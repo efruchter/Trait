@@ -1,11 +1,12 @@
-package efruchter.util;
+package trts.util;
 
 import java.awt.Color;
 
 import org.lwjgl.opengl.GL11;
 
-import efruchter.entities.Behavior;
-import efruchter.entities.Ship;
+import trts.entities.Behavior;
+import trts.entities.Ship;
+
 
 public class RenderUtil {
 
@@ -47,7 +48,7 @@ public class RenderUtil {
 					GL11.glColor3f(color.getRed(), color.getGreen(),
 							color.getBlue());
 					GL11.glTranslatef(self.x, self.y, 0);
-					RenderUtil.drawCircle(100, 10);
+					RenderUtil.drawCircle(self.radius, 10);
 				}
 				GL11.glPopMatrix();
 			}

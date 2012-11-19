@@ -1,13 +1,13 @@
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 
-import efruchter.Level;
-import efruchter.entities.Behavior;
-import efruchter.entities.Ship;
+import trts.entities.Level;
+import trts.gui.TraitViewer;
+import trts.traits.KeyboardControlTrait;
+import trts.traits.Trait;
 
 public class TimerExample {
 
@@ -25,43 +25,12 @@ public class TimerExample {
 
 		level = new Level();
 
-		// Rig controls to player
-		level.getPlayer().updateBehaviors.add(new Behavior() {
+		// Give player keyboard control trait
+		Trait t = new KeyboardControlTrait();
+		level.getPlayer().addTrait(t);
 
-			@Override
-			public void onStart(Ship self) {
-
-			}
-
-			@Override
-			public void onUpdate(Ship self, long delta) {
-				if (Keyboard.isKeyDown(Keyboard.KEY_LEFT))
-					self.x -= 0.35f * delta;
-				if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT))
-					self.x += 0.35f * delta;
-
-				if (Keyboard.isKeyDown(Keyboard.KEY_UP))
-					self.y += 0.35f * delta;
-				if (Keyboard.isKeyDown(Keyboard.KEY_DOWN))
-					self.y -= 0.35f * delta;
-
-				// keep quad on the screen
-				if (self.x < 0)
-					self.x = 0;
-				if (self.x > 800)
-					self.x = 800;
-				if (self.y < 0)
-					self.y = 0;
-				if (self.y > 600)
-					self.y = 600;
-			}
-
-			@Override
-			public void onDeath(Ship self) {
-
-			}
-
-		});
+		TraitViewer viewer = new TraitViewer(t);
+		viewer.showTrait();
 
 		try {
 			Display.setDisplayMode(new DisplayMode(800, 600));
@@ -86,6 +55,7 @@ public class TimerExample {
 		}
 
 		Display.destroy();
+		System.exit(0);
 	}
 
 	public void update(int delta) {

@@ -1,11 +1,10 @@
-package efruchter;
+package trts.entities;
 
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-import efruchter.entities.Ship;
-import efruchter.util.RenderUtil;
+import trts.util.RenderUtil;
 
 public class Level {
 
@@ -14,7 +13,9 @@ public class Level {
 
 	public Level() {
 		player = new Ship();
-		player.renderBehavior = RenderUtil.getShipRenderer(Color.RED);
+		player.setRenderBehavior(RenderUtil.getShipRenderer(Color.RED));
+		player.radius = 10;
+		player.x = player.y = 100;
 
 		ships = new ArrayList<Ship>();
 		ships.add(player);
@@ -44,7 +45,7 @@ public class Level {
 
 	public void renderGL() {
 		for (Ship b : ships) {
-			b.renderBehavior.onUpdate(b, 0);
+			b.getRenderBehavior().onUpdate(b, 0);
 		}
 	}
 }
