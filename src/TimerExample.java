@@ -5,22 +5,64 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 
+import efruchter.Level;
+import efruchter.entities.Behavior;
+import efruchter.entities.Ship;
+
 public class TimerExample {
 
-	/** position of quad */
-	float x = 400, y = 300;
-	/** angle of quad rotation */
-	float rotation = 0;
-	
 	/** time at last frame */
 	long lastFrame;
-	
+
 	/** frames per second */
 	int fps;
 	/** last fps time */
 	long lastFPS;
 
+	private Level level;
+
 	public void start() {
+
+		level = new Level();
+
+		// Rig controls to player
+		level.getPlayer().updateBehaviors.add(new Behavior() {
+
+			@Override
+			public void onStart(Ship self) {
+
+			}
+
+			@Override
+			public void onUpdate(Ship self, long delta) {
+				if (Keyboard.isKeyDown(Keyboard.KEY_LEFT))
+					self.x -= 0.35f * delta;
+				if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT))
+					self.x += 0.35f * delta;
+
+				if (Keyboard.isKeyDown(Keyboard.KEY_UP))
+					self.y += 0.35f * delta;
+				if (Keyboard.isKeyDown(Keyboard.KEY_DOWN))
+					self.y -= 0.35f * delta;
+
+				// keep quad on the screen
+				if (self.x < 0)
+					self.x = 0;
+				if (self.x > 800)
+					self.x = 800;
+				if (self.y < 0)
+					self.y = 0;
+				if (self.y > 600)
+					self.y = 600;
+			}
+
+			@Override
+			public void onDeath(Ship self) {
+
+			}
+
+		});
+
 		try {
 			Display.setDisplayMode(new DisplayMode(800, 600));
 			Display.create();
@@ -35,7 +77,7 @@ public class TimerExample {
 
 		while (!Display.isCloseRequested()) {
 			int delta = getDelta();
-			
+
 			update(delta);
 			renderGL();
 
@@ -45,49 +87,34 @@ public class TimerExample {
 
 		Display.destroy();
 	}
-	
+
 	public void update(int delta) {
-		// rotate quad
-		rotation += 0.15f * delta;
-		
-		if (Keyboard.isKeyDown(Keyboard.KEY_LEFT)) x -= 0.35f * delta;
-		if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT)) x += 0.35f * delta;
-		
-		if (Keyboard.isKeyDown(Keyboard.KEY_UP)) y -= 0.35f * delta;
-		if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) y += 0.35f * delta;
-		
-		// keep quad on the screen
-		if (x < 0) x = 0;
-		if (x > 800) x = 800;
-		if (y < 0) y = 0;
-		if (y > 600) y = 600;
-		
+		level.onUpdate(delta);
 		updateFPS(); // update FPS Counter
 	}
-	
-	/** 
-	 * Calculate how many milliseconds have passed 
-	 * since last frame.
+
+	/**
+	 * Calculate how many milliseconds have passed since last frame.
 	 * 
-	 * @return milliseconds passed since last frame 
+	 * @return milliseconds passed since last frame
 	 */
 	public int getDelta() {
-	    long time = getTime();
-	    int delta = (int) (time - lastFrame);
-	    lastFrame = time;
-	 
-	    return delta;
+		long time = getTime();
+		int delta = (int) (time - lastFrame);
+		lastFrame = time;
+
+		return delta;
 	}
-	
+
 	/**
 	 * Get the accurate system time
 	 * 
 	 * @return The system time in milliseconds
 	 */
 	public long getTime() {
-	    return (Sys.getTime() * 1000) / Sys.getTimerResolution();
+		return (Sys.getTime() * 1000) / Sys.getTimerResolution();
 	}
-	
+
 	/**
 	 * Calculate the FPS and set it in the title bar
 	 */
@@ -99,7 +126,7 @@ public class TimerExample {
 		}
 		fps++;
 	}
-	
+
 	public void initGL() {
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
@@ -111,27 +138,11 @@ public class TimerExample {
 		// Clear The Screen And The Depth Buffer
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 
-		// R,G,B,A Set The Color To Blue One Time Only
-		GL11.glColor3f(0.5f, 0.5f, 1.0f);
-
-		// draw quad
-		GL11.glPushMatrix();
-			GL11.glTranslatef(x, y, 0);
-			GL11.glRotatef(rotation, 0f, 0f, 1f);
-			GL11.glTranslatef(-x, -y, 0);
-			
-			GL11.glBegin(GL11.GL_QUADS);
-				GL11.glVertex2f(x - 50, y - 50);
-				GL11.glVertex2f(x + 50, y - 50);
-				GL11.glVertex2f(x + 50, y + 50);
-				GL11.glVertex2f(x - 50, y + 50);
-			GL11.glEnd();
-		GL11.glPopMatrix();
+		level.renderGL();
 	}
-	
+
 	public static void main(String[] argv) {
 		TimerExample timerExample = new TimerExample();
 		timerExample.start();
 	}
 }
-
