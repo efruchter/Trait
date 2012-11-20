@@ -2,15 +2,15 @@ package efruchter.tp.entities;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import efruchter.tp.util.RenderUtil;
 
-
 public class Level {
 
-	private Ship player;
-	private List<Ship> ships;
+	private Entity player;
+	private List<Entity> ships;
 
 	public Level() {
 		player = new Ship();
@@ -18,35 +18,48 @@ public class Level {
 		player.radius = 10;
 		player.x = player.y = 100;
 
-		ships = new ArrayList<Ship>();
+		ships = new ArrayList<Entity>();
 		ships.add(player);
 	}
 
 	public void onStart() {
-		for (Ship b : ships) {
-			b.onStart();
+		for (Entity b : ships) {
+			b.onStart(this);
 		}
 	}
 
 	public void onUpdate(long delta) {
-		for (Ship b : ships) {
-			b.onUpdate(delta);
+		for (Entity b : new LinkedList<Entity>(ships)) {
+			b.onUpdate(delta, this);
 		}
 	}
 
 	public void onDeath() {
-		for (Ship b : ships) {
-			b.onDeath();
+		for (Entity b : ships) {
+			b.onDeath(this);
 		}
 	}
 
-	public Ship getPlayer() {
+	public Entity getPlayer() {
 		return player;
 	}
 
 	public void renderGL() {
-		for (Ship b : ships) {
-			b.getRenderBehavior().onUpdate(b, 0);
+		for (Entity b : ships) {
+			b.getRenderBehavior().onUpdate(b, this, 0);
 		}
+	}
+
+	public void removeEntity(Entity self) {
+		ships.remove(self);
+		self.onDeath(this);
+	}
+
+	public void addEntity(Projectile p) {
+		ships.add(p);
+	}
+
+	public List<Entity> getEntities() {
+		return ships;
 	}
 }

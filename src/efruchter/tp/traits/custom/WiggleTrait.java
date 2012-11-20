@@ -2,11 +2,11 @@ package efruchter.tp.traits.custom;
 
 import java.util.Random;
 
-import efruchter.tp.entities.Ship;
+import efruchter.tp.entities.Entity;
+import efruchter.tp.entities.Level;
+import efruchter.tp.traits.Gene;
+import efruchter.tp.traits.Gene.GeneFactory;
 import efruchter.tp.traits.Trait;
-import efruchter.tp.traits.genes.Gene;
-import efruchter.tp.traits.genes.Gene.GeneFactory;
-
 
 public class WiggleTrait extends Trait {
 
@@ -23,12 +23,12 @@ public class WiggleTrait extends Trait {
 	}
 
 	@Override
-	public void onStart(Ship self) {
-		
+	public void onStart(Entity self, Level l) {
+
 	}
 
 	@Override
-	public void onUpdate(Ship self, long delta) {
+	public void onUpdate(Entity self, Level l, long delta) {
 		if (random.nextFloat() < wiggleChance.getExpression()) {
 			float dx = random.nextFloat() * wiggleIntensity.getExpression();
 			float dy = random.nextFloat() * wiggleIntensity.getExpression();
@@ -38,7 +38,7 @@ public class WiggleTrait extends Trait {
 	}
 
 	@Override
-	public void onDeath(Ship self) {
+	public void onDeath(Entity self, Level l) {
 		// TODO Auto-generated method stub
 
 	}

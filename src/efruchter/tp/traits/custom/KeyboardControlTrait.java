@@ -2,16 +2,17 @@ package efruchter.tp.traits.custom;
 
 import org.lwjgl.input.Keyboard;
 
-import efruchter.tp.entities.Ship;
+import efruchter.tp.entities.Entity;
+import efruchter.tp.entities.Level;
+import efruchter.tp.entities.Projectile;
+import efruchter.tp.traits.Gene;
+import efruchter.tp.traits.Gene.GeneFactory;
 import efruchter.tp.traits.Trait;
-import efruchter.tp.traits.genes.Gene;
-import efruchter.tp.traits.genes.Gene.GeneFactory;
-
 
 public class KeyboardControlTrait extends Trait {
 
-	private float px, py;
-	private Gene drag, acceleration;
+	private float px, py, coolD, cd;
+	private Gene drag, acceleration, coolDown, spread;
 
 	public KeyboardControlTrait() {
 		super("Keyboard Control", "Entity movement linked to keyboard inputs.");
@@ -19,16 +20,22 @@ public class KeyboardControlTrait extends Trait {
 				"Control the amount of air drag."));
 		registerGene(acceleration = GeneFactory.makeDefaultGene("Accel.",
 				"Control the acceleration of movement."));
+		registerGene(coolDown = GeneFactory.makeDefaultGene("Cooldown",
+				"The projectile cooldown."));
+		registerGene(spread = GeneFactory.makeDefaultGene("Spread",
+				"Bullet spread."));
+		spread.setExpression(0);
 	}
 
 	@Override
-	public void onStart(Ship self) {
+	public void onStart(Entity self, Level level) {
 		px = self.x;
 		py = self.y;
+		coolD = 64 * 2;
 	}
 
 	@Override
-	public void onUpdate(Ship self, long delta) {
+	public void onUpdate(Entity self, Level level, long delta) {
 
 		float ax = 0, ay = 0;
 
@@ -42,6 +49,27 @@ public class KeyboardControlTrait extends Trait {
 			ay += a;
 		if (Keyboard.isKeyDown(Keyboard.KEY_DOWN))
 			ay -= a;
+
+		if (cd < coolD * coolDown.getExpression()) {
+			cd += delta;
+		}
+		if (cd >= coolD * coolDown.getExpression()) {
+			if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
+				cd = 0;
+				Projectile p = new Projectile(self.x, self.y, 3);
+				p.addTrait(new TimedDeathTrait(1), level);
+
+				TravelSimple t = new TravelSimple();
+
+				t.dx.setExpression(.5f + (float) Math.random()
+						* (spread.getExpression())
+						* (Math.random() < .5 ? -1 : 1) / 2);
+				t.dy.setExpression(1);
+
+				p.addTrait(t, level);
+				level.addEntity(p);
+			}
+		}
 
 		// get velocity
 		float vx = self.x - px;
@@ -63,7 +91,7 @@ public class KeyboardControlTrait extends Trait {
 	}
 
 	@Override
-	public void onDeath(Ship self) {
+	public void onDeath(Entity self, Level level) {
 
 	}
 

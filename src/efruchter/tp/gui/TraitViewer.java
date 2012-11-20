@@ -7,14 +7,14 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import efruchter.tp.entities.Ship;
+import efruchter.tp.entities.Entity;
+import efruchter.tp.traits.Gene;
 import efruchter.tp.traits.Trait;
-import efruchter.tp.traits.genes.Gene;
 
 @SuppressWarnings("serial")
 public class TraitViewer extends JPanel {
 
-	public TraitViewer(final Ship entity) {
+	public TraitViewer(final Entity entity) {
 
 		setBorder(BorderFactory.createTitledBorder(entity.name));
 
@@ -43,6 +43,7 @@ public class TraitViewer extends JPanel {
 		}
 
 		JFrame frame = new JFrame("Trait Viewer");
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.add(this);
 		frame.pack();
 		frame.setVisible(true);

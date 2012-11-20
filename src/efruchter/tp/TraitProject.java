@@ -1,4 +1,5 @@
 package efruchter.tp;
+
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
 import org.lwjgl.opengl.Display;
@@ -8,8 +9,8 @@ import org.lwjgl.opengl.GL11;
 import efruchter.tp.entities.Level;
 import efruchter.tp.gui.TraitViewer;
 import efruchter.tp.traits.custom.KeyboardControlTrait;
+import efruchter.tp.traits.custom.TravelSimple;
 import efruchter.tp.traits.custom.WiggleTrait;
-
 
 public class TraitProject {
 
@@ -28,8 +29,9 @@ public class TraitProject {
 		level = new Level();
 
 		// Give player keyboard control trait
-		level.getPlayer().addTrait(new KeyboardControlTrait());
-		level.getPlayer().addTrait(new WiggleTrait());
+		level.getPlayer().addTrait(new KeyboardControlTrait(), level);
+		level.getPlayer().addTrait(new WiggleTrait(), level);
+		level.getPlayer().addTrait(new TravelSimple(), level);
 		level.getPlayer().name = "Player Ship";
 
 		// Show the traits for the player
@@ -93,7 +95,7 @@ public class TraitProject {
 	 */
 	public void updateFPS() {
 		if (getTime() - lastFPS > 1000) {
-			Display.setTitle("FPS: " + fps);
+			Display.setTitle("FPS: " + fps + " Entities: " + level.getEntities().size());
 			fps = 0;
 			lastFPS += 1000;
 		}

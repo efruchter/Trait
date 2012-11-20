@@ -5,9 +5,8 @@ import java.awt.Color;
 import org.lwjgl.opengl.GL11;
 
 import efruchter.tp.entities.Behavior;
-import efruchter.tp.entities.Ship;
-
-
+import efruchter.tp.entities.Entity;
+import efruchter.tp.entities.Level;
 
 public class RenderUtil {
 
@@ -38,12 +37,12 @@ public class RenderUtil {
 		return new Behavior() {
 
 			@Override
-			public void onStart(Ship self) {
+			public void onStart(Entity self, Level l) {
 
 			}
 
 			@Override
-			public void onUpdate(Ship self, long delta) {
+			public void onUpdate(Entity self, Level l, long delta) {
 				GL11.glPushMatrix();
 				{
 					GL11.glColor3f(color.getRed(), color.getGreen(),
@@ -55,7 +54,7 @@ public class RenderUtil {
 			}
 
 			@Override
-			public void onDeath(Ship self) {
+			public void onDeath(Entity self, Level l) {
 
 			}
 

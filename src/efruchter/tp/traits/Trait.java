@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import efruchter.tp.entities.Behavior;
-import efruchter.tp.traits.genes.Gene;
 
 
 
