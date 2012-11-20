@@ -1,44 +1,50 @@
-package trts.entities;
+package efruchter.tp.entities;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import trts.traits.Trait;
+import efruchter.tp.traits.Trait;
+
 
 public class Ship {
 
 	public float x, y, radius, health;
+	public String name = "Ship";
 
 	private Behavior renderBehavior;
-	private List<Behavior> updateBehaviors;
+	private List<Trait> traits;
 
 	public Ship() {
 		x = y = radius = health = 0;
 		setRenderBehavior(Behavior.EMPTY);
-		updateBehaviors = new ArrayList<Behavior>();
+		traits = new ArrayList<Trait>();
 	}
 
 	public void onStart() {
-		for (Behavior b : updateBehaviors) {
+		for (Behavior b : traits) {
 			b.onStart(this);
 		}
 	}
 
 	public void onUpdate(long delta) {
-		for (Behavior b : updateBehaviors) {
+		for (Behavior b : traits) {
 			b.onUpdate(this, delta);
 		}
 	}
 
 	public void onDeath() {
-		for (Behavior b : updateBehaviors) {
+		for (Behavior b : traits) {
 			b.onDeath(this);
 		}
 	}
 
 	public void addTrait(Trait trait) {
-		updateBehaviors.add(trait);
+		traits.add(trait);
 		trait.onStart(this);
+	}
+
+	public List<Trait> getTraits() {
+		return traits;
 	}
 
 	public Behavior getRenderBehavior() {

@@ -1,11 +1,12 @@
-package trts.util;
+package efruchter.tp.util;
 
 import java.awt.Color;
 
 import org.lwjgl.opengl.GL11;
 
-import trts.entities.Behavior;
-import trts.entities.Ship;
+import efruchter.tp.entities.Behavior;
+import efruchter.tp.entities.Ship;
+
 
 
 public class RenderUtil {

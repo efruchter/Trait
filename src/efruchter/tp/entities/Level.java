@@ -1,10 +1,11 @@
-package trts.entities;
+package efruchter.tp.entities;
 
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-import trts.util.RenderUtil;
+import efruchter.tp.util.RenderUtil;
+
 
 public class Level {
 

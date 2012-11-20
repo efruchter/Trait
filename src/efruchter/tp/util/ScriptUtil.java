@@ -1,6 +1,6 @@
-package trts.util;
+package efruchter.tp.util;
 
-import trts.entities.Ship;
+import efruchter.tp.entities.Ship;
 
 public class ScriptUtil {
 

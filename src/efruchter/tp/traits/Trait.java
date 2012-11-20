@@ -1,10 +1,11 @@
-package trts.traits;
+package efruchter.tp.traits;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import trts.entities.Behavior;
-import trts.genes.Gene;
+import efruchter.tp.entities.Behavior;
+import efruchter.tp.traits.genes.Gene;
+
 
 
 public abstract class Trait implements Behavior {

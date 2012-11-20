@@ -1,10 +1,12 @@
-package trts.traits;
+package efruchter.tp.traits.custom;
 
 import org.lwjgl.input.Keyboard;
 
-import trts.entities.Ship;
-import trts.genes.Gene;
-import trts.genes.Gene.GeneFactory;
+import efruchter.tp.entities.Ship;
+import efruchter.tp.traits.Trait;
+import efruchter.tp.traits.genes.Gene;
+import efruchter.tp.traits.genes.Gene.GeneFactory;
+
 
 public class KeyboardControlTrait extends Trait {
 
@@ -45,8 +47,8 @@ public class KeyboardControlTrait extends Trait {
 		float vx = self.x - px;
 		float vy = self.y - py;
 
-		vx *= .07f * (1 - drag.getExpression());
-		vy *= .07f * (1 - drag.getExpression());
+		vx *= .07f * (1f - drag.getExpression());
+		vy *= .07f * (1f - drag.getExpression());
 
 		float dx = vx * delta + .5f * ax * delta * delta;
 		float dy = vy * delta + .5f * ay * delta * delta;

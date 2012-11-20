@@ -1,15 +1,17 @@
+package efruchter.tp;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 
-import trts.entities.Level;
-import trts.gui.TraitViewer;
-import trts.traits.KeyboardControlTrait;
-import trts.traits.Trait;
+import efruchter.tp.entities.Level;
+import efruchter.tp.gui.TraitViewer;
+import efruchter.tp.traits.custom.KeyboardControlTrait;
+import efruchter.tp.traits.custom.WiggleTrait;
 
-public class TimerExample {
+
+public class TraitProject {
 
 	/** time at last frame */
 	long lastFrame;
@@ -26,11 +28,12 @@ public class TimerExample {
 		level = new Level();
 
 		// Give player keyboard control trait
-		Trait t = new KeyboardControlTrait();
-		level.getPlayer().addTrait(t);
+		level.getPlayer().addTrait(new KeyboardControlTrait());
+		level.getPlayer().addTrait(new WiggleTrait());
+		level.getPlayer().name = "Player Ship";
 
-		TraitViewer viewer = new TraitViewer(t);
-		viewer.showTrait();
+		// Show the traits for the player
+		new TraitViewer(level.getPlayer());
 
 		try {
 			Display.setDisplayMode(new DisplayMode(800, 600));
@@ -112,7 +115,7 @@ public class TimerExample {
 	}
 
 	public static void main(String[] argv) {
-		TimerExample timerExample = new TimerExample();
+		TraitProject timerExample = new TraitProject();
 		timerExample.start();
 	}
 }

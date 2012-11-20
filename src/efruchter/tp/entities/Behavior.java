@@ -1,4 +1,4 @@
-package trts.entities;
+package efruchter.tp.entities;
 
 public interface Behavior {
 
