@@ -12,7 +12,7 @@ import efruchter.tp.traits.Trait;
 public class KeyboardControlTrait extends Trait {
 
 	private float px, py, coolD, cd;
-	private Gene drag, acceleration, coolDown, spread;
+	private Gene drag, acceleration, coolDown, spread, wiggleBigness;
 
 	public KeyboardControlTrait() {
 		super("Keyboard Control", "Entity movement linked to keyboard inputs.");
@@ -24,6 +24,8 @@ public class KeyboardControlTrait extends Trait {
 				"The projectile cooldown."));
 		registerGene(spread = GeneFactory.makeDefaultGene("Spread",
 				"Bullet spread."));
+		registerGene(wiggleBigness = GeneFactory.makeDefaultGene("Wiggleness",
+				"Maximum wiggle magnitude."));
 		spread.setExpression(0);
 	}
 
@@ -58,6 +60,13 @@ public class KeyboardControlTrait extends Trait {
 				cd = 0;
 				Projectile p = new Projectile(self.x, self.y, 3);
 				p.addTrait(new TimedDeathTrait(1), level);
+
+				WiggleTrait w = new WiggleTrait(
+						20 * wiggleBigness.getExpression());
+				w.wiggleChance.setExpression(1);
+				w.wiggleIntensity.setExpression(1);
+
+				p.addTrait(w, level);
 
 				TravelSimple t = new TravelSimple();
 

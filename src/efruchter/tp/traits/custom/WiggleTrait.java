@@ -10,16 +10,21 @@ import efruchter.tp.traits.Trait;
 
 public class WiggleTrait extends Trait {
 
-	private Gene wiggleChance, wiggleIntensity;
+	public Gene wiggleChance, wiggleIntensity;
 	private static Random random = new Random();
+	private float maxWiggle;
 
-	public WiggleTrait() {
+	public WiggleTrait(float maxWiggle) {
 		super("Wiggle", "Causes random wiggles.");
 		registerGene(wiggleChance = GeneFactory.makeDefaultGene("%",
 				"The chance of a wiggle occuring."));
 		registerGene(wiggleIntensity = GeneFactory.makeDefaultGene("Int.",
 				"The intensity of the wiggle."));
-		wiggleChance.setExpression(0);
+		this.maxWiggle = maxWiggle;
+	}
+
+	public WiggleTrait() {
+		this(1);
 	}
 
 	@Override
@@ -32,8 +37,8 @@ public class WiggleTrait extends Trait {
 		if (random.nextFloat() < wiggleChance.getExpression()) {
 			float dx = random.nextFloat() * wiggleIntensity.getExpression();
 			float dy = random.nextFloat() * wiggleIntensity.getExpression();
-			self.x += dx * (random.nextBoolean() ? 1 : -1);
-			self.y += dy * (random.nextBoolean() ? 1 : -1);
+			self.x += dx * (random.nextBoolean() ? maxWiggle : -maxWiggle);
+			self.y += dy * (random.nextBoolean() ? maxWiggle : -maxWiggle);
 		}
 	}
 

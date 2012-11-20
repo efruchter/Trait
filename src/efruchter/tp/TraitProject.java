@@ -39,7 +39,9 @@ public class TraitProject {
 
 		// Give player keyboard control trait
 		level.getPlayer().addTrait(new KeyboardControlTrait(), level);
-		level.getPlayer().addTrait(new WiggleTrait(), level);
+		WiggleTrait w = new WiggleTrait();
+		w.wiggleChance.setExpression(0);
+		level.getPlayer().addTrait(w, level);
 		level.getPlayer().addTrait(new TravelSimple(), level);
 		level.getPlayer().name = "Player Ship";
 
