@@ -1,5 +1,7 @@
 package efruchter.tp;
 
+import javax.swing.UIManager;
+
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
 import org.lwjgl.opengl.Display;
@@ -25,6 +27,13 @@ public class TraitProject {
 	private Level level;
 
 	public void start() {
+
+		try {
+			UIManager
+					.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		level = new Level();
 
@@ -95,7 +104,8 @@ public class TraitProject {
 	 */
 	public void updateFPS() {
 		if (getTime() - lastFPS > 1000) {
-			Display.setTitle("FPS: " + fps + " Entities: " + level.getEntities().size());
+			Display.setTitle("FPS: " + fps + " Entities: "
+					+ level.getEntities().size());
 			fps = 0;
 			lastFPS += 1000;
 		}
