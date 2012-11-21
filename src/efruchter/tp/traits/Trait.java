@@ -9,7 +9,8 @@ import efruchter.tp.entities.Behavior;
 
 public abstract class Trait implements Behavior {
 
-	private String name, info;
+	protected String name, info;
+	protected List<Gene> genes = new ArrayList<Gene>();
 
 	public Trait(String name, String info) {
 		this.name = name;
@@ -31,8 +32,6 @@ public abstract class Trait implements Behavior {
 	public void setInfo(String info) {
 		this.info = info;
 	}
-
-	protected List<Gene> genes = new ArrayList<Gene>();
 
 	public void registerGene(Gene gene) {
 		genes.add(gene);

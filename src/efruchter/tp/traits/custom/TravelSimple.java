@@ -3,7 +3,6 @@ package efruchter.tp.traits.custom;
 import efruchter.tp.entities.Entity;
 import efruchter.tp.entities.Level;
 import efruchter.tp.traits.Gene;
-import efruchter.tp.traits.Gene.GeneFactory;
 import efruchter.tp.traits.Trait;
 
 public class TravelSimple extends Trait {
@@ -12,10 +11,8 @@ public class TravelSimple extends Trait {
 
 	public TravelSimple() {
 		super("TravelSimple", "Move in straight line path.");
-		registerGene(dx = GeneFactory.makeDefaultGene("dx",
-				"movement in x firection"));
-		registerGene(dy = GeneFactory.makeDefaultGene("dy",
-				"movement in y firection"));
+		registerGene(dx = new Gene("dx", "movement in x firection", -1, 1, 0));
+		registerGene(dy = new Gene("dy", "movement in y firection", -1, 1, 0));
 	}
 
 	@Override
@@ -25,8 +22,8 @@ public class TravelSimple extends Trait {
 
 	@Override
 	public void onUpdate(Entity self, Level level, long delta) {
-		self.x += (-1 + 2 * dx.getExpression()) * delta;
-		self.y += (-1 + 2 * dy.getExpression()) * delta;
+		self.x += dx.getValue() * delta;
+		self.y += dy.getValue() * delta;
 	}
 
 	@Override

@@ -5,7 +5,6 @@ import java.util.Random;
 import efruchter.tp.entities.Entity;
 import efruchter.tp.entities.Level;
 import efruchter.tp.traits.Gene;
-import efruchter.tp.traits.Gene.GeneFactory;
 import efruchter.tp.traits.Trait;
 
 public class WiggleTrait extends Trait {
@@ -16,10 +15,10 @@ public class WiggleTrait extends Trait {
 
 	public WiggleTrait(float maxWiggle) {
 		super("Wiggle", "Causes random wiggles.");
-		registerGene(wiggleChance = GeneFactory.makeDefaultGene("%",
-				"The chance of a wiggle occuring."));
-		registerGene(wiggleIntensity = GeneFactory.makeDefaultGene("Int.",
-				"The intensity of the wiggle."));
+		registerGene(wiggleChance = new Gene("%",
+				"The chance of a wiggle occuring.", 0, 1, 0));
+		registerGene(wiggleIntensity = new Gene("Int.",
+				"The intensity of the wiggle.", 0, 1, .5f));
 		this.maxWiggle = maxWiggle;
 	}
 
@@ -35,8 +34,8 @@ public class WiggleTrait extends Trait {
 	@Override
 	public void onUpdate(Entity self, Level l, long delta) {
 		if (random.nextFloat() < wiggleChance.getExpression()) {
-			float dx = random.nextFloat() * wiggleIntensity.getExpression();
-			float dy = random.nextFloat() * wiggleIntensity.getExpression();
+			float dx = random.nextFloat() * wiggleIntensity.getValue();
+			float dy = random.nextFloat() * wiggleIntensity.getValue();
 			self.x += dx * (random.nextBoolean() ? maxWiggle : -maxWiggle);
 			self.y += dy * (random.nextBoolean() ? maxWiggle : -maxWiggle);
 		}

@@ -1,54 +1,74 @@
 package efruchter.tp.traits;
 
-public interface Gene {
+public class Gene {
 
-	/**
-	 * Value from 0 to 1. 0 deactivated the gene, 1 is maximum expression.
-	 * 
-	 * @param prob
-	 */
-	public void setExpression(float prob);
+	private float exp, maxVal, minVal, val;
+	private String name, info;
 
-	public float getExpression();
+	public Gene(String name, String info, float minVal, float maxVal,
+			float initialVal) {
+		this.name = name;
+		this.info = info;
+		this.minVal = minVal;
+		this.maxVal = maxVal;
+		setValue(initialVal);
 
-	public String getInfo();
-
-	public String getName();
-
-	public class GeneFactory {
-		private GeneFactory() {
-		}
-
-		public static Gene makeDefaultGene(final String name, final String info) {
-			return new Gene() {
-
-				private float exp = .5f;
-
-				@Override
-				public void setExpression(float prob) {
-					exp = prob;
-					if (exp > 1)
-						exp = 1;
-					else if (exp < 0)
-						exp = 0;
-				}
-
-				@Override
-				public float getExpression() {
-					return exp;
-				}
-
-				@Override
-				public String getInfo() {
-					return info;
-				}
-
-				@Override
-				public String getName() {
-					return name;
-				}
-
-			};
-		}
 	}
+
+	public Gene(String name, String info) {
+		this(name, info, 0, 1, .5f);
+	}
+
+	public String getInfo() {
+		return info;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setValue(float val) {
+		if (val > maxVal)
+			val = maxVal;
+		else if (val < minVal)
+			val = minVal;
+		this.val = val;
+		exp = (val - minVal) / (maxVal - minVal);
+	}
+
+	public void setMinValue(float val) {
+		this.minVal = val;
+		setValue(this.val);
+	}
+
+	public void setMaxValue(float val) {
+		this.maxVal = val;
+		setValue(this.val);
+	}
+
+	public void setExpression(float prob) {
+		if (prob > 1)
+			prob = 1;
+		else if (prob < 0)
+			prob = 0;
+		exp = prob;
+		val = exp * (maxVal - minVal) + minVal;
+	}
+
+	public float getExpression() {
+		return exp;
+	}
+
+	public float getMinValue() {
+		return minVal;
+	}
+
+	public float getMaxValue() {
+		return maxVal;
+	}
+
+	public float getValue() {
+		return val;
+	}
+
 }

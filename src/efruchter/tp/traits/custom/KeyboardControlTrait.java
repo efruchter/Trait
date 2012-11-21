@@ -6,26 +6,24 @@ import efruchter.tp.entities.Entity;
 import efruchter.tp.entities.Level;
 import efruchter.tp.entities.Projectile;
 import efruchter.tp.traits.Gene;
-import efruchter.tp.traits.Gene.GeneFactory;
 import efruchter.tp.traits.Trait;
 
 public class KeyboardControlTrait extends Trait {
 
 	private float px, py, coolD, cd;
-	private Gene drag, acceleration, coolDown, spread, wiggleBigness;
+	private Gene drag, acceleration, coolDown, spread, wiggleBigness, bullets;
 
 	public KeyboardControlTrait() {
 		super("Keyboard Control", "Entity movement linked to keyboard inputs.");
-		registerGene(drag = GeneFactory.makeDefaultGene("Drag",
-				"Control the amount of air drag."));
-		registerGene(acceleration = GeneFactory.makeDefaultGene("Accel.",
+		registerGene(drag = new Gene("Drag", "Control the amount of air drag."));
+		registerGene(acceleration = new Gene("Accel.",
 				"Control the acceleration of movement."));
-		registerGene(coolDown = GeneFactory.makeDefaultGene("Cooldown",
-				"The projectile cooldown."));
-		registerGene(spread = GeneFactory.makeDefaultGene("Spread",
-				"Bullet spread."));
-		registerGene(wiggleBigness = GeneFactory.makeDefaultGene("Wiggleness",
+		registerGene(coolDown = new Gene("Cooldown", "The projectile cooldown."));
+		registerGene(spread = new Gene("Spread", "Bullet spread."));
+		registerGene(wiggleBigness = new Gene("Wiggleness",
 				"Maximum wiggle magnitude."));
+		registerGene(bullets = new Gene("Amount",
+				"Amount of bullets per salvo.", 0, 10, 1));
 		spread.setExpression(0);
 	}
 
@@ -58,25 +56,27 @@ public class KeyboardControlTrait extends Trait {
 		if (cd >= coolD * coolDown.getExpression()) {
 			if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
 				cd = 0;
-				Projectile p = new Projectile(self.x, self.y, 3);
-				p.addTrait(new TimedDeathTrait(1), level);
+				for (int i = 0; i < bullets.getValue(); i++) {
+					Projectile p = new Projectile(self.x, self.y, 3);
+					p.addTrait(new TimedDeathTrait(1), level);
 
-				WiggleTrait w = new WiggleTrait(
-						20 * wiggleBigness.getExpression());
-				w.wiggleChance.setExpression(1);
-				w.wiggleIntensity.setExpression(1);
+					WiggleTrait w = new WiggleTrait(20 * wiggleBigness
+							.getExpression());
+					w.wiggleChance.setExpression(1);
+					w.wiggleIntensity.setExpression(1);
 
-				p.addTrait(w, level);
+					p.addTrait(w, level);
 
-				TravelSimple t = new TravelSimple();
+					TravelSimple t = new TravelSimple();
 
-				t.dx.setExpression(.5f + (float) Math.random()
-						* (spread.getExpression())
-						* (Math.random() < .5 ? -1 : 1) / 2);
-				t.dy.setExpression(1);
+					t.dx.setExpression(.5f + (float) Math.random()
+							* (spread.getExpression())
+							* (Math.random() < .5 ? -1 : 1) / 2);
+					t.dy.setExpression(1);
 
-				p.addTrait(t, level);
-				level.addEntity(p);
+					p.addTrait(t, level);
+					level.addEntity(p);
+				}
 			}
 		}
 
