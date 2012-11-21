@@ -11,7 +11,7 @@ import org.lwjgl.opengl.GL11;
 import efruchter.tp.entities.Level;
 import efruchter.tp.gui.TraitViewer;
 import efruchter.tp.traits.custom.KeyboardControlTrait;
-import efruchter.tp.traits.custom.TravelSimple;
+import efruchter.tp.traits.custom.RadiusEditTrait;
 import efruchter.tp.traits.custom.WiggleTrait;
 
 public class TraitProject {
@@ -29,9 +29,8 @@ public class TraitProject {
 	public void start() {
 
 		try {
-			UIManager
-					.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
-		} catch (Exception e) {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 
@@ -42,7 +41,7 @@ public class TraitProject {
 		WiggleTrait w = new WiggleTrait();
 		w.wiggleChance.setExpression(0);
 		level.getPlayer().addTrait(w, level);
-		level.getPlayer().addTrait(new TravelSimple(), level);
+		level.getPlayer().addTrait(new RadiusEditTrait(3, 20, 10), level);
 		level.getPlayer().name = "Player Ship";
 
 		// Show the traits for the player
@@ -146,9 +145,9 @@ public class TraitProject {
 			System.exit(0);
 		}
 
-		System.setProperty("org.lwjgl.librarypath", 
-				System.getProperty("user.dir")
-				+ "/lwjgl-2.8.5/native/" + osString);
+		System.setProperty("org.lwjgl.librarypath",
+				System.getProperty("user.dir") + "/lwjgl-2.8.5/native/"
+						+ osString);
 
 		TraitProject timerExample = new TraitProject();
 		timerExample.start();

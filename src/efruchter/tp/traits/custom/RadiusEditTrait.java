@@ -5,14 +5,13 @@ import efruchter.tp.entities.Level;
 import efruchter.tp.traits.Gene;
 import efruchter.tp.traits.Trait;
 
-public class TravelSimple extends Trait {
+public class RadiusEditTrait extends Trait {
 
-	public Gene dx, dy;
+	public Gene radius;
 
-	public TravelSimple() {
-		super("TravelSimple", "Move in straight line path.");
-		registerGene(dx = new Gene("dx", "movement in x direction", -1, 1, 0));
-		registerGene(dy = new Gene("dy", "movement in y direction", -1, 1, 0));
+	public RadiusEditTrait(float minR, float maxR, float var) {
+		super("Radius", "Has a variable radius.");
+		registerGene(radius = new Gene("r", "the radius value", minR, maxR, var));
 	}
 
 	@Override
@@ -22,8 +21,7 @@ public class TravelSimple extends Trait {
 
 	@Override
 	public void onUpdate(Entity self, Level level, long delta) {
-		self.x += dx.getValue() * delta;
-		self.y += dy.getValue() * delta;
+		self.radius = radius.getValue();
 	}
 
 	@Override

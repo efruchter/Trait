@@ -10,7 +10,7 @@ import efruchter.tp.traits.Trait;
 
 public class KeyboardControlTrait extends Trait {
 
-	private float px, py, coolD, cd;
+	private float px, py, cd;
 	private Gene drag, acceleration, coolDown, spread, wiggleBigness, bullets;
 
 	public KeyboardControlTrait() {
@@ -18,12 +18,13 @@ public class KeyboardControlTrait extends Trait {
 		registerGene(drag = new Gene("Drag", "Control the amount of air drag."));
 		registerGene(acceleration = new Gene("Accel.",
 				"Control the acceleration of movement."));
-		registerGene(coolDown = new Gene("Cooldown", "The projectile cooldown."));
+		registerGene(coolDown = new Gene("Cooldown",
+				"The projectile cooldown.", 0, 64, 1000));
 		registerGene(spread = new Gene("Spread", "Bullet spread."));
 		registerGene(wiggleBigness = new Gene("Wiggleness",
 				"Maximum wiggle magnitude."));
 		registerGene(bullets = new Gene("Amount",
-				"Amount of bullets per salvo.", 0, 10, 1));
+				"Amount of bullets per salvo.", 0, 100, 1));
 		spread.setExpression(0);
 	}
 
@@ -31,7 +32,6 @@ public class KeyboardControlTrait extends Trait {
 	public void onStart(Entity self, Level level) {
 		px = self.x;
 		py = self.y;
-		coolD = 64 * 2;
 	}
 
 	@Override
@@ -50,18 +50,18 @@ public class KeyboardControlTrait extends Trait {
 		if (Keyboard.isKeyDown(Keyboard.KEY_DOWN))
 			ay -= a;
 
-		if (cd < coolD * coolDown.getExpression()) {
+		if (cd < coolDown.getValue()) {
 			cd += delta;
 		}
-		if (cd >= coolD * coolDown.getExpression()) {
+		if (cd >= coolDown.getValue()) {
 			if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
 				cd = 0;
 				for (int i = 0; i < bullets.getValue(); i++) {
 					Projectile p = new Projectile(self.x, self.y, 3);
 					p.addTrait(new TimedDeathTrait(1), level);
 
-					WiggleTrait w = new WiggleTrait(20 * wiggleBigness
-							.getExpression());
+					WiggleTrait w = new WiggleTrait(
+							20 * wiggleBigness.getExpression());
 					w.wiggleChance.setExpression(1);
 					w.wiggleIntensity.setExpression(1);
 

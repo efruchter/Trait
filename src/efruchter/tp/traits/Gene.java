@@ -1,5 +1,6 @@
 package efruchter.tp.traits;
 
+
 public class Gene {
 
 	private float exp, maxVal, minVal, val;
@@ -69,6 +70,10 @@ public class Gene {
 
 	public float getValue() {
 		return val;
+	}
+
+	public interface GeneChangeListener {
+		public void expressionChanged(float newValue);
 	}
 
 }

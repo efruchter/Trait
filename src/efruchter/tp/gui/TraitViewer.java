@@ -14,6 +14,8 @@ import efruchter.tp.traits.Trait;
 @SuppressWarnings("serial")
 public class TraitViewer extends JPanel {
 
+	private int detail = 1000;
+
 	public TraitViewer(final Entity entity) {
 
 		setBorder(BorderFactory.createTitledBorder(entity.name));
@@ -27,11 +29,11 @@ public class TraitViewer extends JPanel {
 				JPanel p = new JPanel();
 				p.setBorder(BorderFactory.createTitledBorder(gene.getName()));
 
-				final JSlider c = new JSlider(JSlider.VERTICAL, 0, 100,
-						(int) (gene.getExpression() * 100));
+				final JSlider c = new JSlider(JSlider.VERTICAL, 0, detail,
+						(int) (gene.getExpression() * detail));
 				c.addChangeListener(new ChangeListener() {
 					public void stateChanged(ChangeEvent arg0) {
-						gene.setExpression(c.getValue() / 100f);
+						gene.setExpression((float) c.getValue() / detail);
 					}
 				});
 				c.setToolTipText(gene.getInfo());
