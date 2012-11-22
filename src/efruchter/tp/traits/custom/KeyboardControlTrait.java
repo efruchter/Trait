@@ -10,14 +10,14 @@ import efruchter.tp.traits.Trait;
 
 public class KeyboardControlTrait extends Trait {
 
-	private float px, py, cd;
+	private float vx, vy, cd;
 	private Gene drag, acceleration, coolDown, spread, wiggleBigness, bullets;
 
 	public KeyboardControlTrait() {
 		super("Keyboard Control", "Entity movement linked to keyboard inputs.");
 		registerGene(drag = new Gene("Drag", "Control the amount of air drag."));
 		registerGene(acceleration = new Gene("Accel.",
-				"Control the acceleration of movement."));
+				"Control the acceleration of movement.", 0, .09f, .04f));
 		registerGene(coolDown = new Gene("Cooldown",
 				"The projectile cooldown.", 0, 64, 1000));
 		registerGene(spread = new Gene("Spread", "Bullet spread."));
@@ -26,12 +26,14 @@ public class KeyboardControlTrait extends Trait {
 		registerGene(bullets = new Gene("Amount",
 				"Amount of bullets per salvo.", 0, 100, 1));
 		spread.setExpression(0);
+		drag.setExpression(.6f);
+
+		vx = vy = 0;
 	}
 
 	@Override
 	public void onStart(Entity self, Level level) {
-		px = self.x;
-		py = self.y;
+
 	}
 
 	@Override
@@ -39,7 +41,7 @@ public class KeyboardControlTrait extends Trait {
 
 		float ax = 0, ay = 0;
 
-		float a = .04f * acceleration.getExpression();
+		float a = acceleration.getValue();
 
 		if (Keyboard.isKeyDown(Keyboard.KEY_LEFT))
 			ax -= a;
@@ -80,23 +82,19 @@ public class KeyboardControlTrait extends Trait {
 			}
 		}
 
-		// get velocity
-		float vx = self.x - px;
-		float vy = self.y - py;
+		vx += ax * delta;
+		vy += ay * delta;
 
-		vx *= .07f * (1f - drag.getExpression());
-		vy *= .07f * (1f - drag.getExpression());
+		float x = (1 - drag.getValue());
+		float y = (1 - drag.getValue());
 
-		float dx = vx * delta + .5f * ax * delta * delta;
-		float dy = vy * delta + .5f * ay * delta * delta;
+		if (Math.abs(x) > .00001f)
+			vx *= x;
+		if (Math.abs(y) > .00001f)
+			vy *= y;
 
-		if (Math.abs(dx) > .00001)
-			px = self.x;
-		if (Math.abs(dy) > .00001)
-			py = self.y;
-
-		self.x += dx;
-		self.y += dy;
+		self.x += vx * delta;
+		self.y += vy * delta;
 	}
 
 	@Override
