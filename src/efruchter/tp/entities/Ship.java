@@ -1,11 +1,21 @@
 package efruchter.tp.entities;
 
+/**
+ * Entity with health.
+ * 
+ * @author toriscope
+ * 
+ */
 public class Ship extends Entity {
-
+	
 	protected float health;
-
-	public Ship() {
+	
+	public Ship(float health) {
 		super("Ship");
-		health = 0;
+		this.health = health;
+	}
+	
+	public Ship() {
+		this(10);
 	}
 }
