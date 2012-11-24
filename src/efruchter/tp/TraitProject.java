@@ -139,25 +139,6 @@ public class TraitProject {
 	
 	public static void main(String[] argv) {
 		
-		/*
-		 * Get the proper native files.
-		 */
-		String OS = System.getProperty("os.name").toLowerCase();
-		String osString = "";
-		if (OS.indexOf("win") != -1)
-			osString = "windows";
-		else if (OS.indexOf("mac") != -1)
-			osString = "macosx";
-		else if (OS.indexOf("nix") != -1 | OS.indexOf("nux") != -1 | OS.indexOf("aix") != -1)
-			osString = "linux";
-		else if (OS.indexOf("sunos") != -1)
-			osString = "solaris";
-		else {
-			System.out.println("OS not supported");
-			System.exit(0);
-		}
-		System.setProperty("org.lwjgl.librarypath", System.getProperty("user.dir") + "/lwjgl-2.8.5/native/" + osString);
-		
 		//Start the game
 		new TraitProject().start();
 	}
