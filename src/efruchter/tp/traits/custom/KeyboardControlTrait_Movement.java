@@ -18,6 +18,7 @@ public class KeyboardControlTrait_Movement extends Trait {
 	private float vx, vy;
 	public Gene drag, acceleration;
 	private int upKey, downKey, leftKey, rightKey;
+	private static final float MOVE_ADJUST = 1000f / 60f;
 	
 	public KeyboardControlTrait_Movement(int upKey, int downKey, int leftKey, int rightKey) {
 		super("Move Control", "Entity movement linked to keyboard inputs.");
@@ -38,7 +39,8 @@ public class KeyboardControlTrait_Movement extends Trait {
 	
 	@Override
 	public void onUpdate(Entity self, Level level, long delta) {
-		
+		if (delta == 0)
+			return;
 		float ax = 0, ay = 0;
 		
 		float a = acceleration.getValue();
@@ -54,9 +56,10 @@ public class KeyboardControlTrait_Movement extends Trait {
 		
 		vx += ax * delta;
 		vy += ay * delta;
-		
-		float x = (1 - drag.getValue());
-		float y = (1 - drag.getValue());
+
+		float dscale = MOVE_ADJUST / delta;
+		float x = (1 - drag.getValue()) * dscale;
+		float y = (1 - drag.getValue()) * dscale;
 		
 		if (Math.abs(x) > .00001f)
 			vx *= x;
