@@ -1,11 +1,8 @@
 package efruchter.tp.entities;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-
-import efruchter.tp.util.RenderUtil;
 
 /**
  * Stores and coordinates entities.
@@ -20,7 +17,6 @@ public class Level {
 	
 	public Level() {
 		player = new Ship();
-		player.setRenderBehavior(RenderUtil.getShipRenderer(Color.RED));
 		player.radius = 10;
 		player.x = player.y = 100;
 		

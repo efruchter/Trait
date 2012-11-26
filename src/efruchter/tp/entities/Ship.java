@@ -1,5 +1,7 @@
 package efruchter.tp.entities;
 
+import java.awt.Color;
+
 /**
  * Entity with health.
  * 
@@ -11,7 +13,7 @@ public class Ship extends Entity {
 	protected float health;
 	
 	public Ship(float health) {
-		super("Ship");
+		super("Ship", Color.CYAN);
 		this.health = health;
 	}
 	

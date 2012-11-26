@@ -1,9 +1,11 @@
 package efruchter.tp.entities;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
 import efruchter.tp.traits.Trait;
+import efruchter.tp.util.RenderUtil;
 
 /**
  * Entity in the game world, with behaviors, a position and a radius.
@@ -15,14 +17,17 @@ public abstract class Entity {
 	
 	public float x, y, radius;
 	public String name;
+	public Color baseColor;
 	
 	private Behavior renderBehavior;
 	private List<Trait> traits;
 	
-	public Entity(String name) {
+	public Entity(String name, Color baseColor) {
 		x = y = radius = 0;
 		setRenderBehavior(Behavior.EMPTY);
 		traits = new ArrayList<Trait>();
+		this.baseColor = baseColor;
+		this.setRenderBehavior(RenderUtil.getGenericRenderBehavior());
 	}
 	
 	public void onStart(Level level) {
