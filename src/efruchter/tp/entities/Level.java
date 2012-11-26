@@ -11,19 +11,12 @@ import java.util.List;
  */
 public class Level {
 	
-	private Ship player;
-	private List<Ship> ships;
-	private List<Projectile> bullets;
+	private List<Entity> ships;
+	private List<Entity> bullets;
 	
 	public Level() {
-		player = new Ship();
-		player.radius = 10;
-		player.x = player.y = 100;
-		
-		ships = new LinkedList<Ship>();
-		ships.add(player);
-		
-		bullets = new LinkedList<Projectile>();
+		ships = new LinkedList<Entity>();
+		bullets = new LinkedList<Entity>();
 	}
 	
 	public void onStart() {
@@ -57,10 +50,6 @@ public class Level {
 		
 	}
 	
-	public Entity getPlayer() {
-		return player;
-	}
-	
 	public void renderGL() {
 		for (Entity b : ships) {
 			b.getRenderBehavior().onUpdate(b, this, 0);
@@ -72,26 +61,40 @@ public class Level {
 	}
 	
 	public void removeEntity(Entity p) {
-		if (p instanceof Ship)
-			ships.remove((Ship) p);
-		else if (p instanceof Projectile)
-			bullets.remove((Projectile) p);
+		switch (p.entityType) {
+			case SHIP:
+				ships.remove(p);
+				break;
+			case PROJECTILE:
+				bullets.remove(p);
+				break;
+			default:
+				throw new RuntimeException("Entity with NO_TYPE encountered.");
+		}
+		
 		p.onDeath(this);
 	}
 	
 	public void addEntity(Entity p) {
-		if (p instanceof Ship)
-			ships.add((Ship) p);
-		else if (p instanceof Projectile)
-			bullets.add((Projectile) p);
+		switch (p.entityType) {
+			case SHIP:
+				ships.add(p);
+				break;
+			case PROJECTILE:
+				bullets.add(p);
+				break;
+			default:
+				throw new RuntimeException("Entity with NO_TYPE encountered.");
+		}
+		
 		p.onStart(this);
 	}
 	
-	public List<Ship> getShips() {
+	public List<Entity> getShips() {
 		return ships;
 	}
 	
-	public List<Projectile> getBullets() {
+	public List<Entity> getBullets() {
 		return bullets;
 	}
 	

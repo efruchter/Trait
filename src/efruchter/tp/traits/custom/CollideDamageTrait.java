@@ -2,7 +2,6 @@ package efruchter.tp.traits.custom;
 
 import efruchter.tp.entities.Entity;
 import efruchter.tp.entities.Level;
-import efruchter.tp.entities.Ship;
 import efruchter.tp.traits.Trait;
 
 public class CollideDamageTrait extends Trait {
@@ -23,7 +22,7 @@ public class CollideDamageTrait extends Trait {
 	@Override
 	public void onUpdate(Entity self, Level level, long delta) {
 		boolean hit = false;
-		for (Ship e : level.getShips()) {
+		for (Entity e : level.getShips()) {
 			if (self.isColliding(e)) {
 				e.causeDamage(damage);
 				hit = true;

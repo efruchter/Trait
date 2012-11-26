@@ -5,7 +5,6 @@ import org.lwjgl.opengl.GL11;
 import efruchter.tp.entities.Behavior;
 import efruchter.tp.entities.Entity;
 import efruchter.tp.entities.Level;
-import efruchter.tp.entities.Ship;
 
 public class RenderUtil {
 	
@@ -70,11 +69,7 @@ public class RenderUtil {
 		GL11.glPopMatrix();
 	}
 	
-	public static Behavior getGenericRenderBehavior() {
-		return GENERIC_RENDER;
-	}
-	
-	private final static Behavior GENERIC_RENDER = new Behavior() {
+	public final static Behavior GENERIC_RENDER = new Behavior() {
 		
 		@Override
 		public void onStart(Entity self, Level l) {
@@ -83,7 +78,7 @@ public class RenderUtil {
 		
 		@Override
 		public void onUpdate(Entity self, Level l, long delta) {
-			if (self instanceof Ship && ((Ship) self).isHurtAnimFrame())
+			if (self.isHurtAnimFrame())
 				return;
 			GL11.glPushMatrix();
 			{

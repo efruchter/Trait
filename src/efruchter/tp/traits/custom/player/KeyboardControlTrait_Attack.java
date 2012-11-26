@@ -1,14 +1,15 @@
 package efruchter.tp.traits.custom.player;
 
+import java.awt.Color;
+
 import org.lwjgl.input.Keyboard;
 
 import efruchter.tp.defaults.CollisionLabels;
+import efruchter.tp.defaults.EntityFactory;
 import efruchter.tp.entities.Entity;
 import efruchter.tp.entities.Level;
-import efruchter.tp.entities.Projectile;
 import efruchter.tp.traits.Gene;
 import efruchter.tp.traits.Trait;
-import efruchter.tp.traits.custom.CollideDamageTrait;
 import efruchter.tp.traits.custom.TimedDeathTrait;
 import efruchter.tp.traits.custom.TravelSimple;
 import efruchter.tp.traits.custom.WiggleTrait;
@@ -58,14 +59,15 @@ public class KeyboardControlTrait_Attack extends Trait {
 			if (Keyboard.isKeyDown(key)) {
 				cd = 0;
 				for (int i = 0; i < amount.getValue(); i++) {
-					Projectile p = new Projectile(self.x, self.y, 3);
-					p.addTrait(new TimedDeathTrait(1), level);
+					Entity p = EntityFactory.buildProjectile(self.x, self.y, 4, CollisionLabels.PLAYER_LABEL,
+							Color.GREEN, damage.getValue());
+					p.addTrait(new TimedDeathTrait(1));
 					
 					WiggleTrait w = new WiggleTrait(20 * wiggleBigness.getExpression());
 					w.wiggleChance.setExpression(1);
 					w.wiggleIntensity.setExpression(1);
 					
-					p.addTrait(w, level);
+					p.addTrait(w);
 					
 					TravelSimple t = new TravelSimple();
 					
@@ -73,9 +75,8 @@ public class KeyboardControlTrait_Attack extends Trait {
 							* (Math.random() < .5 ? -1 : 1) / 2);
 					t.dy.setExpression(1);
 					
-					p.addTrait(t, level);
+					p.addTrait(t);
 					p.collisionLabel = CollisionLabels.PLAYER_LABEL;
-					p.addTrait(new CollideDamageTrait(damage.getValue()), level);
 					
 					level.addEntity(p);
 				}

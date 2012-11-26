@@ -10,6 +10,7 @@ public class CollisionLabels {
 	private CollisionLabels() {
 	}
 	
-	public final static int PLAYER_LABEL = 0;
-	public final static int ENEMY_LABEL = 2;
+	public static final int PLAYER_LABEL = 0;
+	public static final int ENEMY_LABEL = 2;
+	public static final int DEFAULT = -1;
 }

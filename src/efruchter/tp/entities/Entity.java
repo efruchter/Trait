@@ -4,8 +4,9 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
+import efruchter.tp.defaults.CollisionLabels;
+import efruchter.tp.defaults.EntityType;
 import efruchter.tp.traits.Trait;
-import efruchter.tp.util.RenderUtil;
 import efruchter.tp.util.ScriptUtil;
 
 /**
@@ -14,34 +15,32 @@ import efruchter.tp.util.ScriptUtil;
  * @author toriscope
  * 
  */
-public abstract class Entity {
+public class Entity {
 	
 	public float x, y, radius;
 	public String name;
 	public Color baseColor;
-	public int collisionLabel = 0;
-	public int typeLabel = 0;
+	public int collisionLabel;
+	public float health;
+	public EntityType entityType;
 	
 	private Behavior renderBehavior;
 	private List<Trait> traits;
+	private long damageTimer = 0;
 	
-	public Entity(String name, Color baseColor) {
+	public Entity() {
+		this.name = "NO_NAME";
+		this.baseColor = Color.BLACK;
 		x = y = radius = 0;
-		setRenderBehavior(Behavior.EMPTY);
 		traits = new ArrayList<Trait>();
-		this.baseColor = baseColor;
-		this.setRenderBehavior(RenderUtil.getGenericRenderBehavior());
+		collisionLabel = CollisionLabels.DEFAULT;
+		entityType = EntityType.NO_TYPE;
+		setRenderBehavior(Behavior.EMPTY);
 	}
 	
 	public void onStart(Level level) {
 		for (Behavior b : traits) {
 			b.onStart(this, level);
-		}
-	}
-	
-	public void onUpdate(long delta, Level level) {
-		for (Behavior b : traits) {
-			b.onUpdate(this, level, delta);
 		}
 	}
 	
@@ -51,9 +50,8 @@ public abstract class Entity {
 		}
 	}
 	
-	public void addTrait(Trait trait, Level level) {
+	public void addTrait(Trait trait) {
 		traits.add(trait);
-		trait.onStart(this, level);
 	}
 	
 	public List<Trait> getTraits() {
@@ -72,8 +70,30 @@ public abstract class Entity {
 		return collisionLabel != other.collisionLabel && ScriptUtil.isColliding(this, other);
 	}
 	
-	public final static Entity BLANK = new Entity("", Color.BLACK) {
-		//Blank entity
-	};
+	public float getHealth() {
+		return health;
+	}
 	
+	public void onUpdate(long delta, Level level) {
+		for (Behavior b : traits) {
+			b.onUpdate(this, level, delta);
+		}
+		
+		if (damageTimer > 0) {
+			damageTimer--;
+		}
+	}
+	
+	public void setHealth(float newHealth) {
+		health = newHealth;
+	}
+	
+	public void causeDamage(float damage) {
+		health -= damage;
+		damageTimer = 16 - damageTimer % 4;
+	}
+	
+	public boolean isHurtAnimFrame() {
+		return damageTimer % 4 != 0;
+	}
 }

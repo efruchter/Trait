@@ -12,11 +12,10 @@ import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 
 import efruchter.tp.defaults.CollisionLabels;
+import efruchter.tp.defaults.EntityFactory;
 import efruchter.tp.entities.Entity;
 import efruchter.tp.entities.Level;
-import efruchter.tp.entities.Ship;
 import efruchter.tp.gui.TraitViewer;
-import efruchter.tp.traits.custom.NoHealthDeathTrait;
 import efruchter.tp.traits.custom.RadiusEditTrait;
 import efruchter.tp.traits.custom.WiggleTrait;
 import efruchter.tp.traits.custom.player.KeyboardControlTrait_Attack;
@@ -49,7 +48,7 @@ public class TraitProject {
 			e.printStackTrace();
 		}
 		
-		viewer = new TraitViewer(Entity.BLANK);
+		viewer = new TraitViewer(new Entity());
 		
 		setup();
 		
@@ -82,40 +81,25 @@ public class TraitProject {
 	private void setup() {
 		level = new Level();
 		
-		// Assign some traits to the player
-		level.getPlayer().addTrait(
-				new KeyboardControlTrait_Movement(Keyboard.KEY_UP, Keyboard.KEY_DOWN, Keyboard.KEY_LEFT,
-						Keyboard.KEY_RIGHT), level);
-		level.getPlayer().addTrait(new KeyboardControlTrait_Attack(Keyboard.KEY_SPACE), level);
+		// Build Player
+		Entity player = EntityFactory.buildShip(100, 100, 10, CollisionLabels.PLAYER_LABEL, Color.CYAN, 100);
+		player.addTrait(new KeyboardControlTrait_Movement(Keyboard.KEY_UP, Keyboard.KEY_DOWN, Keyboard.KEY_LEFT, Keyboard.KEY_RIGHT));
+		player.addTrait(new KeyboardControlTrait_Attack(Keyboard.KEY_SPACE));
 		WiggleTrait w = new WiggleTrait();
 		w.wiggleChance.setExpression(0);
-		level.getPlayer().addTrait(w, level);
-		level.getPlayer().addTrait(new RadiusEditTrait(3, 20, 10), level);
-		level.getPlayer().name = "Player Ship";
-		level.getPlayer().collisionLabel = CollisionLabels.PLAYER_LABEL;
+		player.addTrait(w);
+		player.addTrait(new RadiusEditTrait(3, 20, 10));
+		player.name = "Player Ship";
+		level.addEntity(player);
 		
-		Ship enemy1 = new Ship();
-		enemy1.setHealth(100);
-		enemy1.baseColor = Color.RED;
-		enemy1.x = 400;
-		enemy1.y = 500;
-		enemy1.radius = 20;
-		enemy1.collisionLabel = CollisionLabels.ENEMY_LABEL;
-		enemy1.addTrait(new NoHealthDeathTrait(), level);
+		Entity enemy1 = EntityFactory.buildShip(400, 500, 20, CollisionLabels.ENEMY_LABEL, Color.RED, 100);
 		level.addEntity(enemy1);
 		
-		enemy1 = new Ship();
-		enemy1.setHealth(100);
-		enemy1.baseColor = Color.RED;
-		enemy1.x = 600;
-		enemy1.y = 500;
-		enemy1.radius = 20;
-		enemy1.collisionLabel = CollisionLabels.ENEMY_LABEL;
-		enemy1.addTrait(new NoHealthDeathTrait(), level);
-		level.addEntity(enemy1);
+		Entity enemy2 = EntityFactory.buildShip(600, 500, 20, CollisionLabels.ENEMY_LABEL, Color.RED, 100);
+		level.addEntity(enemy2);
 		
 		// Show the traits for the player
-		viewer.setEntity(level.getPlayer());
+		viewer.setEntity(player);
 	}
 	
 	public void update(int delta) {
