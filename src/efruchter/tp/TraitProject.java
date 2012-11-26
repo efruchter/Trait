@@ -48,7 +48,7 @@ public class TraitProject {
 			e.printStackTrace();
 		}
 		
-		viewer = new TraitViewer(new Entity());
+		viewer = new TraitViewer();
 		
 		setup();
 		

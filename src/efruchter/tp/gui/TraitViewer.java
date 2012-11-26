@@ -34,6 +34,10 @@ public class TraitViewer extends JPanel {
 		frame.setVisible(true);
 	}
 	
+	public TraitViewer() {
+		this(new Entity());
+	}
+	
 	public void setEntity(Entity e) {
 		this.entity = e;
 		buildGUI();
