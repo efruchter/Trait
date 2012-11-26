@@ -16,6 +16,7 @@ import efruchter.tp.defaults.EntityFactory;
 import efruchter.tp.entities.Entity;
 import efruchter.tp.entities.Level;
 import efruchter.tp.gui.TraitViewer;
+import efruchter.tp.traits.custom.LoopScreenTrait;
 import efruchter.tp.traits.custom.RadiusEditTrait;
 import efruchter.tp.traits.custom.WiggleTrait;
 import efruchter.tp.traits.custom.player.KeyboardControlTrait_Attack;
@@ -98,6 +99,8 @@ public class TraitProject {
 		//Radius editing trait
 		player.addTrait(new RadiusEditTrait(3, 20, 10));
 		player.name = "Player Ship";
+		//Add screen loop trait
+		player.addTrait(new LoopScreenTrait());
 		//Add to level
 		level.addEntity(player);
 		

@@ -51,6 +51,16 @@ public class TraitViewer extends JPanel {
 			center.setToolTipText(trait.getInfo());
 			center.setBorder(BorderFactory.createTitledBorder(trait.getName()));
 			
+			if (trait.getGenes().isEmpty()) {
+				JPanel p = new JPanel();
+				p.setBorder(BorderFactory.createTitledBorder("No Gene"));
+				final JSlider c = new JSlider(JSlider.VERTICAL, 0, detail, detail);
+				c.setEnabled(false);
+				c.setToolTipText("This trait is always maximally expressed.");
+				p.add(c);
+				center.add(p);
+			}
+			
 			for (final Gene gene : trait.getGenes()) {
 				JPanel p = new JPanel();
 				p.setBorder(BorderFactory.createTitledBorder(gene.getName()));

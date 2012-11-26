@@ -47,7 +47,6 @@ public class WiggleTrait extends Trait {
 	
 	@Override
 	public void onDeath(Entity self, Level l) {
-		// TODO Auto-generated method stub
 		
 	}
 	

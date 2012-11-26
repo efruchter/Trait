@@ -15,7 +15,6 @@ public class CollideDamageTrait extends Trait {
 	
 	@Override
 	public void onStart(Entity self, Level level) {
-		// TODO Auto-generated method stub
 		
 	}
 	
