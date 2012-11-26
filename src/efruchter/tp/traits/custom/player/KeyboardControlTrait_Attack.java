@@ -36,7 +36,7 @@ public class KeyboardControlTrait_Attack extends Trait {
 		registerGene(coolDown = new Gene("Delay", "The projectile cooldown.", 0, 64, 1000));
 		registerGene(spread = new Gene("Spread", "Bullet spread."));
 		registerGene(wiggleBigness = new Gene("Wiggle", "Maximum wiggle magnitude."));
-		registerGene(amount = new Gene("Amount", "Amount of bullets per salvo.", 0, 25, 1));
+		registerGene(amount = new Gene("Amount", "Amount of bullets per salvo.", 0, 100, 1));
 		registerGene(damage = new Gene("Damage", "Amount of damage per bullet.", 0, 10, 1));
 		
 		spread.setExpression(0);

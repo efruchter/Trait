@@ -23,9 +23,9 @@ public class CollideDamageTrait extends Trait {
 	@Override
 	public void onUpdate(Entity self, Level level, long delta) {
 		boolean hit = false;
-		for (Entity e : level.getEntities()) {
-			if (e instanceof Ship && self.isColliding(e)) {
-				((Ship) e).causeDamage(damage);
+		for (Ship e : level.getShips()) {
+			if (self.isColliding(e)) {
+				e.causeDamage(damage);
 				hit = true;
 			}
 		}
@@ -36,7 +36,6 @@ public class CollideDamageTrait extends Trait {
 	
 	@Override
 	public void onDeath(Entity self, Level level) {
-		// TODO Auto-generated method stub
 		
 	}
 	

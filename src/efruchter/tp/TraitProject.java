@@ -71,6 +71,16 @@ public class TraitProject {
 		enemy1.addTrait(new NoHealthDeathTrait(), level);
 		level.addEntity(enemy1);
 		
+		enemy1 = new Ship();
+		enemy1.setHealth(100);
+		enemy1.baseColor = Color.RED;
+		enemy1.x = 600;
+		enemy1.y = 500;
+		enemy1.radius = 20;
+		enemy1.collisionLabel = CollisionLabels.ENEMY_LABEL;
+		enemy1.addTrait(new NoHealthDeathTrait(), level);
+		level.addEntity(enemy1);
+		
 		// Show the traits for the player
 		new TraitViewer(level.getPlayer());
 		
@@ -132,7 +142,7 @@ public class TraitProject {
 	 */
 	public void updateFPS() {
 		if (getTime() - lastFPS > 1000) {
-			Display.setTitle("FPS: " + fps + " Entities: " + level.getEntities().size());
+			Display.setTitle("FPS: " + fps + " Entities: " + level.getEntityCount());
 			fps = 0;
 			lastFPS += 1000;
 		}
