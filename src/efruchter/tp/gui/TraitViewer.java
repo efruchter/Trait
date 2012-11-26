@@ -21,11 +21,27 @@ import efruchter.tp.traits.Trait;
 public class TraitViewer extends JPanel {
 	
 	private int detail = 1000;
+	private JFrame frame;
+	private Entity entity;
 	
 	public TraitViewer(final Entity entity) {
+		this.entity = entity;
 		
+		frame = new JFrame("Trait Viewer");
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.add(this);
+		buildGUI();
+		frame.setVisible(true);
+	}
+	
+	public void setEntity(Entity e) {
+		this.entity = e;
+		buildGUI();
+	}
+	
+	private void buildGUI() {
 		setBorder(BorderFactory.createTitledBorder(entity.name));
-		
+		this.removeAll();
 		for (Trait trait : entity.getTraits()) {
 			JPanel center = new JPanel();
 			center.setToolTipText(trait.getInfo());
@@ -48,11 +64,6 @@ public class TraitViewer extends JPanel {
 			
 			add(center);
 		}
-		
-		JFrame frame = new JFrame("Trait Viewer");
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.add(this);
 		frame.pack();
-		frame.setVisible(true);
 	}
 }

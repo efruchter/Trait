@@ -72,4 +72,8 @@ public abstract class Entity {
 		return collisionLabel != other.collisionLabel && ScriptUtil.isColliding(this, other);
 	}
 	
+	public final static Entity BLANK = new Entity("", Color.BLACK) {
+		//Blank entity
+	};
+	
 }

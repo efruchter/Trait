@@ -12,6 +12,7 @@ import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 
 import efruchter.tp.defaults.CollisionLabels;
+import efruchter.tp.entities.Entity;
 import efruchter.tp.entities.Level;
 import efruchter.tp.entities.Ship;
 import efruchter.tp.gui.TraitViewer;
@@ -38,6 +39,7 @@ public class TraitProject {
 	long lastFPS;
 	
 	private Level level;
+	private TraitViewer viewer;
 	
 	public void start() {
 		
@@ -47,6 +49,37 @@ public class TraitProject {
 			e.printStackTrace();
 		}
 		
+		viewer = new TraitViewer(Entity.BLANK);
+		
+		setup();
+		
+		try {
+			Display.setDisplayMode(new DisplayMode(800, 600));
+			Display.create();
+		} catch (LWJGLException e) {
+			e.printStackTrace();
+			System.exit(0);
+		}
+		
+		initGL(); // init OpenGL
+		getDelta(); // call once before loop to initialise lastFrame
+		lastFPS = getTime(); // call before loop to initialise fps timer
+		
+		while (!Display.isCloseRequested()) {
+			int delta = getDelta();
+			
+			update(delta);
+			renderGL();
+			
+			Display.update();
+			Display.sync(60); // cap fps to 60fps
+		}
+		
+		Display.destroy();
+		System.exit(0);
+	}
+	
+	private void setup() {
 		level = new Level();
 		
 		// Assign some traits to the player
@@ -82,32 +115,7 @@ public class TraitProject {
 		level.addEntity(enemy1);
 		
 		// Show the traits for the player
-		new TraitViewer(level.getPlayer());
-		
-		try {
-			Display.setDisplayMode(new DisplayMode(800, 600));
-			Display.create();
-		} catch (LWJGLException e) {
-			e.printStackTrace();
-			System.exit(0);
-		}
-		
-		initGL(); // init OpenGL
-		getDelta(); // call once before loop to initialise lastFrame
-		lastFPS = getTime(); // call before loop to initialise fps timer
-		
-		while (!Display.isCloseRequested()) {
-			int delta = getDelta();
-			
-			update(delta);
-			renderGL();
-			
-			Display.update();
-			Display.sync(60); // cap fps to 60fps
-		}
-		
-		Display.destroy();
-		System.exit(0);
+		viewer.setEntity(level.getPlayer());
 	}
 	
 	public void update(int delta) {
@@ -142,11 +150,14 @@ public class TraitProject {
 	 */
 	public void updateFPS() {
 		if (getTime() - lastFPS > 1000) {
-			Display.setTitle("FPS: " + fps + " Entities: " + level.getEntityCount());
+			Display.setTitle("'r' to reset. FPS: " + fps + " Entities: " + level.getEntityCount());
 			fps = 0;
 			lastFPS += 1000;
 		}
 		fps++;
+		if (Keyboard.isKeyDown(Keyboard.KEY_R) && !Keyboard.isRepeatEvent()) {
+			setup();
+		}
 	}
 	
 	public void initGL() {
