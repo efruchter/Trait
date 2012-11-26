@@ -6,6 +6,7 @@ import java.util.List;
 
 import efruchter.tp.traits.Trait;
 import efruchter.tp.util.RenderUtil;
+import efruchter.tp.util.ScriptUtil;
 
 /**
  * Entity in the game world, with behaviors, a position and a radius.
@@ -18,6 +19,8 @@ public abstract class Entity {
 	public float x, y, radius;
 	public String name;
 	public Color baseColor;
+	public int collisionLabel = 0;
+	public int typeLabel = 0;
 	
 	private Behavior renderBehavior;
 	private List<Trait> traits;
@@ -63,6 +66,10 @@ public abstract class Entity {
 	
 	public void setRenderBehavior(Behavior renderBehavior) {
 		this.renderBehavior = renderBehavior;
+	}
+	
+	public boolean isColliding(Entity other) {
+		return collisionLabel != other.collisionLabel && ScriptUtil.isColliding(this, other);
 	}
 	
 }

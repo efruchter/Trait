@@ -1,12 +1,17 @@
-package efruchter.tp.traits.custom;
+package efruchter.tp.traits.custom.player;
 
 import org.lwjgl.input.Keyboard;
 
+import efruchter.tp.defaults.CollisionLabels;
 import efruchter.tp.entities.Entity;
 import efruchter.tp.entities.Level;
 import efruchter.tp.entities.Projectile;
 import efruchter.tp.traits.Gene;
 import efruchter.tp.traits.Trait;
+import efruchter.tp.traits.custom.CollideDamageTrait;
+import efruchter.tp.traits.custom.TimedDeathTrait;
+import efruchter.tp.traits.custom.TravelSimple;
+import efruchter.tp.traits.custom.WiggleTrait;
 
 /**
  * Govern the attack of an entity with the keyboard.
@@ -17,7 +22,7 @@ import efruchter.tp.traits.Trait;
 public class KeyboardControlTrait_Attack extends Trait {
 	
 	private float cd;
-	public Gene coolDown, spread, wiggleBigness, bullets;
+	public Gene coolDown, spread, wiggleBigness, amount, damage;
 	private int key;
 	
 	/**
@@ -31,7 +36,9 @@ public class KeyboardControlTrait_Attack extends Trait {
 		registerGene(coolDown = new Gene("Delay", "The projectile cooldown.", 0, 64, 1000));
 		registerGene(spread = new Gene("Spread", "Bullet spread."));
 		registerGene(wiggleBigness = new Gene("Wiggle", "Maximum wiggle magnitude."));
-		registerGene(bullets = new Gene("Amount", "Amount of bullets per salvo.", 0, 100, 1));
+		registerGene(amount = new Gene("Amount", "Amount of bullets per salvo.", 0, 25, 1));
+		registerGene(damage = new Gene("Damage", "Amount of damage per bullet.", 0, 10, 1));
+		
 		spread.setExpression(0);
 		this.key = keyChar;
 	}
@@ -50,7 +57,7 @@ public class KeyboardControlTrait_Attack extends Trait {
 		if (cd >= coolDown.getValue()) {
 			if (Keyboard.isKeyDown(key)) {
 				cd = 0;
-				for (int i = 0; i < bullets.getValue(); i++) {
+				for (int i = 0; i < amount.getValue(); i++) {
 					Projectile p = new Projectile(self.x, self.y, 3);
 					p.addTrait(new TimedDeathTrait(1), level);
 					
@@ -67,6 +74,9 @@ public class KeyboardControlTrait_Attack extends Trait {
 					t.dy.setExpression(1);
 					
 					p.addTrait(t, level);
+					p.collisionLabel = CollisionLabels.PLAYER_LABEL;
+					p.addTrait(new CollideDamageTrait(damage.getValue()), level);
+					
 					level.addEntity(p);
 				}
 			}

@@ -57,7 +57,7 @@ public class Level {
 		self.onDeath(this);
 	}
 	
-	public void addEntity(Projectile p) {
+	public void addEntity(Entity p) {
 		ships.add(p);
 	}
 	

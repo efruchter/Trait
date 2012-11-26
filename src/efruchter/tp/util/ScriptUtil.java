@@ -1,6 +1,6 @@
 package efruchter.tp.util;
 
-import efruchter.tp.entities.Ship;
+import efruchter.tp.entities.Entity;
 
 /**
  * Some random helper methods for scripting.
@@ -22,11 +22,11 @@ public class ScriptUtil {
 	 *            ship 2
 	 * @return true if overlapping, false otherwise.
 	 */
-	public boolean isColliding(Ship a, Ship b) {
+	public static boolean isColliding(Entity a, Entity b) {
 		return isWithin(a, b.x, b.y, b.radius);
 	}
 	
-	public boolean isWithin(Ship a, float x, float y, float radius) {
+	public static boolean isWithin(Entity a, float x, float y, float radius) {
 		float dx, dy;
 		dx = a.x - x;
 		dy = a.y - y;

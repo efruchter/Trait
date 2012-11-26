@@ -1,5 +1,7 @@
 package efruchter.tp;
 
+import java.awt.Color;
+
 import javax.swing.UIManager;
 
 import org.lwjgl.LWJGLException;
@@ -9,12 +11,15 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 
+import efruchter.tp.defaults.CollisionLabels;
 import efruchter.tp.entities.Level;
+import efruchter.tp.entities.Ship;
 import efruchter.tp.gui.TraitViewer;
-import efruchter.tp.traits.custom.KeyboardControlTrait_Attack;
-import efruchter.tp.traits.custom.KeyboardControlTrait_Movement;
+import efruchter.tp.traits.custom.NoHealthDeathTrait;
 import efruchter.tp.traits.custom.RadiusEditTrait;
 import efruchter.tp.traits.custom.WiggleTrait;
+import efruchter.tp.traits.custom.player.KeyboardControlTrait_Attack;
+import efruchter.tp.traits.custom.player.KeyboardControlTrait_Movement;
 
 /**
  * LWJGL Trait-based shmup.
@@ -54,6 +59,17 @@ public class TraitProject {
 		level.getPlayer().addTrait(w, level);
 		level.getPlayer().addTrait(new RadiusEditTrait(3, 20, 10), level);
 		level.getPlayer().name = "Player Ship";
+		level.getPlayer().collisionLabel = CollisionLabels.PLAYER_LABEL;
+		
+		Ship enemy1 = new Ship();
+		enemy1.setHealth(100);
+		enemy1.baseColor = Color.RED;
+		enemy1.x = 400;
+		enemy1.y = 500;
+		enemy1.radius = 20;
+		enemy1.collisionLabel = CollisionLabels.ENEMY_LABEL;
+		enemy1.addTrait(new NoHealthDeathTrait(), level);
+		level.addEntity(enemy1);
 		
 		// Show the traits for the player
 		new TraitViewer(level.getPlayer());

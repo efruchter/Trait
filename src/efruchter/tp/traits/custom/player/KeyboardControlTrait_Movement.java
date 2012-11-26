@@ -1,4 +1,4 @@
-package efruchter.tp.traits.custom;
+package efruchter.tp.traits.custom.player;
 
 import org.lwjgl.input.Keyboard;
 
