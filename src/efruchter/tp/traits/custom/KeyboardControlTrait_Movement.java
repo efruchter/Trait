@@ -58,8 +58,8 @@ public class KeyboardControlTrait_Movement extends Trait {
 		vy += ay * delta;
 
 		float dscale = MOVE_ADJUST / delta;
-		float x = (1 - drag.getValue()) * dscale;
-		float y = (1 - drag.getValue()) * dscale;
+		float x = (1.01f - drag.getValue()) * dscale;
+		float y = (1.01f - drag.getValue()) * dscale;
 		
 		if (Math.abs(x) > .00001f)
 			vx *= x;
