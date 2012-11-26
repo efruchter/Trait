@@ -78,23 +78,34 @@ public class TraitProject {
 		System.exit(0);
 	}
 	
+	/**
+	 * Build the level and entities from scratch.
+	 */
 	private void setup() {
+		
 		level = new Level();
 		
 		// Build Player
 		Entity player = EntityFactory.buildShip(100, 100, 10, CollisionLabels.PLAYER_LABEL, Color.CYAN, 100);
-		player.addTrait(new KeyboardControlTrait_Movement(Keyboard.KEY_UP, Keyboard.KEY_DOWN, Keyboard.KEY_LEFT, Keyboard.KEY_RIGHT));
+		// Add control traits to player with arrow-keys
+		player.addTrait(new KeyboardControlTrait_Movement(Keyboard.KEY_UP, Keyboard.KEY_DOWN, Keyboard.KEY_LEFT,
+				Keyboard.KEY_RIGHT));
 		player.addTrait(new KeyboardControlTrait_Attack(Keyboard.KEY_SPACE));
+		// Wiggle trait
 		WiggleTrait w = new WiggleTrait();
 		w.wiggleChance.setExpression(0);
 		player.addTrait(w);
+		//Radius editing trait
 		player.addTrait(new RadiusEditTrait(3, 20, 10));
 		player.name = "Player Ship";
+		//Add to level
 		level.addEntity(player);
 		
+		//Build enemy 1
 		Entity enemy1 = EntityFactory.buildShip(400, 500, 20, CollisionLabels.ENEMY_LABEL, Color.RED, 100);
 		level.addEntity(enemy1);
 		
+		//Build enemy 2
 		Entity enemy2 = EntityFactory.buildShip(600, 500, 20, CollisionLabels.ENEMY_LABEL, Color.RED, 100);
 		level.addEntity(enemy2);
 		
@@ -159,7 +170,6 @@ public class TraitProject {
 	}
 	
 	public static void main(String[] argv) {
-		
 		//Start the game
 		new TraitProject().start();
 	}
