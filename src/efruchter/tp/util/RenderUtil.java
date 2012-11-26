@@ -14,7 +14,7 @@ public class RenderUtil {
 	/*
 	 * Pre-compute sin/cos tables for circle.
 	 */
-	private final static int FAST_SUB = 10;
+	private final static int FAST_SUB = 15;
 	private static float[] COS_FAST = new float[FAST_SUB + 1], SIN_FAST = new float[FAST_SUB + 1];
 	static {
 		for (int i = 0; i <= FAST_SUB; i++) {
