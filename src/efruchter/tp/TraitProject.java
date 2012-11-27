@@ -112,7 +112,7 @@ public class TraitProject {
 		level.addEntity(enemy2);
 		
 		//Create a little behavior cycle
-		BehaviorChain c = new BehaviorChain("Wiggle Chain", "An behavior loop, wiggle every second.", true);
+		BehaviorChain c = new BehaviorChain("Wiggle Chain", "A behavior loop. Wait, wiggle, then move.", true);
 		c.addWait(1000);
 		WiggleTrait f = new WiggleTrait();
 		f.wiggleChance.setExpression(0);
