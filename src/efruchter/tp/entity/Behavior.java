@@ -1,4 +1,4 @@
-package efruchter.tp.entities;
+package efruchter.tp.entity;
 
 /**
  * A behavior an entity should perform. Three timing methods are called given

@@ -1,7 +1,7 @@
 package efruchter.tp.traits.custom;
 
-import efruchter.tp.entities.Entity;
-import efruchter.tp.entities.Level;
+import efruchter.tp.entity.Entity;
+import efruchter.tp.entity.Level;
 import efruchter.tp.traits.Trait;
 
 public class CollideDamageTrait extends Trait {

@@ -6,8 +6,8 @@ import org.lwjgl.input.Keyboard;
 
 import efruchter.tp.defaults.CollisionLabels;
 import efruchter.tp.defaults.EntityFactory;
-import efruchter.tp.entities.Entity;
-import efruchter.tp.entities.Level;
+import efruchter.tp.entity.Entity;
+import efruchter.tp.entity.Level;
 import efruchter.tp.traits.Gene;
 import efruchter.tp.traits.Trait;
 import efruchter.tp.traits.custom.TimedDeathTrait;

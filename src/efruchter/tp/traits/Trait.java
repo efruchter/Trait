@@ -3,7 +3,7 @@ package efruchter.tp.traits;
 import java.util.ArrayList;
 import java.util.List;
 
-import efruchter.tp.entities.Behavior;
+import efruchter.tp.entity.Behavior;
 
 /**
  * Trait, composed of genes. This should convert its genes into some sort of

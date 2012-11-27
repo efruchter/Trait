@@ -2,8 +2,8 @@ package efruchter.tp.traits.custom.player;
 
 import org.lwjgl.input.Keyboard;
 
-import efruchter.tp.entities.Entity;
-import efruchter.tp.entities.Level;
+import efruchter.tp.entity.Entity;
+import efruchter.tp.entity.Level;
 import efruchter.tp.traits.Gene;
 import efruchter.tp.traits.Trait;
 

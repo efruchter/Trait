@@ -13,8 +13,8 @@ import org.lwjgl.opengl.GL11;
 
 import efruchter.tp.defaults.CollisionLabels;
 import efruchter.tp.defaults.EntityFactory;
-import efruchter.tp.entities.Entity;
-import efruchter.tp.entities.Level;
+import efruchter.tp.entity.Entity;
+import efruchter.tp.entity.Level;
 import efruchter.tp.gui.TraitViewer;
 import efruchter.tp.traits.custom.LoopScreenTrait;
 import efruchter.tp.traits.custom.RadiusEditTrait;

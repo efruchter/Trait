@@ -1,20 +1,22 @@
-package efruchter.tp.actions;
+package efruchter.tp.action;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import efruchter.tp.entities.Behavior;
-import efruchter.tp.entities.Entity;
-import efruchter.tp.entities.Level;
+import efruchter.tp.entity.Behavior;
+import efruchter.tp.entity.Entity;
+import efruchter.tp.entity.Level;
 import efruchter.tp.traits.Trait;
 
 /**
- * Trying out stuff...
+ * This trait will activate Actions in a specified order for their allocated
+ * durations.
  * 
  * @author toriscope
  * 
  */
 public class ActionChain extends Trait {
+	
 	private List<Action> actions;
 	private List<Long> endings;
 	private long currTime;
@@ -68,11 +70,10 @@ public class ActionChain extends Trait {
 	@Override
 	public void onUpdate(Entity self, Level level, long delta) {
 		while (delta > 0 && index < actions.size()) {
-			Action a = actions.get(index);
 			long remaining = Math.min(endings.get(index) - currTime, delta);
 			delta -= remaining;
 			currTime += remaining;
-			a.onUpdate(self, level, remaining);
+			actions.get(index).onUpdate(self, level, remaining);
 			if (currTime >= endings.get(index)) {
 				index++;
 			}
@@ -81,6 +82,8 @@ public class ActionChain extends Trait {
 	
 	@Override
 	public void onDeath(Entity self, Level level) {
-		
+		for (Action a : actions) {
+			a.onDeath(self, level);
+		}
 	}
 }

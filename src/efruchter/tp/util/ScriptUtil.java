@@ -1,6 +1,6 @@
 package efruchter.tp.util;
 
-import efruchter.tp.entities.Entity;
+import efruchter.tp.entity.Entity;
 
 /**
  * Some random helper methods for scripting.

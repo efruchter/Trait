@@ -7,7 +7,7 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import efruchter.tp.entities.Entity;
+import efruchter.tp.entity.Entity;
 import efruchter.tp.traits.Gene;
 import efruchter.tp.traits.Trait;
 

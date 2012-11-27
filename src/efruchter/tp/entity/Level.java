@@ -1,4 +1,4 @@
-package efruchter.tp.entities;
+package efruchter.tp.entity;
 
 import java.util.LinkedList;
 import java.util.List;

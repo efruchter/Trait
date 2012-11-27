@@ -1,6 +1,6 @@
-package efruchter.tp.actions;
+package efruchter.tp.action;
 
-import efruchter.tp.entities.Behavior;
+import efruchter.tp.entity.Behavior;
 
 /**
  * A type of Behavior with a time component. Designed as an intermediate for an
