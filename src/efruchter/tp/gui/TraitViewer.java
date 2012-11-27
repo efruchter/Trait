@@ -3,6 +3,7 @@ package efruchter.tp.gui;
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -29,8 +30,9 @@ public class TraitViewer extends JPanel {
 		
 		frame = new JFrame("Trait Viewer");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.add(this);
 		buildGUI();
+		frame.add(new JScrollPane(this));
+		frame.pack();
 		frame.setVisible(true);
 	}
 	
@@ -52,6 +54,7 @@ public class TraitViewer extends JPanel {
 			center.setBorder(BorderFactory.createTitledBorder(trait.getName()));
 			
 			if (trait.getGenes().isEmpty()) {
+				//Trait with no genes
 				JPanel p = new JPanel();
 				p.setBorder(BorderFactory.createTitledBorder("No Gene"));
 				final JSlider c = new JSlider(JSlider.VERTICAL, 0, detail, detail);
@@ -59,23 +62,23 @@ public class TraitViewer extends JPanel {
 				c.setToolTipText("This trait is always maximally expressed.");
 				p.add(c);
 				center.add(p);
+			} else {
+				// Normal Trait w/ genes
+				for (final Gene gene : trait.getGenes()) {
+					JPanel p = new JPanel();
+					p.setBorder(BorderFactory.createTitledBorder(gene.getName()));
+					
+					final JSlider c = new JSlider(JSlider.VERTICAL, 0, detail, (int) (gene.getExpression() * detail));
+					c.addChangeListener(new ChangeListener() {
+						public void stateChanged(ChangeEvent arg0) {
+							gene.setExpression((float) c.getValue() / detail);
+						}
+					});
+					c.setToolTipText(gene.getInfo());
+					p.add(c);
+					center.add(p);
+				}
 			}
-			
-			for (final Gene gene : trait.getGenes()) {
-				JPanel p = new JPanel();
-				p.setBorder(BorderFactory.createTitledBorder(gene.getName()));
-				
-				final JSlider c = new JSlider(JSlider.VERTICAL, 0, detail, (int) (gene.getExpression() * detail));
-				c.addChangeListener(new ChangeListener() {
-					public void stateChanged(ChangeEvent arg0) {
-						gene.setExpression((float) c.getValue() / detail);
-					}
-				});
-				c.setToolTipText(gene.getInfo());
-				p.add(c);
-				center.add(p);
-			}
-			
 			add(center);
 		}
 		frame.pack();

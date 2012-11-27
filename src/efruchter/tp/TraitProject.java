@@ -13,11 +13,13 @@ import org.lwjgl.opengl.GL11;
 
 import efruchter.tp.defaults.CollisionLabels;
 import efruchter.tp.defaults.EntityFactory;
+import efruchter.tp.entity.BehaviorChain;
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
 import efruchter.tp.gui.TraitViewer;
 import efruchter.tp.traits.custom.LoopScreenTrait;
 import efruchter.tp.traits.custom.RadiusEditTrait;
+import efruchter.tp.traits.custom.TravelSimple;
 import efruchter.tp.traits.custom.WiggleTrait;
 import efruchter.tp.traits.custom.player.KeyboardControlTrait_Attack;
 import efruchter.tp.traits.custom.player.KeyboardControlTrait_Movement;
@@ -111,6 +113,16 @@ public class TraitProject {
 		//Build enemy 2
 		Entity enemy2 = EntityFactory.buildShip(600, 500, 20, CollisionLabels.ENEMY_LABEL, Color.RED, 100);
 		level.addEntity(enemy2);
+		
+		//Create a little behavior cycle
+		BehaviorChain c = new BehaviorChain("Wiggle Chain", "An behavior loop, wiggle every second.", true);
+		c.addWait(1000);
+		WiggleTrait f = new WiggleTrait();
+		f.wiggleChance.setExpression(0);
+		f.wiggleIntensity.setExpression(1);
+		c.addBehavior(f, 1000);
+		c.addBehavior(new TravelSimple(), 200);
+		player.addTrait(c);
 		
 		// Show the traits for the player
 		viewer.setEntity(player);
