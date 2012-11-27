@@ -50,6 +50,7 @@ public class LevelViewer implements TreeSelectionListener {
 	
 	public void setLevel(Level level) {
 		tree.setModel(new LevelTreeModel(level));
+		genEditor.setEditing(null);
 	}
 	
 	@Override
