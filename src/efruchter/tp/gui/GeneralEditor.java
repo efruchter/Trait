@@ -53,7 +53,6 @@ public class GeneralEditor extends JPanel implements ChangeListener {
 	public void setEditing(Object editme) {
 		this.editingEntity = editme;
 		refreshView();
-		System.out.println(editme.toString());
 	}
 	
 	public GeneralEditor() {
