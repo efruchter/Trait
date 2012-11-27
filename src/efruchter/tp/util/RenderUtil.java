@@ -2,9 +2,9 @@ package efruchter.tp.util;
 
 import org.lwjgl.opengl.GL11;
 
-import efruchter.tp.entity.Behavior;
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
+import efruchter.tp.trait.behavior.Behavior;
 
 public class RenderUtil {
 	

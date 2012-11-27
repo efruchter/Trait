@@ -1,11 +1,11 @@
-package efruchter.tp.traits.custom;
+package efruchter.tp.trait.custom;
 
 import java.util.Random;
 
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
-import efruchter.tp.traits.Gene;
-import efruchter.tp.traits.Trait;
+import efruchter.tp.trait.Trait;
+import efruchter.tp.trait.gene.Gene;
 
 /**
  * Cause random wiggles.

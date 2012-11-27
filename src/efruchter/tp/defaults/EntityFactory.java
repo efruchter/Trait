@@ -3,8 +3,8 @@ package efruchter.tp.defaults;
 import java.awt.Color;
 
 import efruchter.tp.entity.Entity;
-import efruchter.tp.traits.custom.CollideDamageTrait;
-import efruchter.tp.traits.custom.NoHealthDeathTrait;
+import efruchter.tp.trait.custom.CollideDamageTrait;
+import efruchter.tp.trait.custom.NoHealthDeathTrait;
 import efruchter.tp.util.RenderUtil;
 
 /**

@@ -1,8 +1,8 @@
-package efruchter.tp.traits.custom;
+package efruchter.tp.trait.custom;
 
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
-import efruchter.tp.traits.Trait;
+import efruchter.tp.trait.Trait;
 
 /**
  * Destroy the entity after a given amount of time

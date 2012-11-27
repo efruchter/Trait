@@ -1,4 +1,7 @@
-package efruchter.tp.entity;
+package efruchter.tp.trait.behavior;
+
+import efruchter.tp.entity.Entity;
+import efruchter.tp.entity.Level;
 
 /**
  * A behavior an entity should perform. Three timing methods are called given

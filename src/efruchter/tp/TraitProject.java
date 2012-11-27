@@ -13,16 +13,16 @@ import org.lwjgl.opengl.GL11;
 
 import efruchter.tp.defaults.CollisionLabels;
 import efruchter.tp.defaults.EntityFactory;
-import efruchter.tp.entity.BehaviorChain;
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
 import efruchter.tp.gui.TraitViewer;
-import efruchter.tp.traits.custom.LoopScreenTrait;
-import efruchter.tp.traits.custom.RadiusEditTrait;
-import efruchter.tp.traits.custom.TravelSimple;
-import efruchter.tp.traits.custom.WiggleTrait;
-import efruchter.tp.traits.custom.player.KeyboardControlTrait_Attack;
-import efruchter.tp.traits.custom.player.KeyboardControlTrait_Movement;
+import efruchter.tp.trait.behavior.BehaviorChain;
+import efruchter.tp.trait.custom.LoopScreenTrait;
+import efruchter.tp.trait.custom.RadiusEditTrait;
+import efruchter.tp.trait.custom.TravelSimple;
+import efruchter.tp.trait.custom.WiggleTrait;
+import efruchter.tp.trait.custom.player.KeyboardControlTrait_Attack;
+import efruchter.tp.trait.custom.player.KeyboardControlTrait_Movement;
 
 /**
  * LWJGL Trait-based shmup.
@@ -71,7 +71,7 @@ public class TraitProject {
 			int delta = getDelta();
 			
 			update(delta);
-			renderGL();
+			renderGL(delta);
 			
 			Display.update();
 			Display.sync(60); // cap fps to 60fps
@@ -94,12 +94,9 @@ public class TraitProject {
 		player.addTrait(new KeyboardControlTrait_Movement(Keyboard.KEY_UP, Keyboard.KEY_DOWN, Keyboard.KEY_LEFT,
 				Keyboard.KEY_RIGHT));
 		player.addTrait(new KeyboardControlTrait_Attack(Keyboard.KEY_SPACE));
-		// Wiggle trait
-		WiggleTrait w = new WiggleTrait();
-		w.wiggleChance.setExpression(0);
-		player.addTrait(w);
 		//Radius editing trait
-		player.addTrait(new RadiusEditTrait(3, 20, 10));
+		RadiusEditTrait rad = new RadiusEditTrait(3, 20, 10);
+		player.addTrait(rad);
 		player.name = "Player Ship";
 		//Add screen loop trait
 		player.addTrait(new LoopScreenTrait());
@@ -177,11 +174,11 @@ public class TraitProject {
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 	}
 	
-	public void renderGL() {
+	public void renderGL(long delta) {
 		// Clear The Screen And The Depth Buffer
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		
-		level.renderGL();
+		level.renderGL(delta);
 	}
 	
 	public static void main(String[] argv) {

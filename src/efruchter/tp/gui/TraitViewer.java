@@ -9,8 +9,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import efruchter.tp.entity.Entity;
-import efruchter.tp.traits.Gene;
-import efruchter.tp.traits.Trait;
+import efruchter.tp.trait.Trait;
+import efruchter.tp.trait.gene.Gene;
 
 /**
  * A slider-based editor for the traits of a single entity.

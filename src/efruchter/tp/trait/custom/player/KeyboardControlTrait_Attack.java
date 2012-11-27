@@ -1,4 +1,4 @@
-package efruchter.tp.traits.custom.player;
+package efruchter.tp.trait.custom.player;
 
 import java.awt.Color;
 
@@ -8,11 +8,13 @@ import efruchter.tp.defaults.CollisionLabels;
 import efruchter.tp.defaults.EntityFactory;
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
-import efruchter.tp.traits.Gene;
-import efruchter.tp.traits.Trait;
-import efruchter.tp.traits.custom.TimedDeathTrait;
-import efruchter.tp.traits.custom.TravelSimple;
-import efruchter.tp.traits.custom.WiggleTrait;
+import efruchter.tp.trait.Trait;
+import efruchter.tp.trait.custom.RadiusEditTrait;
+import efruchter.tp.trait.custom.TimedDeathTrait;
+import efruchter.tp.trait.custom.TravelSimple;
+import efruchter.tp.trait.custom.WiggleTrait;
+import efruchter.tp.trait.gene.Gene;
+import efruchter.tp.trait.gene.GeneExpressionInterpolator;
 
 /**
  * Govern the attack of an entity with the keyboard.
@@ -77,6 +79,11 @@ public class KeyboardControlTrait_Attack extends Trait {
 					
 					p.addTrait(t);
 					p.collisionLabel = CollisionLabels.PLAYER_LABEL;
+					
+					RadiusEditTrait rad = new RadiusEditTrait(3, 10, 10);
+					p.addTrait(rad);
+					
+					p.addTrait(new GeneExpressionInterpolator(rad.radius, 0, 1, 200));
 					
 					level.addEntity(p);
 				}

@@ -1,11 +1,11 @@
-package efruchter.tp.traits.custom.player;
+package efruchter.tp.trait.custom.player;
 
 import org.lwjgl.input.Keyboard;
 
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
-import efruchter.tp.traits.Gene;
-import efruchter.tp.traits.Trait;
+import efruchter.tp.trait.Trait;
+import efruchter.tp.trait.gene.Gene;
 
 /**
  * Govern the movement of an entity with the keyboard.

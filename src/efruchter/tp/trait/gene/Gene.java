@@ -1,4 +1,4 @@
-package efruchter.tp.traits;
+package efruchter.tp.trait.gene;
 
 public class Gene {
 	

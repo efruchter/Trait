@@ -1,10 +1,12 @@
-package efruchter.tp.entity;
+package efruchter.tp.trait.behavior;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import efruchter.tp.traits.Gene;
-import efruchter.tp.traits.Trait;
+import efruchter.tp.entity.Entity;
+import efruchter.tp.entity.Level;
+import efruchter.tp.trait.Trait;
+import efruchter.tp.trait.gene.Gene;
 
 /**
  * This trait will activate Behaviors in a specified order for their allocated
@@ -105,6 +107,8 @@ public class BehaviorChain extends Trait {
 				if (loop && index >= actions.size()) {
 					currTime = 0;
 					index = 0;
+					for (Behavior a : actions)
+						a.onStart(self, level);
 				}
 			}
 		}

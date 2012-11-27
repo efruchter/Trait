@@ -6,7 +6,8 @@ import java.util.List;
 
 import efruchter.tp.defaults.CollisionLabels;
 import efruchter.tp.defaults.EntityType;
-import efruchter.tp.traits.Trait;
+import efruchter.tp.trait.Trait;
+import efruchter.tp.trait.behavior.Behavior;
 import efruchter.tp.util.ScriptUtil;
 
 /**

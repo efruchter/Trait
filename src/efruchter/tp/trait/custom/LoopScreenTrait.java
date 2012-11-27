@@ -1,10 +1,10 @@
-package efruchter.tp.traits.custom;
+package efruchter.tp.trait.custom;
 
 import org.lwjgl.opengl.Display;
 
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
-import efruchter.tp.traits.Trait;
+import efruchter.tp.trait.Trait;
 
 public class LoopScreenTrait extends Trait {
 	

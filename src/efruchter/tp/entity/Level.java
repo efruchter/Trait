@@ -50,13 +50,13 @@ public class Level {
 		
 	}
 	
-	public void renderGL() {
+	public void renderGL(long delta) {
 		for (Entity b : ships) {
-			b.getRenderBehavior().onUpdate(b, this, 0);
+			b.getRenderBehavior().onUpdate(b, this, delta);
 		}
 		
 		for (Entity b : bullets) {
-			b.getRenderBehavior().onUpdate(b, this, 0);
+			b.getRenderBehavior().onUpdate(b, this, delta);
 		}
 	}
 	
