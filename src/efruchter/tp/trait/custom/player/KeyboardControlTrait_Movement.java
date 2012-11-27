@@ -22,8 +22,8 @@ public class KeyboardControlTrait_Movement extends Trait {
 	
 	public KeyboardControlTrait_Movement(int upKey, int downKey, int leftKey, int rightKey) {
 		super("Move Control", "Entity movement linked to keyboard inputs.");
-		registerGene(drag = new Gene("Drag", "Control the amount of air drag."));
-		registerGene(acceleration = new Gene("Accel.", "Control the acceleration of movement.", 0, .09f, .04f));
+		registerGene(drag = new Gene("Air Drag", "Amount of air drag."));
+		registerGene(acceleration = new Gene("Acceleration", "Control the acceleration of movement.", 0, .09f, .04f));
 		drag.setExpression(.6f);
 		this.upKey = upKey;
 		this.downKey = downKey;
@@ -56,7 +56,7 @@ public class KeyboardControlTrait_Movement extends Trait {
 		
 		vx += ax * delta;
 		vy += ay * delta;
-
+		
 		float dscale = MOVE_ADJUST / delta;
 		float x = (1.01f - drag.getValue()) * dscale;
 		float y = (1.01f - drag.getValue()) * dscale;

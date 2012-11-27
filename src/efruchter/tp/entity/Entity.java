@@ -29,8 +29,10 @@ public class Entity {
 	private List<Trait> traits;
 	private long damageTimer = 0;
 	
+	public static long entityNum;
+	
 	public Entity() {
-		this.name = "NO_NAME";
+		this.name = "" + entityNum++;
 		this.baseColor = Color.BLACK;
 		x = y = radius = 0;
 		traits = new ArrayList<Trait>();
@@ -96,5 +98,10 @@ public class Entity {
 	
 	public boolean isHurtAnimFrame() {
 		return damageTimer % 4 != 0;
+	}
+	
+	@Override
+	public String toString() {
+		return "(E) " + name;
 	}
 }

@@ -9,7 +9,7 @@ public class CollideDamageTrait extends Trait {
 	private float damage;
 	
 	public CollideDamageTrait(float damage) {
-		super("Damage other", "deals damage to another entity.");
+		super("Damage Dealing", "Deals damage to another entity.");
 		this.damage = damage;
 	}
 	

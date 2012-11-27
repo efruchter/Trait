@@ -13,7 +13,7 @@ import efruchter.tp.trait.Trait;
 public class NoHealthDeathTrait extends Trait {
 	
 	public NoHealthDeathTrait() {
-		super("Die", "Dies when out of health.");
+		super("Can Die", "Dies when out of health.");
 	}
 	
 	@Override

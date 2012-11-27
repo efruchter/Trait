@@ -2,8 +2,6 @@ package efruchter.tp;
 
 import java.awt.Color;
 
-import javax.swing.UIManager;
-
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
@@ -15,7 +13,7 @@ import efruchter.tp.defaults.CollisionLabels;
 import efruchter.tp.defaults.EntityFactory;
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
-import efruchter.tp.gui.TraitViewer;
+import efruchter.tp.gui.LevelViewer;
 import efruchter.tp.trait.behavior.BehaviorChain;
 import efruchter.tp.trait.custom.LoopScreenTrait;
 import efruchter.tp.trait.custom.RadiusEditTrait;
@@ -41,17 +39,11 @@ public class TraitProject {
 	long lastFPS;
 	
 	private Level level;
-	private TraitViewer viewer;
+	private LevelViewer viewer;
 	
 	public void start() {
 		
-		try {
-			UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		viewer = new TraitViewer();
+		viewer = new LevelViewer(level = new Level());
 		
 		setup();
 		
@@ -105,10 +97,12 @@ public class TraitProject {
 		
 		//Build enemy 1
 		Entity enemy1 = EntityFactory.buildShip(400, 500, 20, CollisionLabels.ENEMY_LABEL, Color.RED, 100);
+		enemy1.name = "Enemy 1";
 		level.addEntity(enemy1);
 		
 		//Build enemy 2
 		Entity enemy2 = EntityFactory.buildShip(600, 500, 20, CollisionLabels.ENEMY_LABEL, Color.RED, 100);
+		enemy2.name = "Enemy 2";
 		level.addEntity(enemy2);
 		
 		//Create a little behavior cycle
@@ -121,8 +115,7 @@ public class TraitProject {
 		c.addBehavior(new TravelSimple(), 200);
 		player.addTrait(c);
 		
-		// Show the traits for the player
-		viewer.setEntity(player);
+		viewer.setLevel(level);
 	}
 	
 	public void update(int delta) {

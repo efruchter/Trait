@@ -91,4 +91,9 @@ public class Gene {
 	public float getValue() {
 		return val;
 	}
+	
+	@Override
+	public String toString() {
+		return "(G) " + name + " " + this.getExpression();
+	}
 }

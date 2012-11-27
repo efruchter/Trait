@@ -36,11 +36,11 @@ public class KeyboardControlTrait_Attack extends Trait {
 	 */
 	public KeyboardControlTrait_Attack(final int keyChar) {
 		super("Attack Control", "Entity attack linked to keyboard inputs.");
-		registerGene(coolDown = new Gene("Delay", "The projectile cooldown.", 0, 1000, 64));
-		registerGene(spread = new Gene("Spread", "Bullet spread."));
+		registerGene(coolDown = new Gene("Cool Down Delay", "The projectile cooldown.", 0, 1000, 64));
+		registerGene(spread = new Gene("Launch Spread", "Bullet spread."));
 		registerGene(wiggleBigness = new Gene("Wiggle", "Maximum wiggle magnitude."));
-		registerGene(amount = new Gene("Amount", "Amount of bullets per salvo.", 0, 100, 1));
-		registerGene(damage = new Gene("Damage", "Amount of damage per bullet.", 0, 10, 5));
+		registerGene(amount = new Gene("# of Bullets", "Amount of bullets per salvo.", 0, 100, 1));
+		registerGene(damage = new Gene("Damage Per Bullet", "Amount of damage per bullet.", 0, 10, 5));
 		
 		spread.setExpression(0);
 		this.key = keyChar;

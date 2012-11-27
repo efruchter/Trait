@@ -15,7 +15,7 @@ public class TimedDeathTrait extends Trait {
 	private float t, max;
 	
 	public TimedDeathTrait(float milliTillDeath) {
-		super("TimedDeath", "Die after a certain amount of time");
+		super("Timed Death", "Die after a certain amount of time");
 		max = milliTillDeath;
 	}
 	

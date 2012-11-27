@@ -101,4 +101,9 @@ public class Level {
 	public int getEntityCount() {
 		return ships.size() + bullets.size();
 	}
+	
+	@Override
+	public String toString() {
+		return "Level";
+	}
 }

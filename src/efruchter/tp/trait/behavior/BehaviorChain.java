@@ -6,7 +6,6 @@ import java.util.List;
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
 import efruchter.tp.trait.Trait;
-import efruchter.tp.trait.gene.Gene;
 
 /**
  * This trait will activate Behaviors in a specified order for their allocated
@@ -66,7 +65,7 @@ public class BehaviorChain extends Trait {
 	 *            the length of the wait in milliseconds
 	 */
 	public void addWait(long duration) {
-		addBehavior(Behavior.EMPTY, duration);
+		addBehavior(Behavior.WAIT, duration);
 	}
 	
 	/**
@@ -78,11 +77,6 @@ public class BehaviorChain extends Trait {
 	 *            duration of action in milliseconds.
 	 */
 	public void addBehavior(final Behavior behavior, final long duration) {
-		if (behavior instanceof Trait) {
-			for (Gene g : ((Trait) behavior).getGenes()) {
-				registerGene(g);
-			}
-		}
 		actions.add(behavior);
 		endings.add(duration + (endings.isEmpty() ? 0 : endings.get(endings.size() - 1)));
 	}
@@ -119,5 +113,9 @@ public class BehaviorChain extends Trait {
 		for (Behavior a : actions) {
 			a.onDeath(self, level);
 		}
+	}
+	
+	public List<Behavior> getBehaviors() {
+		return actions;
 	}
 }

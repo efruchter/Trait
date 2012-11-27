@@ -63,5 +63,34 @@ public interface Behavior {
 		public void onDeath(Entity self, Level level) {
 			
 		}
+		
+		public String toString() {
+			return "(B) " + "EMPTY";
+		}
+	};
+	
+	/**
+	 * Wait behavior. Does nothing.
+	 */
+	public static Behavior WAIT = new Behavior() {
+		
+		@Override
+		public void onStart(Entity self, Level level) {
+			
+		}
+		
+		@Override
+		public void onUpdate(Entity self, Level level, long delta) {
+			
+		}
+		
+		@Override
+		public void onDeath(Entity self, Level level) {
+			
+		}
+		
+		public String toString() {
+			return "(B) " + WAIT;
+		}
 	};
 }

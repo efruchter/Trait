@@ -16,8 +16,8 @@ public class RadiusEditTrait extends Trait {
 	public Gene radius;
 	
 	public RadiusEditTrait(float minR, float maxR, float var) {
-		super("Radius", "Has a variable radius.");
-		registerGene(radius = new Gene("r", "the radius value", minR, maxR, var));
+		super("Variable Radius", "Has a variable radius.");
+		registerGene(radius = new Gene("Radius", "The radius value", minR, maxR, var));
 	}
 	
 	@Override

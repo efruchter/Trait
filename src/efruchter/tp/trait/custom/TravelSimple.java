@@ -16,7 +16,7 @@ public class TravelSimple extends Trait {
 	public Gene dx, dy;
 	
 	public TravelSimple() {
-		super("TravelSimple", "Move in straight line path.");
+		super("Simple Travel", "Move in straight line path.");
 		registerGene(dx = new Gene("dx", "movement in x direction", -1, 1, 0));
 		registerGene(dy = new Gene("dy", "movement in y direction", -1, 1, 0));
 	}

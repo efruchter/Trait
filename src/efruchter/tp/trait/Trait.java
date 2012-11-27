@@ -47,4 +47,8 @@ public abstract class Trait implements Behavior {
 		return genes;
 	}
 	
+	@Override
+	public String toString() {
+		return "(T) " + name;
+	}
 }

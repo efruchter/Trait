@@ -9,7 +9,7 @@ import efruchter.tp.trait.Trait;
 public class LoopScreenTrait extends Trait {
 	
 	public LoopScreenTrait() {
-		super("Loop", "Cause entity to loop when offscreen.");
+		super("Loop Screen Around Edges", "Cause entity to loop when offscreen.");
 		
 	}
 	

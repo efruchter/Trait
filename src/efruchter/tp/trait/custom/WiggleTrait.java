@@ -21,8 +21,8 @@ public class WiggleTrait extends Trait {
 	
 	public WiggleTrait(float maxWiggle) {
 		super("Wiggle", "Causes random wiggles.");
-		registerGene(wiggleChance = new Gene("%", "The chance of a wiggle occuring.", 0, 1, 0));
-		registerGene(wiggleIntensity = new Gene("Int.", "The intensity of the wiggle.", 0, 1, .5f));
+		registerGene(wiggleChance = new Gene("Probability", "The chance of a wiggle occuring.", 0, 1, 0));
+		registerGene(wiggleIntensity = new Gene("Intensity", "The intensity of the wiggle.", 0, 1, .5f));
 		this.maxWiggle = maxWiggle;
 	}
 	
