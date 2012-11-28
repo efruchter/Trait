@@ -57,6 +57,10 @@ public class Entity {
 		traits.add(trait);
 	}
 	
+	public boolean removeTrait(Trait trait) {
+		return traits.remove(trait);
+	}
+	
 	public List<Trait> getTraits() {
 		return traits;
 	}

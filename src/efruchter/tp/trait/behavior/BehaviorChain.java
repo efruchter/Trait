@@ -91,6 +91,12 @@ public class BehaviorChain extends Trait {
 	
 	@Override
 	public void onUpdate(Entity self, Level level, long delta) {
+		
+		if (loop && index >= actions.size()) {
+			currTime = 0;
+			index = 0;
+		}
+		
 		while (index < actions.size() && delta > 0) {
 			long remaining = Math.min(endings.get(index) - currTime, delta);
 			delta -= remaining;
@@ -99,10 +105,7 @@ public class BehaviorChain extends Trait {
 			if (currTime >= endings.get(index)) {
 				index++;
 				if (loop && index >= actions.size()) {
-					currTime = 0;
-					index = 0;
-					for (Behavior a : actions)
-						a.onStart(self, level);
+					currTime = index = 0;
 				}
 			}
 		}
@@ -122,5 +125,22 @@ public class BehaviorChain extends Trait {
 	@Override
 	public String toString() {
 		return "(C) " + name;
+	}
+	
+	public void removeBehavior(Behavior editingEntity) {
+		int index = actions.indexOf(editingEntity);
+		if (index != -1) {
+			currTime = this.index = 0;
+			actions.remove(index);
+			
+			long time = endings.remove(index);
+			
+			if (index != 0) {
+				time -= endings.get(index - 1);
+			}
+			for (int i = index; i < endings.size(); i++) {
+				endings.set(i, endings.get(i) - time);
+			}
+		}
 	}
 }

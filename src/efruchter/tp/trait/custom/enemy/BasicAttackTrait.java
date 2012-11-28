@@ -46,7 +46,7 @@ public class BasicAttackTrait extends Trait {
 	
 	@Override
 	public void onStart(Entity self, Level level) {
-		
+		cd = coolDown.getValue();
 	}
 	
 	@Override

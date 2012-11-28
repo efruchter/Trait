@@ -19,17 +19,17 @@ public class ConstantHealthBoostTrait extends Trait {
 	
 	@Override
 	public void onStart(Entity self, Level level) {
-		self.health = 999999;
+		self.health = 100;
 	}
 	
 	@Override
 	public void onUpdate(Entity self, Level level, long delta) {
-		self.health = 999999;
+		self.health = 100;
 	}
 	
 	@Override
 	public void onDeath(Entity self, Level level) {
-		self.health = 999999;
+		self.health = 100;
 	}
 	
 }

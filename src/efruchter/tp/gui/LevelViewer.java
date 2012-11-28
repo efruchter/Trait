@@ -66,7 +66,7 @@ public class LevelViewer implements TreeSelectionListener {
 	@Override
 	public void valueChanged(TreeSelectionEvent arg0) {
 		if (tree.getSelectionCount() > 0) {
-			genEditor.setEditing(tree.getSelectionPath().getLastPathComponent());
+			genEditor.setEditing(tree.getSelectionPath());
 		}
 		
 	}

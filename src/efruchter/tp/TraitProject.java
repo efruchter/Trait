@@ -43,6 +43,7 @@ public class TraitProject {
 	
 	private Level level;
 	private LevelViewer viewer;
+	public boolean markForDeletion = false;
 	
 	public void start() {
 		
