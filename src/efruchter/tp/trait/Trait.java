@@ -16,11 +16,12 @@ import efruchter.tp.trait.gene.Gene;
 public abstract class Trait implements Behavior {
 	
 	protected String name, info;
-	protected List<Gene> genes = new ArrayList<Gene>();
+	protected final List<Gene> genes;
 	
 	public Trait(String name, String info) {
 		this.name = name;
 		this.info = info;
+		genes = new ArrayList<Gene>();
 	}
 	
 	public String getName() {
