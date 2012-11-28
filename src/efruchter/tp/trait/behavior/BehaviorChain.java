@@ -118,4 +118,9 @@ public class BehaviorChain extends Trait {
 	public List<Behavior> getBehaviors() {
 		return actions;
 	}
+	
+	@Override
+	public String toString() {
+		return "(C) " + name;
+	}
 }

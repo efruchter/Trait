@@ -21,6 +21,12 @@ public class TravelSimple extends Trait {
 		registerGene(dy = new Gene("dy", "movement in y direction", -1, 1, 0));
 	}
 	
+	public TravelSimple(float dx, float dy) {
+		this();
+		this.dx.setExpression(dx);
+		this.dy.setExpression(dy);
+	}
+	
 	@Override
 	public void onStart(Entity self, Level level) {
 		

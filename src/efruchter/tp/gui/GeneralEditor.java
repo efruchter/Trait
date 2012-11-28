@@ -5,6 +5,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
+import javax.swing.JTree;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -20,9 +21,9 @@ public class GeneralEditor extends JPanel implements ChangeListener {
 	private final JLabel name, info, value;
 	private final JSlider slider;
 	private int detail = 1000;
+	private JTree tree;
 	
 	public void refreshView() {
-		
 		name.setText("Nothing Selected");
 		info.setText("");
 		value.setText("");
@@ -55,7 +56,8 @@ public class GeneralEditor extends JPanel implements ChangeListener {
 		refreshView();
 	}
 	
-	public GeneralEditor() {
+	public GeneralEditor(JTree tree) {
+		this.tree = tree;
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		setBorder(BorderFactory.createTitledBorder("Inspector"));
 		add(name = new JLabel());
@@ -71,6 +73,7 @@ public class GeneralEditor extends JPanel implements ChangeListener {
 		if (editingEntity instanceof Gene) {
 			((Gene) editingEntity).setExpression((float) slider.getValue() / detail);
 			value.setText("Value: " + ((Gene) editingEntity).getValue());
+			tree.repaint();
 		}
 	}
 }

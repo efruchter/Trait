@@ -13,10 +13,12 @@ public class Level {
 	
 	private List<Entity> ships;
 	private List<Entity> bullets;
+	private List<LevelListener> listeners;
 	
 	public Level() {
 		ships = new LinkedList<Entity>();
 		bullets = new LinkedList<Entity>();
+		listeners = new LinkedList<LevelListener>();
 	}
 	
 	public void onStart() {
@@ -27,6 +29,10 @@ public class Level {
 		for (Entity b : bullets) {
 			b.onStart(this);
 		}
+	}
+	
+	public void addLevelListener(LevelListener b) {
+		listeners.add(b);
 	}
 	
 	public void onUpdate(long delta) {
@@ -64,9 +70,13 @@ public class Level {
 		switch (p.entityType) {
 			case SHIP:
 				ships.remove(p);
+				for (LevelListener listener : listeners)
+					listener.shipRemoved(p);
 				break;
 			case PROJECTILE:
 				bullets.remove(p);
+				for (LevelListener listener : listeners)
+					listener.bulletRemoved(p);
 				break;
 			default:
 				throw new RuntimeException("Entity with NO_TYPE encountered.");
@@ -79,9 +89,13 @@ public class Level {
 		switch (p.entityType) {
 			case SHIP:
 				ships.add(p);
+				for (LevelListener listener : listeners)
+					listener.shipAdded(p);
 				break;
 			case PROJECTILE:
 				bullets.add(p);
+				for (LevelListener listener : listeners)
+					listener.bulletAdded(p);
 				break;
 			default:
 				throw new RuntimeException("Entity with NO_TYPE encountered.");
@@ -105,5 +119,15 @@ public class Level {
 	@Override
 	public String toString() {
 		return "Level";
+	}
+	
+	public interface LevelListener {
+		void shipRemoved(Entity ship);
+		
+		void shipAdded(Entity ship);
+		
+		void bulletAdded(Entity bullet);
+		
+		void bulletRemoved(Entity bullet);
 	}
 }

@@ -13,12 +13,15 @@ import efruchter.tp.defaults.CollisionLabels;
 import efruchter.tp.defaults.EntityFactory;
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
+import efruchter.tp.entity.Level.LevelListener;
 import efruchter.tp.gui.LevelViewer;
 import efruchter.tp.trait.behavior.BehaviorChain;
+import efruchter.tp.trait.custom.ConstantHealthBoostTrait;
 import efruchter.tp.trait.custom.LoopScreenTrait;
 import efruchter.tp.trait.custom.RadiusEditTrait;
 import efruchter.tp.trait.custom.TravelSimple;
 import efruchter.tp.trait.custom.WiggleTrait;
+import efruchter.tp.trait.custom.enemy.BasicAttackTrait;
 import efruchter.tp.trait.custom.player.KeyboardControlTrait_Attack;
 import efruchter.tp.trait.custom.player.KeyboardControlTrait_Movement;
 
@@ -92,17 +95,34 @@ public class TraitProject {
 		player.name = "Player Ship";
 		//Add screen loop trait
 		player.addTrait(new LoopScreenTrait());
+		player.addTrait(new ConstantHealthBoostTrait());
 		//Add to level
 		level.addEntity(player);
 		
-		//Build enemy 1
-		Entity enemy1 = EntityFactory.buildShip(400, 500, 20, CollisionLabels.ENEMY_LABEL, Color.RED, 100);
+		//Build enemy 2
+		Entity enemy1 = EntityFactory.buildShip(600, 500, 20, CollisionLabels.ENEMY_LABEL, Color.RED, 100);
 		enemy1.name = "Enemy 1";
+		BehaviorChain m2 = new BehaviorChain("Attack Pattern", "Move around and attack.", true);
+		m2.addWait(6000);
+		m2.addBehavior(new TravelSimple(.4f, .6f), 500);
+		m2.addBehavior(new TravelSimple(.3f, .4f), 500);
+		BasicAttackTrait b;
+		m2.addBehavior(b = new BasicAttackTrait(), 600);
+		b.movePlasmid.dy.setExpression(0.40f);
+		enemy1.addTrait(m2);
+		enemy1.addTrait(new LoopScreenTrait());
 		level.addEntity(enemy1);
 		
 		//Build enemy 2
-		Entity enemy2 = EntityFactory.buildShip(600, 500, 20, CollisionLabels.ENEMY_LABEL, Color.RED, 100);
+		Entity enemy2 = EntityFactory.buildShip(400, 500, 20, CollisionLabels.ENEMY_LABEL, Color.RED, 100);
 		enemy2.name = "Enemy 2";
+		BehaviorChain m = new BehaviorChain("Attack Pattern", "Move around and attack.", true);
+		m.addWait(2000);
+		m.addBehavior(new TravelSimple(.8f, .4f), 500);
+		m.addBehavior(new TravelSimple(.5f, .6f), 500);
+		m.addBehavior(new BasicAttackTrait(), 500);
+		enemy2.addTrait(m);
+		enemy2.addTrait(new LoopScreenTrait());
 		level.addEntity(enemy2);
 		
 		//Create a little behavior cycle
@@ -114,6 +134,30 @@ public class TraitProject {
 		c.addBehavior(f, 1000);
 		c.addBehavior(new TravelSimple(), 200);
 		player.addTrait(c);
+		
+		level.addLevelListener(new LevelListener() {
+			
+			@Override
+			public void shipRemoved(Entity ship) {
+				viewer.setLevel(level);
+			}
+			
+			@Override
+			public void shipAdded(Entity ship) {
+				viewer.setLevel(level);
+			}
+			
+			@Override
+			public void bulletAdded(Entity bullet) {
+				
+			}
+			
+			@Override
+			public void bulletRemoved(Entity bullet) {
+				
+			}
+			
+		});
 		
 		viewer.setLevel(level);
 	}

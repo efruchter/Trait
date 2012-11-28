@@ -5,6 +5,8 @@ import java.awt.Dimension;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
@@ -25,6 +27,9 @@ public class LevelViewer implements TreeSelectionListener {
 	private GeneralEditor genEditor;
 	
 	public LevelViewer(final Level level) {
+		
+		String info = "(E) Entity  (T) Trait  (G) Gene  (B) Behavior  (C) Chain";
+		
 		frame = new JFrame("Level Viewer");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
@@ -41,7 +46,12 @@ public class LevelViewer implements TreeSelectionListener {
 		frame.add(pane, BorderLayout.CENTER);
 		
 		//General editor
-		frame.add(genEditor = new GeneralEditor(), BorderLayout.SOUTH);
+		frame.add(genEditor = new GeneralEditor(tree), BorderLayout.SOUTH);
+		
+		JPanel panel = new JPanel();
+		panel.add(new JLabel(info));
+		panel.setBorder(BorderFactory.createTitledBorder("Key:"));
+		frame.add(panel, BorderLayout.NORTH);
 		
 		frame.pack();
 		frame.setVisible(true);

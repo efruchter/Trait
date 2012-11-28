@@ -39,8 +39,9 @@ public abstract class Trait implements Behavior {
 		this.info = info;
 	}
 	
-	public void registerGene(Gene gene) {
-		genes.add(gene);
+	public void registerGene(Gene... genes) {
+		for (Gene g : genes)
+			this.genes.add(g);
 	}
 	
 	public List<Gene> getGenes() {

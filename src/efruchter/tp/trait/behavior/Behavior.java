@@ -47,7 +47,7 @@ public interface Behavior {
 	/**
 	 * Default behavior. Does nothing.
 	 */
-	public static Behavior EMPTY = new Behavior() {
+	public final static Behavior EMPTY = new Behavior() {
 		
 		@Override
 		public void onStart(Entity self, Level level) {
@@ -72,7 +72,7 @@ public interface Behavior {
 	/**
 	 * Wait behavior. Does nothing.
 	 */
-	public static Behavior WAIT = new Behavior() {
+	public final static Behavior WAIT = new Behavior() {
 		
 		@Override
 		public void onStart(Entity self, Level level) {
@@ -90,7 +90,7 @@ public interface Behavior {
 		}
 		
 		public String toString() {
-			return "(B) " + WAIT;
+			return "(B) " + "WAIT";
 		}
 	};
 }

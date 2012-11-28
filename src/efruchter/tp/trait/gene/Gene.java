@@ -94,6 +94,6 @@ public class Gene {
 	
 	@Override
 	public String toString() {
-		return "(G) " + name + " " + this.getExpression();
+		return "(G) " + name;
 	}
 }

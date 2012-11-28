@@ -9,6 +9,7 @@ import efruchter.tp.defaults.EntityFactory;
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
 import efruchter.tp.trait.Trait;
+import efruchter.tp.trait.custom.DieOffScreenTrait;
 import efruchter.tp.trait.custom.RadiusEditTrait;
 import efruchter.tp.trait.custom.TimedDeathTrait;
 import efruchter.tp.trait.custom.TravelSimple;
@@ -26,6 +27,7 @@ public class KeyboardControlTrait_Attack extends Trait {
 	
 	private float cd;
 	public Gene coolDown, spread, wiggleBigness, amount, damage;
+	private TravelSimple movePlasmid;
 	private int key;
 	
 	/**
@@ -41,6 +43,8 @@ public class KeyboardControlTrait_Attack extends Trait {
 		registerGene(wiggleBigness = new Gene("Wiggle", "Maximum wiggle magnitude."));
 		registerGene(amount = new Gene("# of Bullets", "Amount of bullets per salvo.", 0, 100, 1));
 		registerGene(damage = new Gene("Damage Per Bullet", "Amount of damage per bullet.", 0, 10, 5));
+		movePlasmid = new TravelSimple(.5f, 1);
+		registerGene(movePlasmid.dx, movePlasmid.dy);
 		
 		spread.setExpression(0);
 		this.key = keyChar;
@@ -63,7 +67,8 @@ public class KeyboardControlTrait_Attack extends Trait {
 				for (int i = 0; i < amount.getValue(); i++) {
 					Entity p = EntityFactory.buildProjectile(self.x, self.y, 4, CollisionLabels.PLAYER_LABEL,
 							Color.GREEN, damage.getValue());
-					p.addTrait(new TimedDeathTrait(1));
+					p.addTrait(new DieOffScreenTrait());
+					p.addTrait(new TimedDeathTrait(10));
 					
 					WiggleTrait w = new WiggleTrait(20 * wiggleBigness.getExpression());
 					w.wiggleChance.setExpression(1);
@@ -73,12 +78,11 @@ public class KeyboardControlTrait_Attack extends Trait {
 					
 					TravelSimple t = new TravelSimple();
 					
-					t.dx.setExpression(.5f + (float) Math.random() * (spread.getExpression())
-							* (Math.random() < .5 ? -1 : 1) / 2);
-					t.dy.setExpression(1);
+					t.dx.setExpression(movePlasmid.dx.getExpression() + (float) Math.random()
+							* (spread.getExpression()) * (Math.random() < .5 ? -1 : 1) / 2);
+					t.dy.setExpression(movePlasmid.dy.getExpression());
 					
 					p.addTrait(t);
-					p.collisionLabel = CollisionLabels.PLAYER_LABEL;
 					
 					RadiusEditTrait rad = new RadiusEditTrait(3, 10, 10);
 					p.addTrait(rad);
