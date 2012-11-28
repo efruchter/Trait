@@ -22,11 +22,11 @@ public class Level {
 	}
 	
 	public void onStart() {
-		for (Entity b : ships) {
+		for (Entity b : new LinkedList<Entity>(ships)) {
 			b.onStart(this);
 		}
 		
-		for (Entity b : bullets) {
+		for (Entity b : new LinkedList<Entity>(bullets)) {
 			b.onStart(this);
 		}
 	}
@@ -46,11 +46,11 @@ public class Level {
 	}
 	
 	public void onDeath() {
-		for (Entity b : ships) {
+		for (Entity b : new LinkedList<Entity>(ships)) {
 			b.onDeath(this);
 		}
 		
-		for (Entity b : bullets) {
+		for (Entity b : new LinkedList<Entity>(bullets)) {
 			b.onDeath(this);
 		}
 		

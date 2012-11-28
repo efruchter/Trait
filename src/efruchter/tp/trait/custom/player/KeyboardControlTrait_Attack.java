@@ -93,7 +93,6 @@ public class KeyboardControlTrait_Attack extends Trait {
 				}
 			}
 		}
-		System.out.println(self.health);
 	}
 	
 	@Override
