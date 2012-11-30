@@ -121,13 +121,10 @@ public class Level {
 		return "Level";
 	}
 	
-	public interface LevelListener {
-		void shipRemoved(Entity ship);
-		
-		void shipAdded(Entity ship);
-		
-		void bulletAdded(Entity bullet);
-		
-		void bulletRemoved(Entity bullet);
+	public static abstract class LevelListener {
+		public void shipRemoved(Entity ship) {}
+		public void shipAdded(Entity ship){}
+		public void bulletAdded(Entity bullet){}
+		public void bulletRemoved(Entity bullet){}
 	}
 }

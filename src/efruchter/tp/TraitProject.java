@@ -137,27 +137,13 @@ public class TraitProject {
 		player.addTrait(c);
 		
 		level.addLevelListener(new LevelListener() {
-			
-			@Override
 			public void shipRemoved(Entity ship) {
 				viewer.setLevel(level);
 			}
 			
-			@Override
 			public void shipAdded(Entity ship) {
 				viewer.setLevel(level);
 			}
-			
-			@Override
-			public void bulletAdded(Entity bullet) {
-				
-			}
-			
-			@Override
-			public void bulletRemoved(Entity bullet) {
-				
-			}
-			
 		});
 		
 		viewer.setLevel(level);
