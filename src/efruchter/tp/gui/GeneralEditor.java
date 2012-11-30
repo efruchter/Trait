@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
@@ -28,6 +29,7 @@ public class GeneralEditor extends JPanel implements ChangeListener, ActionListe
 	private final JLabel name, info, value;
 	private final JButton removeButton;
 	private final JSlider slider;
+	private final JCheckBox checkBox;
 	private int detail = 1000;
 	private JTree tree;
 	
@@ -37,6 +39,7 @@ public class GeneralEditor extends JPanel implements ChangeListener, ActionListe
 		value.setText("");
 		slider.setVisible(false);
 		removeButton.setVisible(false);
+		checkBox.setVisible(false);
 		
 		if (editingEntity instanceof Gene) {
 			name.setText(((Gene) editingEntity).getName());
@@ -55,6 +58,8 @@ public class GeneralEditor extends JPanel implements ChangeListener, ActionListe
 				value.setText("No Genes for this Trait");
 			}
 			removeButton.setVisible(true);
+			checkBox.setVisible(true);
+			checkBox.setSelected(((Trait) editingEntity).isActive());
 		} else if (editingEntity instanceof Behavior) {
 			name.setText("Behavior (No info available)");
 			info.setText("");
@@ -75,7 +80,7 @@ public class GeneralEditor extends JPanel implements ChangeListener, ActionListe
 		refreshView();
 	}
 	
-	public GeneralEditor(JTree tree) {
+	public GeneralEditor(final JTree tree) {
 		this.tree = tree;
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		setBorder(BorderFactory.createTitledBorder("Inspector"));
@@ -83,9 +88,17 @@ public class GeneralEditor extends JPanel implements ChangeListener, ActionListe
 		add(info = new JLabel());
 		add(value = new JLabel());
 		add(slider = new JSlider(JSlider.HORIZONTAL, 0, detail, 0));
+		add(checkBox = new JCheckBox("Active"));
 		add(removeButton = new JButton("Delete"));
 		removeButton.addActionListener(this);
 		slider.addChangeListener(this);
+		checkBox.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				((Trait) editingEntity).setActive(checkBox.isSelected() ? true : false);
+				tree.repaint();
+			}
+		});
 		refreshView();
 	}
 	

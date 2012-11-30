@@ -5,7 +5,7 @@ import efruchter.tp.entity.Level;
 
 /**
  * A behavior an entity should perform. Three timing methods are called given
- * certain game events.
+ * certain game events. The mose basic form of functional unit.
  * 
  * @author toriscope
  * 
@@ -66,31 +66,6 @@ public interface Behavior {
 		
 		public String toString() {
 			return "(B) " + "EMPTY";
-		}
-	};
-	
-	/**
-	 * Wait behavior. Does nothing.
-	 */
-	public final static Behavior WAIT = new Behavior() {
-		
-		@Override
-		public void onStart(Entity self, Level level) {
-			
-		}
-		
-		@Override
-		public void onUpdate(Entity self, Level level, long delta) {
-			
-		}
-		
-		@Override
-		public void onDeath(Entity self, Level level) {
-			
-		}
-		
-		public String toString() {
-			return "(B) " + "WAIT";
 		}
 	};
 }

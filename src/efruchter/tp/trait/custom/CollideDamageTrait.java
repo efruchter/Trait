@@ -3,14 +3,15 @@ package efruchter.tp.trait.custom;
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
 import efruchter.tp.trait.Trait;
+import efruchter.tp.trait.gene.Gene;
 
 public class CollideDamageTrait extends Trait {
 	
-	private float damage;
+	private Gene damage;
 	
 	public CollideDamageTrait(float damage) {
 		super("Damage Dealing", "Deals damage to another entity.");
-		this.damage = damage;
+		registerGene(this.damage = new Gene("Damage", "Amount of damage to deal.", 0, damage, damage));
 	}
 	
 	@Override
@@ -23,7 +24,7 @@ public class CollideDamageTrait extends Trait {
 		boolean hit = false;
 		for (Entity e : level.getShips()) {
 			if (self.isColliding(e)) {
-				e.causeDamage(damage);
+				e.causeDamage(damage.getValue());
 				hit = true;
 			}
 		}

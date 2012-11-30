@@ -42,14 +42,16 @@ public class Entity {
 	}
 	
 	public void onStart(Level level) {
-		for (Behavior b : traits) {
-			b.onStart(this, level);
+		for (Trait b : traits) {
+			if (b.isActive())
+				b.onStart(this, level);
 		}
 	}
 	
 	public void onDeath(Level level) {
-		for (Behavior b : traits) {
-			b.onDeath(this, level);
+		for (Trait b : traits) {
+			if (b.isActive())
+				b.onDeath(this, level);
 		}
 	}
 	
@@ -82,8 +84,9 @@ public class Entity {
 	}
 	
 	public void onUpdate(long delta, Level level) {
-		for (Behavior b : traits) {
-			b.onUpdate(this, level, delta);
+		for (Trait b : traits) {
+			if (b.isActive())
+				b.onUpdate(this, level, delta);
 		}
 		
 		if (damageTimer > 0) {

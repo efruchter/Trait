@@ -65,7 +65,7 @@ public class BehaviorChain extends Trait {
 	 *            the length of the wait in milliseconds
 	 */
 	public void addWait(long duration) {
-		addBehavior(Behavior.WAIT, duration);
+		addBehavior(new TraitAdapter("WAIT", "Waiting Period."), duration);
 	}
 	
 	/**
@@ -101,7 +101,12 @@ public class BehaviorChain extends Trait {
 			long remaining = Math.min(endings.get(index) - currTime, delta);
 			delta -= remaining;
 			currTime += remaining;
-			actions.get(index).onUpdate(self, level, remaining);
+			Behavior b = actions.get(index);
+			if (!(b instanceof Trait) || (b instanceof Trait && ((Trait) b).isActive()))
+				actions.get(index).onUpdate(self, level, remaining);
+			if (b instanceof Trait && !((Trait) b).isActive()) {
+				currTime = endings.get(index);
+			}
 			if (currTime >= endings.get(index)) {
 				index++;
 				if (loop && index >= actions.size()) {
@@ -122,11 +127,6 @@ public class BehaviorChain extends Trait {
 		return actions;
 	}
 	
-	@Override
-	public String toString() {
-		return "(C) " + name;
-	}
-	
 	public void removeBehavior(Behavior editingEntity) {
 		int index = actions.indexOf(editingEntity);
 		if (index != -1) {
@@ -142,5 +142,10 @@ public class BehaviorChain extends Trait {
 				endings.set(i, endings.get(i) - time);
 			}
 		}
+	}
+	
+	@Override
+	public String toString() {
+		return "(C) " + name + " (" + (isActive() ? "ON" : "OFF") + ")";
 	}
 }
