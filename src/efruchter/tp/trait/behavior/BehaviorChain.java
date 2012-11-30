@@ -93,20 +93,27 @@ public class BehaviorChain extends Trait {
 	public void onUpdate(Entity self, Level level, long delta) {
 		
 		if (loop && index >= actions.size()) {
-			currTime = 0;
-			index = 0;
+			currTime = index = 0;
 		}
 		
 		while (index < actions.size() && delta > 0) {
-			long remaining = Math.min(endings.get(index) - currTime, delta);
-			delta -= remaining;
-			currTime += remaining;
 			Behavior b = actions.get(index);
-			if (!(b instanceof Trait) || (b instanceof Trait && ((Trait) b).isActive()))
+			
+			boolean active = (!(b instanceof Trait) || (b instanceof Trait && ((Trait) b).isActive()));
+			boolean inactive = b instanceof Trait && !((Trait) b).isActive();
+			
+			long remaining = Math.min(endings.get(index) - currTime, delta);
+			
+			currTime += remaining;
+			
+			if (active) {
+				delta -= remaining;
 				actions.get(index).onUpdate(self, level, remaining);
-			if (b instanceof Trait && !((Trait) b).isActive()) {
+			}
+			if (inactive) {
 				currTime = endings.get(index);
 			}
+			
 			if (currTime >= endings.get(index)) {
 				index++;
 				if (loop && index >= actions.size()) {
