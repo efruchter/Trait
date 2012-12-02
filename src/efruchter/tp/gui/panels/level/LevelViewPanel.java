@@ -1,10 +1,9 @@
-package efruchter.tp.gui;
+package efruchter.tp.gui.panels.level;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 
 import javax.swing.BorderFactory;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -20,19 +19,16 @@ import efruchter.tp.entity.Level;
  * @author toriscope
  * 
  */
-public class LevelViewer implements TreeSelectionListener {
+@SuppressWarnings("serial")
+public class LevelViewPanel extends JPanel implements TreeSelectionListener {
 	
-	private JFrame frame;
 	private JTree tree;
 	private GeneralEditor genEditor;
 	
-	public LevelViewer(final Level level) {
+	public LevelViewPanel(final Level level) {
 		
 		String info = "(E) Entity  (T) Trait  (G) Gene  (B) Behavior  (C) Chain";
-		
-		frame = new JFrame("Level Viewer");
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
+		setLayout(new BorderLayout());
 		//Make tree
 		tree = new JTree();
 		tree.setExpandsSelectedPaths(true);
@@ -43,18 +39,16 @@ public class LevelViewer implements TreeSelectionListener {
 		JScrollPane pane = new JScrollPane(tree);
 		pane.setBorder(BorderFactory.createTitledBorder("Hierarchy"));
 		pane.setPreferredSize(new Dimension(500, 500));
-		frame.add(pane, BorderLayout.CENTER);
+		add(pane, BorderLayout.CENTER);
 		
 		//General editor
-		frame.add(genEditor = new GeneralEditor(tree), BorderLayout.SOUTH);
+		add(genEditor = new GeneralEditor(tree), BorderLayout.SOUTH);
 		
 		JPanel panel = new JPanel();
 		panel.add(new JLabel(info));
 		panel.setBorder(BorderFactory.createTitledBorder("Key:"));
-		frame.add(panel, BorderLayout.NORTH);
+		add(panel, BorderLayout.NORTH);
 		
-		frame.pack();
-		frame.setVisible(true);
 		tree.addTreeSelectionListener(this);
 	}
 	

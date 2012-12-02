@@ -1,4 +1,4 @@
-package efruchter.tp.gui;
+package efruchter.tp.gui.panels.level;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

@@ -14,7 +14,7 @@ import efruchter.tp.defaults.EntityFactory;
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
 import efruchter.tp.entity.Level.LevelListener;
-import efruchter.tp.gui.LevelViewer;
+import efruchter.tp.gui.CoreFrame;
 import efruchter.tp.trait.behavior.BehaviorChain;
 import efruchter.tp.trait.custom.ConstantHealthBoostTrait;
 import efruchter.tp.trait.custom.LoopScreenTrait;
@@ -42,14 +42,15 @@ public class TraitProject {
 	long lastFPS;
 	
 	private Level level;
-	private LevelViewer viewer;
-	public boolean markForDeletion = false;
+	private CoreFrame viewer;
 	
 	public void start() {
 		
-		viewer = new LevelViewer(level = new Level());
+		level = new Level();
 		
-		setup();
+		viewer = new CoreFrame(this);
+		
+		resetSim();
 		
 		try {
 			Display.setDisplayMode(new DisplayMode(800, 600));
@@ -62,6 +63,7 @@ public class TraitProject {
 		initGL(); // init OpenGL
 		getDelta(); // call once before loop to initialise lastFrame
 		lastFPS = getTime(); // call before loop to initialise fps timer
+		Display.setTitle("Trait Project");
 		
 		while (!Display.isCloseRequested()) {
 			int delta = getDelta();
@@ -78,9 +80,10 @@ public class TraitProject {
 	}
 	
 	/**
-	 * Build the level and entities from scratch.
+	 * Build the level and entities from scratch. Update appropriate GUI
+	 * components.
 	 */
-	private void setup() {
+	public void resetSim() {
 		
 		level = new Level();
 		
@@ -138,15 +141,15 @@ public class TraitProject {
 		
 		level.addLevelListener(new LevelListener() {
 			public void shipRemoved(Entity ship) {
-				viewer.setLevel(level);
+				viewer.getLevelView().setLevel(level);
 			}
 			
 			public void shipAdded(Entity ship) {
-				viewer.setLevel(level);
+				viewer.getLevelView().setLevel(level);
 			}
 		});
 		
-		viewer.setLevel(level);
+		viewer.getLevelView().setLevel(level);
 	}
 	
 	public void update(int delta) {
@@ -181,14 +184,12 @@ public class TraitProject {
 	 */
 	public void updateFPS() {
 		if (getTime() - lastFPS > 1000) {
-			Display.setTitle("'r' to reset. FPS: " + fps + " Entities: " + level.getEntityCount());
+			viewer.getStatisticsPanel().setFPS(fps);
+			viewer.getStatisticsPanel().setEntityCount(level.getEntityCount());
 			fps = 0;
 			lastFPS += 1000;
 		}
 		fps++;
-		if (Keyboard.isKeyDown(Keyboard.KEY_R) && !Keyboard.isRepeatEvent()) {
-			setup();
-		}
 	}
 	
 	public void initGL() {
@@ -206,6 +207,7 @@ public class TraitProject {
 	}
 	
 	public static void main(String[] argv) {
+		
 		//Start the game
 		new TraitProject().start();
 	}

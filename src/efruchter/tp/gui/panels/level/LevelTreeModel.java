@@ -1,4 +1,4 @@
-package efruchter.tp.gui;
+package efruchter.tp.gui.panels.level;
 
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
@@ -8,6 +8,7 @@ import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
 import efruchter.tp.trait.Trait;
 import efruchter.tp.trait.behavior.BehaviorChain;
+import efruchter.tp.trait.gene.Gene;
 
 public class LevelTreeModel implements TreeModel {
 	
@@ -72,7 +73,7 @@ public class LevelTreeModel implements TreeModel {
 	
 	@Override
 	public boolean isLeaf(Object node) {
-		return getChildCount(node) == 0;
+		return node instanceof Gene || (node instanceof Trait && getChildCount(node) == 0);
 	}
 	
 	@Override
