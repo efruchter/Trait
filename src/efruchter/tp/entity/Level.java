@@ -1,5 +1,6 @@
 package efruchter.tp.entity;
 
+import java.util.ConcurrentModificationException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -31,10 +32,6 @@ public class Level {
 		}
 	}
 	
-	public void addLevelListener(LevelListener b) {
-		listeners.add(b);
-	}
-	
 	public void onUpdate(long delta) {
 		for (Entity b : new LinkedList<Entity>(bullets)) {
 			b.onUpdate(delta, this);
@@ -56,13 +53,21 @@ public class Level {
 		
 	}
 	
+	public void addLevelListener(LevelListener b) {
+		listeners.add(b);
+	}
+	
 	public void renderGL(long delta) {
-		for (Entity b : ships) {
-			b.getRenderBehavior().onUpdate(b, this, delta);
-		}
-		
-		for (Entity b : bullets) {
-			b.getRenderBehavior().onUpdate(b, this, delta);
+		try {
+			for (Entity b : ships) {
+				b.getRenderBehavior().onUpdate(b, this, delta);
+			}
+			
+			for (Entity b : bullets) {
+				b.getRenderBehavior().onUpdate(b, this, delta);
+			}
+		} catch (ConcurrentModificationException e) {
+			
 		}
 	}
 	
@@ -122,9 +127,16 @@ public class Level {
 	}
 	
 	public static abstract class LevelListener {
-		public void shipRemoved(Entity ship) {}
-		public void shipAdded(Entity ship){}
-		public void bulletAdded(Entity bullet){}
-		public void bulletRemoved(Entity bullet){}
+		public void shipRemoved(Entity ship) {
+		}
+		
+		public void shipAdded(Entity ship) {
+		}
+		
+		public void bulletAdded(Entity bullet) {
+		}
+		
+		public void bulletRemoved(Entity bullet) {
+		}
 	}
 }

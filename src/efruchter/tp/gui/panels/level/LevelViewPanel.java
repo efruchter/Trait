@@ -10,6 +10,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.TreeSelectionModel;
 
 import efruchter.tp.entity.Level;
 
@@ -50,6 +51,7 @@ public class LevelViewPanel extends JPanel implements TreeSelectionListener {
 		add(panel, BorderLayout.NORTH);
 		
 		tree.addTreeSelectionListener(this);
+		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 	}
 	
 	public void setLevel(Level level) {
