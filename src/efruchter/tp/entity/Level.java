@@ -4,6 +4,8 @@ import java.util.ConcurrentModificationException;
 import java.util.LinkedList;
 import java.util.List;
 
+import efruchter.tp.trait.behavior.Behavior;
+
 /**
  * Stores and coordinates entities.
  * 
@@ -12,14 +14,21 @@ import java.util.List;
  */
 public class Level {
 	
-	private List<Entity> ships;
-	private List<Entity> bullets;
-	private List<LevelListener> listeners;
+	private final List<Entity> ships;
+	private final List<Entity> bullets;
+	private final List<LevelListener> listeners;
+
+	private final List<Behavior> renderBehaviors;
 	
 	public Level() {
 		ships = new LinkedList<Entity>();
 		bullets = new LinkedList<Entity>();
 		listeners = new LinkedList<LevelListener>();
+		renderBehaviors = new LinkedList<Behavior>();
+	}
+	
+	public void addRenderBehavior(Behavior beh) {
+		renderBehaviors.add(beh);
 	}
 	
 	public void onStart() {
@@ -58,6 +67,11 @@ public class Level {
 	}
 	
 	public void renderGL(long delta) {
+
+		for (Behavior b : renderBehaviors) {
+			b.onUpdate(null, this, delta);
+		}
+
 		try {
 			for (Entity b : ships) {
 				b.getRenderBehavior().onUpdate(b, this, delta);
