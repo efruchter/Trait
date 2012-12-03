@@ -45,9 +45,9 @@ public class CoreFrame {
 		//Statistics
 		tabbedPane.addTab("Statistics", sPanel = new StatisticsPanel());
 		//Editor
-		tabbedPane.addTab("Script", bEditor = new BehaviorEditor());
+		//tabbedPane.addTab("Script", bEditor = new BehaviorEditor());
 		//Options
-		tabbedPane.addTab("Options", oPanel = new OptionPanel());
+		//tabbedPane.addTab("Options", oPanel = new OptionPanel());
 		
 		//build Frame
 		JFrame frame = new JFrame("Control Panel");
