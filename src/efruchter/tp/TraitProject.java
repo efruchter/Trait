@@ -2,6 +2,8 @@ package efruchter.tp;
 
 import java.awt.Color;
 
+import javax.swing.UIManager;
+
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
@@ -207,6 +209,12 @@ public class TraitProject {
 	}
 	
 	public static void main(String[] argv) {
+		
+		try {
+			UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 		//Start the game
 		new TraitProject().start();
