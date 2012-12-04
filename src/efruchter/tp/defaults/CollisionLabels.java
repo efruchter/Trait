@@ -11,6 +11,6 @@ public class CollisionLabels {
 	}
 	
 	public static final int PLAYER_LABEL = 0;
-	public static final int ENEMY_LABEL = 2;
-	public static final int DEFAULT = -1;
+	public static final int ENEMY_LABEL = 1;
+	public static final int NO_COLLISION = -1;
 }

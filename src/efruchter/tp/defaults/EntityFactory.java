@@ -2,7 +2,11 @@ package efruchter.tp.defaults;
 
 import java.awt.Color;
 
+import org.lwjgl.opengl.Display;
+
 import efruchter.tp.entity.Entity;
+import efruchter.tp.entity.Level;
+import efruchter.tp.trait.Trait;
 import efruchter.tp.trait.custom.CollideDamageTrait;
 import efruchter.tp.trait.custom.DieOffScreenTrait;
 import efruchter.tp.trait.custom.DramaticDeathTrait;
@@ -50,6 +54,54 @@ public class EntityFactory {
 		e.addTrait(new DramaticDeathTrait(10, 1000));
 		return e;
 	}
+	
+	/**
+	 * Generate a background star.
+	 * 
+	 * @return
+	 */
+	public static Entity buildBackgroundStar() {
+		Entity e = new Entity();
+		e.baseColor = Math.random() < .99 ? new Color(82, 82, 82) : Color.WHITE;
+		e.collisionLabel = CollisionLabels.NO_COLLISION;
+		e.entityType = EntityType.NO_TYPE;
+		e.setRenderBehavior(RenderUtil.GENERIC_RENDER);
+		e.health = 0;
+		
+		e.addTrait(starMove);
+		
+		return e;
+	}
+	
+	/**
+	 * Move pattern for stars.
+	 */
+	private static Trait starMove = new Trait("Move star", " star move") {
+		
+		@Override
+		public void onStart(Entity self, Level level) {
+			self.radius = .5f + (float) Math.random() * 3;
+			self.x = ((float) Math.random()) * Display.getWidth();
+			self.y = ((float) Math.random()) * Display.getHeight();
+		}
+		
+		@Override
+		public void onUpdate(Entity self, Level level, long delta) {
+			if (self.y - self.radius < 0) {
+				self.radius = .5f + (float) Math.random() * 3;
+				self.x = ((float) Math.random()) * Display.getWidth();
+				self.y = Display.getHeight() + self.radius;
+			}
+			
+			self.y -= self.radius;
+		}
+		
+		@Override
+		public void onDeath(Entity self, Level level) {
+			
+		}
+		
+	};
 	
 	public static Entity buildExplosion(float x, float y, float radius, Color color, long delay) {
 		Entity e = new Entity();

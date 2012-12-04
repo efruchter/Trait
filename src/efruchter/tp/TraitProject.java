@@ -67,6 +67,8 @@ public class TraitProject {
 		lastFPS = getTime(); // call before loop to initialise fps timer
 		Display.setTitle("Trait Project");
 		
+		level.onStart();
+		
 		while (!Display.isCloseRequested()) {
 			int delta = getDelta();
 			
@@ -87,7 +89,7 @@ public class TraitProject {
 	 */
 	public void resetSim() {
 		
-		level = new Level();
+		final Level level = new Level();
 		
 		// Build Player
 		Entity player = EntityFactory.buildShip(100, 100, 10, CollisionLabels.PLAYER_LABEL, Color.CYAN, 100);
@@ -152,6 +154,13 @@ public class TraitProject {
 		});
 		
 		viewer.getLevelView().setLevel(level);
+		
+		for (int i = 0; i < 200; i++)
+			level.addEntity(EntityFactory.buildBackgroundStar());
+		
+		level.onStart();
+		
+		this.level = level;
 	}
 	
 	public void update(int delta) {

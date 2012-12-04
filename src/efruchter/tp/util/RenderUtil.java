@@ -82,7 +82,8 @@ public class RenderUtil {
 				return;
 			GL11.glPushMatrix();
 			{
-				GL11.glColor3f(self.baseColor.getRed(), self.baseColor.getGreen(), self.baseColor.getBlue());
+				GL11.glColor3f(self.baseColor.getRed() / 255f, self.baseColor.getGreen() / 255f,
+						self.baseColor.getBlue() / 255f);
 				GL11.glTranslatef(self.x, self.y, 0);
 				RenderUtil.drawCircleFast(self.radius);
 			}
@@ -95,4 +96,5 @@ public class RenderUtil {
 		}
 		
 	};
+	
 }

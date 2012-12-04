@@ -36,7 +36,7 @@ public class Entity {
 		this.baseColor = Color.BLACK;
 		x = y = radius = 0;
 		traits = new ArrayList<Trait>();
-		collisionLabel = CollisionLabels.DEFAULT;
+		collisionLabel = CollisionLabels.NO_COLLISION;
 		entityType = EntityType.NO_TYPE;
 		setRenderBehavior(Behavior.EMPTY);
 	}
@@ -76,7 +76,8 @@ public class Entity {
 	}
 	
 	public boolean isColliding(Entity other) {
-		return collisionLabel != other.collisionLabel && ScriptUtil.isColliding(this, other);
+		return other.collisionLabel != CollisionLabels.NO_COLLISION && collisionLabel != other.collisionLabel
+				&& ScriptUtil.isColliding(this, other);
 	}
 	
 	public float getHealth() {
