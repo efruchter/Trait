@@ -1,5 +1,6 @@
 package efruchter.tp.entity;
 
+import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,11 +23,11 @@ public class Level {
 	private final List<Behavior> renderBehaviors;
 	
 	public Level() {
-		ships = new LinkedList<Entity>();
-		bullets = new LinkedList<Entity>();
-		notypes = new LinkedList<Entity>();
-		listeners = new LinkedList<LevelListener>();
-		renderBehaviors = new LinkedList<Behavior>();
+		ships = new ArrayList<Entity>();
+		bullets = new ArrayList<Entity>();
+		notypes = new ArrayList<Entity>();
+		listeners = new ArrayList<LevelListener>();
+		renderBehaviors = new ArrayList<Behavior>();
 	}
 	
 	public void addRenderBehavior(Behavior beh) {
