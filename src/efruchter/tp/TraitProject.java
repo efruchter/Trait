@@ -25,6 +25,7 @@ import efruchter.tp.trait.custom.TravelSimple;
 import efruchter.tp.trait.custom.enemy.BasicAttackTrait;
 import efruchter.tp.trait.custom.player.KeyboardControlTrait_Attack;
 import efruchter.tp.trait.custom.player.KeyboardControlTrait_Movement;
+import efruchter.tp.trait.custom.player.PlayerRadiusEditTrait;
 
 /**
  * LWJGL Trait-based shmup.
@@ -98,7 +99,7 @@ public class TraitProject {
 		
 		player.addTrait(new KeyboardControlTrait_Attack(Keyboard.KEY_SPACE));
 		//Radius editing trait
-		RadiusEditTrait rad = new RadiusEditTrait(3, 20, 10);
+		PlayerRadiusEditTrait rad = new PlayerRadiusEditTrait(3, 20, 10);
 		player.addTrait(rad);
 		player.name = "Player Ship";
 		//Add screen loop trait
@@ -108,7 +109,7 @@ public class TraitProject {
 		level.addEntity(player);
 		
 		//Build enemy 2
-		Entity enemy1 = EntityFactory.buildShip(600, 500, 20, CollisionLabels.ENEMY_LABEL, Color.RED, 100);
+		Entity enemy1 = EntityFactory.buildShip(600, 520, 20, CollisionLabels.ENEMY_LABEL, Color.RED, 100);
 		enemy1.name = "Enemy 1";
 		BehaviorChain m2 = new BehaviorChain("Attack Pattern", "Move around and attack.", true);
 		m2.addWait(6000);
@@ -132,6 +133,17 @@ public class TraitProject {
 		enemy2.addTrait(m);
 		enemy2.addTrait(new LoopScreenTrait());
 		level.addEntity(enemy2);
+		
+		//Build enemy 2
+		Entity enemy3 = EntityFactory.buildShip(300, 500, 20, CollisionLabels.ENEMY_LABEL, Color.RED, 100);
+		enemy3.name = "Enemy 3";
+		BehaviorChain m3 = new BehaviorChain("Attack Pattern", "Move around and attack.", true);
+		m3.addBehavior(new TravelSimple(-.08f, .4f), 500);
+		m3.addBehavior(new TravelSimple(.5f, .6f), 500);
+		m3.addBehavior(new BasicAttackTrait(), 500);
+		enemy3.addTrait(m3);
+		enemy3.addTrait(new LoopScreenTrait());
+		level.addEntity(enemy3);
 		
 		level.addLevelListener(new LevelListener() {
 			public void shipRemoved(Entity ship) {

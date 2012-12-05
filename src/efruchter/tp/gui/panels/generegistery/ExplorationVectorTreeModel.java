@@ -12,12 +12,10 @@ import efruchter.tp.learning.GeneVector.GeneWrapper;
 public class ExplorationVectorTreeModel implements TreeModel {
 	
 	final private List<GeneWrapper> register;
-	final private String root = "Exploration Gene Vector";
+	final private String root = "Current Gene Vector";
 	
 	public ExplorationVectorTreeModel(final Level level) {
 		this.register = level.getExplorationVector().getGenes();
-		System.out.println("dsdsds");
-		
 	}
 	
 	@Override

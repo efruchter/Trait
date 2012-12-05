@@ -101,7 +101,7 @@ public class Entity {
 	
 	public void causeDamage(float damage) {
 		health -= damage;
-		damageTimer = 16 - damageTimer % 4;
+		damageTimer = 8 - damageTimer % 4;
 	}
 	
 	public boolean isHurtAnimFrame() {

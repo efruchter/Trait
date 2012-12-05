@@ -21,6 +21,7 @@ public class GeneVector {
 	public static GeneVector getExplorationVector() {
 		return SERVER_VECTOR;
 	}
+	
 	/* ------------------------------------------------------- */
 	
 	private final HashMap<String, Gene> geneMap;
@@ -63,10 +64,6 @@ public class GeneVector {
 		return geneMap.get(path);
 	}
 	
-	public void clear() {
-		geneMap.clear();
-	}
-	
 	/**
 	 * Get a list of genes as GeneWrappers. No order guarantee.
 	 * 
@@ -100,5 +97,9 @@ public class GeneVector {
 			b.append("\n").append(g.path).append(" | ").append(g.gene.getExpression());
 		}
 		return b.toString().replaceFirst("\n", "");
+	}
+	
+	public void clear() {
+		geneMap.clear();
 	}
 }

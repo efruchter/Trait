@@ -1,6 +1,5 @@
 package efruchter.tp.entity;
 
-import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,16 +18,20 @@ public class Level {
 	private final List<Entity> ships;
 	private final List<Entity> bullets;
 	private final List<Entity> notypes;
+	private final List<Entity> add;
+	private final List<Entity> remove;
 	private final List<LevelListener> listeners;
 	private final GeneVector explorationVector;
 	private final List<Behavior> renderBehaviors;
 	
 	public Level() {
-		ships = new ArrayList<Entity>();
-		bullets = new ArrayList<Entity>();
-		notypes = new ArrayList<Entity>();
-		listeners = new ArrayList<LevelListener>();
-		renderBehaviors = new ArrayList<Behavior>();
+		ships = new LinkedList<Entity>();
+		bullets = new LinkedList<Entity>();
+		notypes = new LinkedList<Entity>();
+		add = new LinkedList<Entity>();
+		remove = new LinkedList<Entity>();
+		listeners = new LinkedList<LevelListener>();
+		renderBehaviors = new LinkedList<Behavior>();
 		explorationVector = GeneVector.getExplorationVector();
 	}
 	
@@ -37,46 +40,66 @@ public class Level {
 	}
 	
 	public void onStart() {
-		for (Entity b : new LinkedList<Entity>(ships)) {
+		for (Entity b : ships) {
 			b.onStart(this);
 		}
 		
-		for (Entity b : new LinkedList<Entity>(bullets)) {
+		for (Entity b : bullets) {
 			b.onStart(this);
 		}
 		
-		for (Entity b : new LinkedList<Entity>(notypes)) {
+		for (Entity b : notypes) {
 			b.onStart(this);
 		}
+		
+		maint();
 	}
 	
 	public void onUpdate(long delta) {
-		for (Entity b : new LinkedList<Entity>(bullets)) {
+		for (Entity b : bullets) {
 			b.onUpdate(delta, this);
 		}
 		
-		for (Entity b : new LinkedList<Entity>(ships)) {
+		for (Entity b : ships) {
 			b.onUpdate(delta, this);
 		}
 		
-		for (Entity b : new LinkedList<Entity>(notypes)) {
+		for (Entity b : notypes) {
 			b.onUpdate(delta, this);
 		}
+		
+		maint();
 	}
 	
 	public void onDeath() {
-		for (Entity b : new LinkedList<Entity>(ships)) {
+		for (Entity b : ships) {
 			b.onDeath(this);
 		}
 		
-		for (Entity b : new LinkedList<Entity>(bullets)) {
+		for (Entity b : bullets) {
 			b.onDeath(this);
 		}
 		
-		for (Entity b : new LinkedList<Entity>(notypes)) {
+		for (Entity b : notypes) {
 			b.onDeath(this);
 		}
 		
+		maint();
+	}
+	
+	private void maint() {
+		if (!add.isEmpty()) {
+			for (Entity a : add) {
+				addEntityUnsafe(a);
+			}
+			add.clear();
+		}
+		if (!remove.isEmpty()) {
+			for (Entity a : remove) {
+				removeEntityUnsafe(a);
+			}
+			remove.clear();
+		}
 	}
 	
 	public void addLevelListener(LevelListener b) {
@@ -108,7 +131,15 @@ public class Level {
 		}
 	}
 	
+	public void addEntity(Entity p) {
+		add.add(p);
+	}
+	
 	public void removeEntity(Entity p) {
+		remove.add(p);
+	}
+	
+	private void removeEntityUnsafe(Entity p) {
 		switch (p.entityType) {
 			case SHIP:
 				ships.remove(p);
@@ -130,7 +161,7 @@ public class Level {
 		p.onDeath(this);
 	}
 	
-	public void addEntity(Entity p) {
+	private void addEntityUnsafe(Entity p) {
 		switch (p.entityType) {
 			case SHIP:
 				ships.add(p);

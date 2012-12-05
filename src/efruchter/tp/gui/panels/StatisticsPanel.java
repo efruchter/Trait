@@ -29,11 +29,15 @@ public class StatisticsPanel extends JPanel {
 		overll.add(new JLabel("No Session Statistics Available."));
 	}
 	
+	private long fps, entities;
+	
 	public void setFPS(long fps) {
-		fpsLabel.setText("FPS: " + fps);
+		if (this.fps != fps)
+			fpsLabel.setText("FPS: " + (this.fps = fps));
 	}
 	
 	public void setEntityCount(long entities) {
-		entitesLabel.setText("Entity Count: " + entities);
+		if (this.entities != entities)
+			entitesLabel.setText("Entities: " + (this.entities = entities));
 	}
 }

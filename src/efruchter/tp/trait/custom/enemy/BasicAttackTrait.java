@@ -11,7 +11,6 @@ import efruchter.tp.trait.custom.DieOffScreenTrait;
 import efruchter.tp.trait.custom.RadiusEditTrait;
 import efruchter.tp.trait.custom.TimedDeathTrait;
 import efruchter.tp.trait.custom.TravelSimple;
-import efruchter.tp.trait.custom.WiggleTrait;
 import efruchter.tp.trait.gene.Gene;
 import efruchter.tp.trait.gene.GeneExpressionInterpolator;
 
@@ -24,7 +23,7 @@ import efruchter.tp.trait.gene.GeneExpressionInterpolator;
 public class BasicAttackTrait extends Trait {
 	
 	private float cd;
-	public Gene coolDown, spread, wiggleBigness, amount, damage;
+	public Gene coolDown, spread, amount, damage;
 	public TravelSimple movePlasmid;
 	
 	/**
@@ -37,7 +36,6 @@ public class BasicAttackTrait extends Trait {
 		super("Basic Attack", "An auto-attack.");
 		registerGene(coolDown = new Gene("Cool Down Delay", "The projectile cooldown.", 0, 1000, 0));
 		registerGene(spread = new Gene("Launch Spread", "Bullet spread.", 0, 1, 1));
-		registerGene(wiggleBigness = new Gene("Wiggle", "Maximum wiggle magnitude.", 0, 1, .035f));
 		registerGene(amount = new Gene("# of Bullets", "Amount of bullets per salvo.", 0, 100, .8f));
 		registerGene(damage = new Gene("Damage Per Bullet", "Amount of damage per bullet.", 0, 10, 1));
 		movePlasmid = new TravelSimple(.5f, .3f);
@@ -62,12 +60,6 @@ public class BasicAttackTrait extends Trait {
 						damage.getValue());
 				p.addTrait(new DieOffScreenTrait());
 				p.addTrait(new TimedDeathTrait(10));
-				
-				WiggleTrait w = new WiggleTrait(20 * wiggleBigness.getExpression());
-				w.wiggleChance.setExpression(1);
-				w.wiggleIntensity.setExpression(1);
-				
-				p.addTrait(w);
 				
 				TravelSimple t = new TravelSimple();
 				
