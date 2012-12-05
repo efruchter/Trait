@@ -6,6 +6,12 @@ import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
 import efruchter.tp.trait.Trait;
 
+/**
+ * IN PROGRESS.
+ * 
+ * @author toriscope
+ * 
+ */
 public class FollowPathTrait extends Trait {
 	
 	public boolean smooth;

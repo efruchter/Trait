@@ -22,7 +22,6 @@ import efruchter.tp.trait.custom.ConstantHealthBoostTrait;
 import efruchter.tp.trait.custom.LoopScreenTrait;
 import efruchter.tp.trait.custom.RadiusEditTrait;
 import efruchter.tp.trait.custom.TravelSimple;
-import efruchter.tp.trait.custom.WiggleTrait;
 import efruchter.tp.trait.custom.enemy.BasicAttackTrait;
 import efruchter.tp.trait.custom.player.KeyboardControlTrait_Attack;
 import efruchter.tp.trait.custom.player.KeyboardControlTrait_Movement;
@@ -96,6 +95,7 @@ public class TraitProject {
 		// Add control traits to player with arrow-keys
 		player.addTrait(new KeyboardControlTrait_Movement(Keyboard.KEY_UP, Keyboard.KEY_DOWN, Keyboard.KEY_LEFT,
 				Keyboard.KEY_RIGHT));
+		
 		player.addTrait(new KeyboardControlTrait_Attack(Keyboard.KEY_SPACE));
 		//Radius editing trait
 		RadiusEditTrait rad = new RadiusEditTrait(3, 20, 10);
@@ -133,27 +133,17 @@ public class TraitProject {
 		enemy2.addTrait(new LoopScreenTrait());
 		level.addEntity(enemy2);
 		
-		//Create a little behavior cycle
-		BehaviorChain c = new BehaviorChain("Wiggle Chain", "A behavior loop. Wait, wiggle, then move.", true);
-		c.addWait(1000);
-		WiggleTrait f = new WiggleTrait();
-		f.wiggleChance.setExpression(0);
-		f.wiggleIntensity.setExpression(1);
-		c.addBehavior(f, 1000);
-		c.addBehavior(new TravelSimple(), 200);
-		player.addTrait(c);
-		
 		level.addLevelListener(new LevelListener() {
 			public void shipRemoved(Entity ship) {
-				viewer.getLevelView().setLevel(level);
+				viewer.setLevel(level);
 			}
 			
 			public void shipAdded(Entity ship) {
-				viewer.getLevelView().setLevel(level);
+				viewer.setLevel(level);
 			}
 		});
 		
-		viewer.getLevelView().setLevel(level);
+		viewer.setLevel(level);
 		
 		for (int i = 0; i < 200; i++)
 			level.addEntity(EntityFactory.buildBackgroundStar());

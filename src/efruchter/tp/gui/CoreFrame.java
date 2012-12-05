@@ -16,11 +16,13 @@ import efruchter.tp.entity.Level;
 import efruchter.tp.gui.panels.BehaviorEditor;
 import efruchter.tp.gui.panels.OptionPanel;
 import efruchter.tp.gui.panels.StatisticsPanel;
+import efruchter.tp.gui.panels.generegistery.VectorViewPanel;
 import efruchter.tp.gui.panels.level.LevelViewPanel;
 
 public class CoreFrame {
 	
 	private LevelViewPanel levelView;
+	private VectorViewPanel vectorView;
 	private StatisticsPanel sPanel;
 	private BehaviorEditor bEditor;
 	private OptionPanel oPanel;
@@ -42,6 +44,8 @@ public class CoreFrame {
 		JTabbedPane tabbedPane = new JTabbedPane();
 		//Level
 		tabbedPane.addTab("Level", levelView = new LevelViewPanel(new Level()));
+		//Gene Reg.
+		tabbedPane.addTab("Vector", vectorView = new VectorViewPanel(new Level()));
 		//Statistics
 		tabbedPane.addTab("Statistics", sPanel = new StatisticsPanel());
 		//Editor
@@ -50,8 +54,8 @@ public class CoreFrame {
 		tabbedPane.addTab("Options", oPanel = new OptionPanel());
 		
 		//deactivate unused
-		tabbedPane.setEnabledAt(2, false);
 		tabbedPane.setEnabledAt(3, false);
+		tabbedPane.setEnabledAt(4, false);
 		
 		//build Frame
 		JFrame frame = new JFrame("Control Panel");
@@ -75,25 +79,18 @@ public class CoreFrame {
 		});
 	}
 	
-	public LevelViewPanel getLevelView() {
-		return levelView;
-	}
-	
-	public StatisticsPanel getStatisticsPanel() {
-		return sPanel;
-	}
-	
-	public BehaviorEditor getBehaviorEditor() {
-		return bEditor;
-	}
-	
-	public OptionPanel getOptionsPanel() {
-		return oPanel;
-	}
-	
 	private static JPanel wrapInPanel(Component s) {
 		JPanel p = new JPanel();
 		p.add(s);
 		return p;
+	}
+	
+	public void setLevel(Level level) {
+		levelView.setLevel(level);
+		vectorView.setLevel(level);
+	}
+	
+	public StatisticsPanel getStatisticsPanel() {
+		return sPanel;
 	}
 }

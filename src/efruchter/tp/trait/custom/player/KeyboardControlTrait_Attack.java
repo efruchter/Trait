@@ -8,6 +8,7 @@ import efruchter.tp.defaults.CollisionLabels;
 import efruchter.tp.defaults.EntityFactory;
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
+import efruchter.tp.learning.GeneVector;
 import efruchter.tp.trait.Trait;
 import efruchter.tp.trait.custom.DieOffScreenTrait;
 import efruchter.tp.trait.custom.RadiusEditTrait;
@@ -26,8 +27,7 @@ import efruchter.tp.trait.gene.GeneExpressionInterpolator;
 public class KeyboardControlTrait_Attack extends Trait {
 	
 	private float cd;
-	public Gene coolDown, spread, wiggleBigness, amount, damage;
-	private TravelSimple movePlasmid;
+	public Gene coolDown, spread, wiggleBigness, amount, damage, dx, dy;
 	private int key;
 	
 	/**
@@ -38,15 +38,21 @@ public class KeyboardControlTrait_Attack extends Trait {
 	 */
 	public KeyboardControlTrait_Attack(final int keyChar) {
 		super("Attack Control", "Entity attack linked to keyboard inputs.");
-		registerGene(coolDown = new Gene("Cool Down Delay", "The projectile cooldown.", 0, 1000, 64));
-		registerGene(spread = new Gene("Launch Spread", "Bullet spread."));
-		registerGene(wiggleBigness = new Gene("Wiggle", "Maximum wiggle magnitude."));
-		registerGene(amount = new Gene("# of Bullets", "Amount of bullets per salvo.", 0, 100, 1));
-		registerGene(damage = new Gene("Damage Per Bullet", "Amount of damage per bullet.", 0, 10, 5));
-		movePlasmid = new TravelSimple(.5f, 1);
-		registerGene(movePlasmid.dx, movePlasmid.dy);
+		registerGene(coolDown = GeneVector.getExplorationVector().storeGene("player.attack.cooldown",
+				new Gene("Cool Down Delay", "The projectile cooldown.", 0, 1000, 64), false));
+		registerGene(spread = GeneVector.getExplorationVector().storeGene("player.attack.spread",
+				new Gene("Launch Spread", "Bullet spread.", 0, 1, 0), false));
+		registerGene(wiggleBigness = GeneVector.getExplorationVector().storeGene("player.attack.wiggle",
+				new Gene("Wiggle", "Maximum wiggle magnitude."), false));
+		registerGene(amount = GeneVector.getExplorationVector().storeGene("player.attack.amount",
+				new Gene("# of Bullets", "Amount of bullets per salvo.", 0, 100, 1), false));
+		registerGene(damage = GeneVector.getExplorationVector().storeGene("player.attack.damage",
+				new Gene("Damage Per Bullet", "Amount of damage per bullet.", 0, 10, 5), false));
+		registerGene(dx = GeneVector.getExplorationVector().storeGene("player.attack.dx",
+				new Gene("dx", "dx travel per step", -1, 1, 0), false));
+		registerGene(dy = GeneVector.getExplorationVector().storeGene("player.attack.dy",
+				new Gene("dy", "dy travel per step", -1, 1, 1), false));
 		
-		spread.setExpression(0);
 		this.key = keyChar;
 	}
 	
@@ -78,9 +84,9 @@ public class KeyboardControlTrait_Attack extends Trait {
 					
 					TravelSimple t = new TravelSimple();
 					
-					t.dx.setExpression(movePlasmid.dx.getExpression() + (float) Math.random()
-							* (spread.getExpression()) * (Math.random() < .5 ? -1 : 1) / 2);
-					t.dy.setExpression(movePlasmid.dy.getExpression());
+					t.dx.setExpression(dx.getExpression() + (float) Math.random() * (spread.getExpression())
+							* (Math.random() < .5 ? -1 : 1) / 2);
+					t.dy.setExpression(dy.getExpression());
 					
 					p.addTrait(t);
 					

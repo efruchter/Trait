@@ -17,6 +17,7 @@ import javax.swing.tree.TreePath;
 
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
+import efruchter.tp.learning.GeneVector.GeneWrapper;
 import efruchter.tp.trait.Trait;
 import efruchter.tp.trait.behavior.Behavior;
 import efruchter.tp.trait.behavior.BehaviorChain;
@@ -47,6 +48,13 @@ public class GeneralEditor extends JPanel implements ChangeListener, ActionListe
 			value.setText("Value: " + ((Gene) editingEntity).getValue());
 			slider.setVisible(true);
 			slider.setValue((int) (((Gene) editingEntity).getExpression() * detail));
+		}
+		if (editingEntity instanceof Gene) {
+			name.setText(((Gene) editingEntity).getName());
+			info.setText(((Gene) editingEntity).getInfo());
+			value.setText("Value: " + ((Gene) editingEntity).getValue());
+			slider.setVisible(true);
+			slider.setValue((int) (((Gene) editingEntity).getExpression() * detail));
 		} else if (editingEntity instanceof Entity) {
 			name.setText("Entity Selected:");
 			info.setText(((Entity) editingEntity).name);
@@ -70,11 +78,13 @@ public class GeneralEditor extends JPanel implements ChangeListener, ActionListe
 	
 	public void setEditing(TreePath editme) {
 		if (editme != null) {
-			this.editingEntity = editme.getLastPathComponent();
+			editingEntity = editme.getLastPathComponent();
+			if (editingEntity instanceof GeneWrapper)
+				editingEntity = ((GeneWrapper) editingEntity).gene;
 			try {
-				this.parent = editme.getParentPath().getLastPathComponent();
+				parent = editme.getParentPath().getLastPathComponent();
 			} catch (NullPointerException e) {
-				this.parent = null;
+				parent = null;
 			}
 		}
 		refreshView();

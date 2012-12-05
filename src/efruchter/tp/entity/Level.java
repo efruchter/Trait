@@ -5,6 +5,7 @@ import java.util.ConcurrentModificationException;
 import java.util.LinkedList;
 import java.util.List;
 
+import efruchter.tp.learning.GeneVector;
 import efruchter.tp.trait.behavior.Behavior;
 
 /**
@@ -19,7 +20,7 @@ public class Level {
 	private final List<Entity> bullets;
 	private final List<Entity> notypes;
 	private final List<LevelListener> listeners;
-	
+	private final GeneVector explorationVector;
 	private final List<Behavior> renderBehaviors;
 	
 	public Level() {
@@ -28,6 +29,7 @@ public class Level {
 		notypes = new ArrayList<Entity>();
 		listeners = new ArrayList<LevelListener>();
 		renderBehaviors = new ArrayList<Behavior>();
+		explorationVector = GeneVector.getExplorationVector();
 	}
 	
 	public void addRenderBehavior(Behavior beh) {
@@ -165,6 +167,10 @@ public class Level {
 	@Override
 	public String toString() {
 		return "Level";
+	}
+	
+	public GeneVector getExplorationVector() {
+		return explorationVector;
 	}
 	
 	public static abstract class LevelListener {
