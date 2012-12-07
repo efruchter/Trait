@@ -20,7 +20,6 @@ import efruchter.tp.gui.CoreFrame;
 import efruchter.tp.trait.behavior.BehaviorChain;
 import efruchter.tp.trait.custom.ConstantHealthBoostTrait;
 import efruchter.tp.trait.custom.LoopScreenTrait;
-import efruchter.tp.trait.custom.RadiusEditTrait;
 import efruchter.tp.trait.custom.TravelSimple;
 import efruchter.tp.trait.custom.enemy.BasicAttackTrait;
 import efruchter.tp.trait.custom.player.KeyboardControlTrait_Attack;

@@ -17,7 +17,7 @@ import efruchter.tp.trait.gene.Gene;
 public class KeyboardControlTrait_Movement extends Trait {
 	
 	private float vx, vy;
-	public Gene drag, acceleration;
+	public Gene drag, thrust;
 	private int upKey, downKey, leftKey, rightKey;
 	private static final float MOVE_ADJUST = 1000f / 60f;
 	
@@ -25,8 +25,8 @@ public class KeyboardControlTrait_Movement extends Trait {
 		super("Move Control", "Entity movement linked to keyboard inputs.");
 		registerGene(drag = GeneVector.getExplorationVector().storeGene("player.move.drag",
 				new Gene("Air Drag", "Amount of air drag."), false));
-		registerGene(acceleration = GeneVector.getExplorationVector().storeGene("player.move.acceleration",
-				new Gene("Acceleration", "Control the acceleration of movement.", 0, .09f, .04f), false));
+		registerGene(thrust = GeneVector.getExplorationVector().storeGene("player.move.thrust",
+				new Gene("Thrust", "Control the acceleration of movement.", 0, .09f, .04f), false));
 		this.upKey = upKey;
 		this.downKey = downKey;
 		this.leftKey = leftKey;
@@ -45,7 +45,7 @@ public class KeyboardControlTrait_Movement extends Trait {
 			return;
 		float ax = 0, ay = 0;
 		
-		float a = acceleration.getValue();
+		float a = thrust.getValue();
 		
 		if (Keyboard.isKeyDown(leftKey))
 			ax -= a;
