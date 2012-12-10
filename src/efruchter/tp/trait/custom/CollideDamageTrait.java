@@ -1,5 +1,6 @@
 package efruchter.tp.trait.custom;
 
+import efruchter.tp.defaults.EntityType;
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
 import efruchter.tp.trait.Trait;
@@ -29,6 +30,9 @@ public class CollideDamageTrait extends Trait {
 			}
 		}
 		if (hit) {
+			if (self.entityType == EntityType.NONE) {
+				System.out.println("SDDD");
+			}
 			level.removeEntity(self);
 		}
 	}

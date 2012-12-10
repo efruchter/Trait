@@ -4,6 +4,7 @@ import java.util.ConcurrentModificationException;
 import java.util.LinkedList;
 import java.util.List;
 
+import efruchter.tp.defaults.EntityType;
 import efruchter.tp.learning.GeneVector;
 import efruchter.tp.trait.behavior.Behavior;
 
@@ -17,9 +18,10 @@ public class Level {
 	
 	private final List<Entity> ships;
 	private final List<Entity> bullets;
-	private final List<Entity> notypes;
+	private final List<Entity> bgs;
 	private final List<Entity> add;
 	private final List<Entity> remove;
+	private final List<Entity> shipRecycle, bulletRecycle, bgRecycle;
 	private final List<LevelListener> listeners;
 	private final GeneVector explorationVector;
 	private final List<Behavior> renderBehaviors;
@@ -27,9 +29,12 @@ public class Level {
 	public Level() {
 		ships = new LinkedList<Entity>();
 		bullets = new LinkedList<Entity>();
-		notypes = new LinkedList<Entity>();
+		bgs = new LinkedList<Entity>();
 		add = new LinkedList<Entity>();
 		remove = new LinkedList<Entity>();
+		shipRecycle = new LinkedList<Entity>();
+		bulletRecycle = new LinkedList<Entity>();
+		bgRecycle = new LinkedList<Entity>();
 		listeners = new LinkedList<LevelListener>();
 		renderBehaviors = new LinkedList<Behavior>();
 		explorationVector = GeneVector.getExplorationVector();
@@ -37,22 +42,6 @@ public class Level {
 	
 	public void addRenderBehavior(Behavior beh) {
 		renderBehaviors.add(beh);
-	}
-	
-	public void onStart() {
-		for (Entity b : ships) {
-			b.onStart(this);
-		}
-		
-		for (Entity b : bullets) {
-			b.onStart(this);
-		}
-		
-		for (Entity b : notypes) {
-			b.onStart(this);
-		}
-		
-		maint();
 	}
 	
 	public void onUpdate(long delta) {
@@ -64,7 +53,7 @@ public class Level {
 			b.onUpdate(delta, this);
 		}
 		
-		for (Entity b : notypes) {
+		for (Entity b : bgs) {
 			b.onUpdate(delta, this);
 		}
 		
@@ -80,11 +69,9 @@ public class Level {
 			b.onDeath(this);
 		}
 		
-		for (Entity b : notypes) {
+		for (Entity b : bgs) {
 			b.onDeath(this);
 		}
-		
-		maint();
 	}
 	
 	private void maint() {
@@ -114,7 +101,7 @@ public class Level {
 		
 		try {
 			
-			for (Entity b : notypes) {
+			for (Entity b : bgs) {
 				b.getRenderBehavior().onUpdate(b, this, delta);
 			}
 			
@@ -131,56 +118,56 @@ public class Level {
 		}
 	}
 	
-	public void addEntity(Entity p) {
-		add.add(p);
-	}
-	
 	public void removeEntity(Entity p) {
 		remove.add(p);
 	}
 	
 	private void removeEntityUnsafe(Entity p) {
 		switch (p.entityType) {
-			case SHIP:
-				ships.remove(p);
+			case SHIP: {
+				shipRecycle.add(p);
 				for (LevelListener listener : listeners)
 					listener.shipRemoved(p);
 				break;
-			case PROJECTILE:
-				bullets.remove(p);
+			}
+			case PROJECTILE: {
+				bulletRecycle.add(p);
 				for (LevelListener listener : listeners)
 					listener.bulletRemoved(p);
 				break;
-			case NO_TYPE:
-				notypes.remove(p);
+			}
+			case BG: {
+				bgRecycle.add(p);
 				break;
+			}
 			default:
-				throw new RuntimeException("Entity with strange type encountered.");
+				throw new RuntimeException("Entity with strange type encountered." + p.entityType);
 		}
-		
 		p.onDeath(this);
+		p.reset();
 	}
 	
 	private void addEntityUnsafe(Entity p) {
 		switch (p.entityType) {
-			case SHIP:
+			case SHIP: {
 				ships.add(p);
 				for (LevelListener listener : listeners)
 					listener.shipAdded(p);
 				break;
-			case PROJECTILE:
+			}
+			case PROJECTILE: {
 				bullets.add(p);
 				for (LevelListener listener : listeners)
 					listener.bulletAdded(p);
 				break;
-			case NO_TYPE:
-				notypes.add(p);
+			}
+			case BG: {
+				bgs.add(p);
 				break;
+			}
 			default:
 				throw new RuntimeException("Entity with strange type encountered.");
 		}
-		
-		p.onStart(this);
 	}
 	
 	public List<Entity> getShips() {
@@ -216,5 +203,42 @@ public class Level {
 		
 		public void bulletRemoved(Entity bullet) {
 		}
+	}
+	
+	/**
+	 * Get a blank entity, automatically added to the level.
+	 * 
+	 * @return
+	 */
+	public Entity getBlankEntity(final EntityType type) {
+		List<Entity> l;
+		switch (type) {
+			case SHIP: {
+				l = shipRecycle;
+				break;
+			}
+			case PROJECTILE: {
+				l = bulletRecycle;
+				break;
+			}
+			case BG: {
+				l = bgRecycle;
+				break;
+			}
+			default:
+				throw new RuntimeException("Entity with strange type requested: " + type);
+		}
+		
+		Entity e;
+		if (l.isEmpty()) {
+			e = new Entity();
+			e.entityType = type;
+			add.add(e);
+		} else
+			e = l.remove(0);
+		
+		e.isActive = true;
+		
+		return e;
 	}
 }

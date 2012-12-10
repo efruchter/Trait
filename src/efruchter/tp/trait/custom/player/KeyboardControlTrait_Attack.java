@@ -6,6 +6,7 @@ import org.lwjgl.input.Keyboard;
 
 import efruchter.tp.defaults.CollisionLabels;
 import efruchter.tp.defaults.EntityFactory;
+import efruchter.tp.defaults.EntityType;
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
 import efruchter.tp.learning.GeneVector;
@@ -71,7 +72,8 @@ public class KeyboardControlTrait_Attack extends Trait {
 			if (Keyboard.isKeyDown(key)) {
 				cd = 0;
 				for (int i = 0; i < amount.getValue(); i++) {
-					Entity p = EntityFactory.buildProjectile(self.x, self.y, 4, CollisionLabels.PLAYER_LABEL,
+					Entity p = level.getBlankEntity(EntityType.PROJECTILE);
+					EntityFactory.buildProjectile(p, self.x, self.y, 4, CollisionLabels.PLAYER_LABEL,
 							Color.GREEN, damage.getValue());
 					p.addTrait(new DieOffScreenTrait());
 					p.addTrait(new TimedDeathTrait(10));
@@ -94,8 +96,6 @@ public class KeyboardControlTrait_Attack extends Trait {
 					p.addTrait(rad);
 					
 					p.addTrait(new GeneExpressionInterpolator(rad.radius, 0, 1, 200));
-					
-					level.addEntity(p);
 				}
 			}
 		}

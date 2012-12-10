@@ -24,6 +24,7 @@ public class Entity {
 	public int collisionLabel;
 	public float health;
 	public EntityType entityType;
+	public boolean isActive, hasStarted;
 	
 	private Behavior renderBehavior;
 	private List<Trait> traits;
@@ -32,19 +33,32 @@ public class Entity {
 	public static long entityNum;
 	
 	public Entity() {
-		this.name = "" + entityNum++;
-		this.baseColor = Color.BLACK;
-		x = y = radius = 0;
 		traits = new ArrayList<Trait>();
-		collisionLabel = CollisionLabels.NO_COLLISION;
-		entityType = EntityType.NO_TYPE;
-		setRenderBehavior(Behavior.EMPTY);
+		reset();
 	}
 	
-	public void onStart(Level level) {
+	private void onStart(Level level) {
 		for (Trait b : traits) {
 			if (b.isActive())
 				b.onStart(this, level);
+		}
+	}
+	
+	public void onUpdate(long delta, Level level) {
+		if (isActive) {
+			if (hasStarted) {
+				for (Trait b : traits) {
+					if (b.isActive()) {
+						b.onUpdate(this, level, delta);
+					}
+				}
+				if (damageTimer > 0) {
+					damageTimer--;
+				}
+			} else {
+				onStart(level);
+				hasStarted = true;
+			}
 		}
 	}
 	
@@ -84,17 +98,6 @@ public class Entity {
 		return health;
 	}
 	
-	public void onUpdate(long delta, Level level) {
-		for (Trait b : traits) {
-			if (b.isActive())
-				b.onUpdate(this, level, delta);
-		}
-		
-		if (damageTimer > 0) {
-			damageTimer--;
-		}
-	}
-	
 	public void setHealth(float newHealth) {
 		health = newHealth;
 	}
@@ -111,5 +114,17 @@ public class Entity {
 	@Override
 	public String toString() {
 		return "(E) " + name;
+	}
+	
+	public void reset() {
+		this.name = "" + entityNum++;
+		this.baseColor = Color.BLACK;
+		x = y = radius = 0;
+		health = 10;
+		traits.clear();
+		collisionLabel = CollisionLabels.NO_COLLISION;
+		entityType = EntityType.NONE;
+		setRenderBehavior(Behavior.EMPTY);
+		isActive = hasStarted = false;
 	}
 }

@@ -13,6 +13,7 @@ import org.lwjgl.opengl.GL11;
 
 import efruchter.tp.defaults.CollisionLabels;
 import efruchter.tp.defaults.EntityFactory;
+import efruchter.tp.defaults.EntityType;
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
 import efruchter.tp.entity.Level.LevelListener;
@@ -66,8 +67,6 @@ public class TraitProject {
 		lastFPS = getTime(); // call before loop to initialise fps timer
 		Display.setTitle("Trait Project");
 		
-		level.onStart();
-		
 		while (!Display.isCloseRequested()) {
 			int delta = getDelta();
 			
@@ -91,7 +90,8 @@ public class TraitProject {
 		final Level level = new Level();
 		
 		// Build Player
-		Entity player = EntityFactory.buildShip(100, 100, 10, CollisionLabels.PLAYER_LABEL, Color.CYAN, 100);
+		Entity player = level.getBlankEntity(EntityType.SHIP);
+		EntityFactory.buildShip(player, 100, 100, 10, CollisionLabels.PLAYER_LABEL, Color.CYAN, 100);
 		// Add control traits to player with arrow-keys
 		player.addTrait(new KeyboardControlTrait_Movement(Keyboard.KEY_UP, Keyboard.KEY_DOWN, Keyboard.KEY_LEFT,
 				Keyboard.KEY_RIGHT));
@@ -104,11 +104,10 @@ public class TraitProject {
 		//Add screen loop trait
 		player.addTrait(new LoopScreenTrait());
 		player.addTrait(new ConstantHealthBoostTrait());
-		//Add to level
-		level.addEntity(player);
 		
 		//Build enemy 2
-		Entity enemy1 = EntityFactory.buildShip(600, 520, 20, CollisionLabels.ENEMY_LABEL, Color.RED, 100);
+		Entity enemy1 = level.getBlankEntity(EntityType.SHIP);
+		EntityFactory.buildShip(enemy1, 600, 520, 20, CollisionLabels.ENEMY_LABEL, Color.RED, 100);
 		enemy1.name = "Enemy 1";
 		BehaviorChain m2 = new BehaviorChain("Attack Pattern", "Move around and attack.", true);
 		m2.addWait(6000);
@@ -119,10 +118,10 @@ public class TraitProject {
 		b.movePlasmid.dy.setExpression(0.40f);
 		enemy1.addTrait(m2);
 		enemy1.addTrait(new LoopScreenTrait());
-		level.addEntity(enemy1);
 		
 		//Build enemy 2
-		Entity enemy2 = EntityFactory.buildShip(400, 500, 20, CollisionLabels.ENEMY_LABEL, Color.RED, 100);
+		Entity enemy2 = level.getBlankEntity(EntityType.SHIP);
+		EntityFactory.buildShip(enemy2, 400, 500, 20, CollisionLabels.ENEMY_LABEL, Color.RED, 100);
 		enemy2.name = "Enemy 2";
 		BehaviorChain m = new BehaviorChain("Attack Pattern", "Move around and attack.", true);
 		m.addWait(2000);
@@ -131,10 +130,10 @@ public class TraitProject {
 		m.addBehavior(new BasicAttackTrait(), 500);
 		enemy2.addTrait(m);
 		enemy2.addTrait(new LoopScreenTrait());
-		level.addEntity(enemy2);
 		
 		//Build enemy 2
-		Entity enemy3 = EntityFactory.buildShip(300, 500, 20, CollisionLabels.ENEMY_LABEL, Color.RED, 100);
+		Entity enemy3 = level.getBlankEntity(EntityType.SHIP);
+		EntityFactory.buildShip(enemy3, 300, 500, 20, CollisionLabels.ENEMY_LABEL, Color.RED, 100);
 		enemy3.name = "Enemy 3";
 		BehaviorChain m3 = new BehaviorChain("Attack Pattern", "Move around and attack.", true);
 		m3.addBehavior(new TravelSimple(-.08f, .4f), 500);
@@ -142,7 +141,6 @@ public class TraitProject {
 		m3.addBehavior(new BasicAttackTrait(), 500);
 		enemy3.addTrait(m3);
 		enemy3.addTrait(new LoopScreenTrait());
-		level.addEntity(enemy3);
 		
 		level.addLevelListener(new LevelListener() {
 			public void shipRemoved(Entity ship) {
@@ -156,10 +154,10 @@ public class TraitProject {
 		
 		viewer.setLevel(level);
 		
-		for (int i = 0; i < 200; i++)
-			level.addEntity(EntityFactory.buildBackgroundStar());
-		
-		level.onStart();
+		for (int i = 0; i < 200; i++) {
+			Entity e = level.getBlankEntity(EntityType.BG);
+			EntityFactory.buildBackgroundStar(e);
+		}
 		
 		this.level = level;
 	}

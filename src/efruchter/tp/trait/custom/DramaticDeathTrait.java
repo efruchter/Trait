@@ -1,6 +1,7 @@
 package efruchter.tp.trait.custom;
 
 import efruchter.tp.defaults.EntityFactory;
+import efruchter.tp.defaults.EntityType;
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
 import efruchter.tp.trait.Trait;
@@ -43,7 +44,8 @@ public class DramaticDeathTrait extends Trait {
 	@Override
 	public void onDeath(Entity self, Level level) {
 		for (int i = 0; i < drama; i++) {
-			level.addEntity(EntityFactory.buildExplosion(self.x, self.y, self.radius, self.baseColor, delay));
+			Entity e = level.getBlankEntity(EntityType.BG);
+			EntityFactory.buildExplosion(e, self.x, self.y, self.radius, self.baseColor, delay);
 		}
 	}
 	

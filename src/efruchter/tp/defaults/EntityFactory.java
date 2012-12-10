@@ -25,8 +25,7 @@ import efruchter.tp.util.RenderUtil;
  * 
  */
 public class EntityFactory {
-	public static Entity buildProjectile(float x, float y, float radius, int collisionLabel, Color color, float damage) {
-		Entity e = new Entity();
+	public static void buildProjectile(final Entity e, float x, float y, float radius, int collisionLabel, Color color, float damage) {
 		e.x = x;
 		e.y = y;
 		e.radius = radius;
@@ -35,13 +34,10 @@ public class EntityFactory {
 		e.entityType = EntityType.PROJECTILE;
 		e.setRenderBehavior(RenderUtil.GENERIC_RENDER);
 		e.addTrait(new CollideDamageTrait(damage));
-		
 		e.addTrait(new DramaticDeathTrait(10, 200));
-		return e;
 	}
 	
-	public static Entity buildShip(float x, float y, float radius, int collisionLabel, Color color, int initialHealth) {
-		Entity e = new Entity();
+	public static void buildShip(final Entity e, float x, float y, float radius, int collisionLabel, Color color, int initialHealth) {
 		e.x = x;
 		e.y = y;
 		e.radius = radius;
@@ -52,7 +48,6 @@ public class EntityFactory {
 		e.health = initialHealth;
 		e.addTrait(new NoHealthDeathTrait());
 		e.addTrait(new DramaticDeathTrait(10, 1000));
-		return e;
 	}
 	
 	/**
@@ -60,17 +55,13 @@ public class EntityFactory {
 	 * 
 	 * @return
 	 */
-	public static Entity buildBackgroundStar() {
-		Entity e = new Entity();
+	public static void buildBackgroundStar(final Entity e) {
 		e.baseColor = Math.random() < .99 ? new Color(82, 82, 82) : Color.WHITE;
 		e.collisionLabel = CollisionLabels.NO_COLLISION;
-		e.entityType = EntityType.NO_TYPE;
+		e.entityType = EntityType.BG;
 		e.setRenderBehavior(RenderUtil.GENERIC_RENDER);
 		e.health = 0;
-		
 		e.addTrait(starMove);
-		
-		return e;
 	}
 	
 	/**
@@ -103,13 +94,12 @@ public class EntityFactory {
 		
 	};
 	
-	public static Entity buildExplosion(float x, float y, float radius, Color color, long delay) {
-		Entity e = new Entity();
+	public static void buildExplosion(final Entity e, float x, float y, float radius, Color color, long delay) {
 		e.x = x;
 		e.y = y;
 		e.radius = radius;
 		e.baseColor = color;
-		e.entityType = EntityType.PROJECTILE;
+		e.entityType = EntityType.BG;
 		e.setRenderBehavior(RenderUtil.GENERIC_RENDER);
 		e.addTrait(new DieOffScreenTrait());
 		e.addTrait(new TimedDeathTrait(delay));
@@ -122,7 +112,5 @@ public class EntityFactory {
 		RadiusEditTrait rad = new RadiusEditTrait(0, radius, radius);
 		e.addTrait(rad);
 		e.addTrait(new GeneExpressionInterpolator(rad.radius, 1, 0, (long) (Math.random() * delay)));
-		
-		return e;
 	}
 }
