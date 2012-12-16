@@ -1,6 +1,5 @@
 package efruchter.tp.trait.custom;
 
-import efruchter.tp.defaults.EntityType;
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
 import efruchter.tp.trait.Trait;
@@ -25,9 +24,6 @@ public class NoHealthDeathTrait extends Trait {
 	@Override
 	public void onUpdate(Entity self, Level level, long delta) {
 		if (self.getHealth() < 0) {
-			if (self.entityType == EntityType.NONE) {
-				System.out.println("SDDD");
-			}
 			level.removeEntity(self);
 		}
 	}

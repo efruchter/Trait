@@ -23,16 +23,13 @@ public class CollideDamageTrait extends Trait {
 	@Override
 	public void onUpdate(Entity self, Level level, long delta) {
 		boolean hit = false;
-		for (Entity e : level.getShips()) {
+		for (Entity e : level.getEntities(EntityType.SHIP)) {
 			if (self.isColliding(e)) {
 				e.causeDamage(damage.getValue());
 				hit = true;
 			}
 		}
 		if (hit) {
-			if (self.entityType == EntityType.NONE) {
-				System.out.println("SDDD");
-			}
 			level.removeEntity(self);
 		}
 	}

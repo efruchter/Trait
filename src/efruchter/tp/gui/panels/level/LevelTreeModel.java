@@ -4,6 +4,7 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
+import efruchter.tp.defaults.EntityType;
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
 import efruchter.tp.trait.Trait;
@@ -28,7 +29,7 @@ public class LevelTreeModel implements TreeModel {
 		if (parent instanceof BehaviorChain) {
 			return ((BehaviorChain) parent).getBehaviors().get(index);
 		} else if (parent instanceof Level) {
-			return ((Level) parent).getShips().get(index);
+			return ((Level) parent).getEntities(EntityType.SHIP).get(index);
 		} else if (parent instanceof Entity) {
 			return ((Entity) parent).getTraits().get(index);
 		} else if (parent instanceof Trait) {
@@ -42,7 +43,7 @@ public class LevelTreeModel implements TreeModel {
 		if (parent instanceof BehaviorChain) {
 			return ((BehaviorChain) parent).getBehaviors().size();
 		} else if (parent instanceof Level) {
-			return ((Level) parent).getShips().size();
+			return ((Level) parent).getEntities(EntityType.SHIP).size();
 		} else if (parent instanceof Entity) {
 			return ((Entity) parent).getTraits().size();
 		} else if (parent instanceof Trait) {
@@ -57,7 +58,7 @@ public class LevelTreeModel implements TreeModel {
 		if (parent instanceof BehaviorChain) {
 			return ((BehaviorChain) parent).getBehaviors().indexOf(child);
 		} else if (parent instanceof Level) {
-			return ((Level) parent).getShips().indexOf(child);
+			return ((Level) parent).getEntities(EntityType.SHIP).indexOf(child);
 		} else if (parent instanceof Entity) {
 			return ((Entity) parent).getTraits().indexOf(child);
 		} else if (parent instanceof Trait) {

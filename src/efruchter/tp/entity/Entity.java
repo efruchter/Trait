@@ -24,13 +24,14 @@ public class Entity {
 	public int collisionLabel;
 	public float health;
 	public EntityType entityType;
-	public boolean isActive, hasStarted;
+	private boolean active, hasStarted;
 	
 	private Behavior renderBehavior;
-	private List<Trait> traits;
+	private final List<Trait> traits;
 	private long damageTimer = 0;
 	
-	public static long entityNum;
+	private static long entityNum = 0;
+	private static long activeEntities = 0;
 	
 	public Entity() {
 		traits = new ArrayList<Trait>();
@@ -38,14 +39,16 @@ public class Entity {
 	}
 	
 	private void onStart(Level level) {
-		for (Trait b : traits) {
-			if (b.isActive())
-				b.onStart(this, level);
+		if (active) {
+			for (Trait b : traits) {
+				if (b.isActive())
+					b.onStart(this, level);
+			}
 		}
 	}
 	
 	public void onUpdate(long delta, Level level) {
-		if (isActive) {
+		if (active) {
 			if (hasStarted) {
 				for (Trait b : traits) {
 					if (b.isActive()) {
@@ -63,9 +66,11 @@ public class Entity {
 	}
 	
 	public void onDeath(Level level) {
-		for (Trait b : traits) {
-			if (b.isActive())
-				b.onDeath(this, level);
+		if (active) {
+			for (Trait b : traits) {
+				if (b.isActive())
+					b.onDeath(this, level);
+			}
 		}
 	}
 	
@@ -116,6 +121,21 @@ public class Entity {
 		return "(E) " + name;
 	}
 	
+	public void setActive(boolean active) {
+		if (this.active != active)
+			activeEntities += (active) ? 1 : -1;
+		this.active = active;
+		
+	}
+	
+	public boolean isActive() {
+		return active;
+	}
+	
+	public static long getActiveEntityCount() {
+		return activeEntities;
+	}
+	
 	public void reset() {
 		this.name = "" + entityNum++;
 		this.baseColor = Color.BLACK;
@@ -125,6 +145,6 @@ public class Entity {
 		collisionLabel = CollisionLabels.NO_COLLISION;
 		entityType = EntityType.NONE;
 		setRenderBehavior(Behavior.EMPTY);
-		isActive = hasStarted = false;
+		setActive(hasStarted = false);
 	}
 }

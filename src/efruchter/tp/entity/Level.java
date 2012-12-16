@@ -1,8 +1,11 @@
 package efruchter.tp.entity;
 
+import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import efruchter.tp.defaults.EntityType;
 import efruchter.tp.learning.GeneVector;
@@ -16,26 +19,29 @@ import efruchter.tp.trait.behavior.Behavior;
  */
 public class Level {
 	
-	private final List<Entity> ships;
-	private final List<Entity> bullets;
-	private final List<Entity> bgs;
-	private final List<Entity> add;
-	private final List<Entity> remove;
-	private final List<Entity> shipRecycle, bulletRecycle, bgRecycle;
-	private final List<LevelListener> listeners;
+	private final Map<EntityType, ArrayList<Entity>> entities;
+	private final Map<EntityType, LinkedList<Entity>> recycle;
+	
+	private final List<Entity> add, remove;
 	private final GeneVector explorationVector;
 	private final List<Behavior> renderBehaviors;
 	
 	public Level() {
-		ships = new LinkedList<Entity>();
-		bullets = new LinkedList<Entity>();
-		bgs = new LinkedList<Entity>();
+		entities = new HashMap<EntityType, ArrayList<Entity>>();
+		recycle = new HashMap<EntityType, LinkedList<Entity>>();
+		
+		// Some canned lists
+		entities.put(EntityType.SHIP, new ArrayList<Entity>());
+		entities.put(EntityType.PROJECTILE, new ArrayList<Entity>());
+		entities.put(EntityType.BG, new ArrayList<Entity>());
+		
+		recycle.put(EntityType.SHIP, new LinkedList<Entity>());
+		recycle.put(EntityType.PROJECTILE, new LinkedList<Entity>());
+		recycle.put(EntityType.BG, new LinkedList<Entity>());
+		
 		add = new LinkedList<Entity>();
 		remove = new LinkedList<Entity>();
-		shipRecycle = new LinkedList<Entity>();
-		bulletRecycle = new LinkedList<Entity>();
-		bgRecycle = new LinkedList<Entity>();
-		listeners = new LinkedList<LevelListener>();
+		
 		renderBehaviors = new LinkedList<Behavior>();
 		explorationVector = GeneVector.getExplorationVector();
 	}
@@ -45,15 +51,15 @@ public class Level {
 	}
 	
 	public void onUpdate(long delta) {
-		for (Entity b : bullets) {
+		for (Entity b : entities.get(EntityType.PROJECTILE)) {
 			b.onUpdate(delta, this);
 		}
 		
-		for (Entity b : ships) {
+		for (Entity b : entities.get(EntityType.SHIP)) {
 			b.onUpdate(delta, this);
 		}
 		
-		for (Entity b : bgs) {
+		for (Entity b : entities.get(EntityType.BG)) {
 			b.onUpdate(delta, this);
 		}
 		
@@ -61,15 +67,15 @@ public class Level {
 	}
 	
 	public void onDeath() {
-		for (Entity b : ships) {
+		for (Entity b : entities.get(EntityType.SHIP)) {
 			b.onDeath(this);
 		}
 		
-		for (Entity b : bullets) {
+		for (Entity b : entities.get(EntityType.PROJECTILE)) {
 			b.onDeath(this);
 		}
 		
-		for (Entity b : bgs) {
+		for (Entity b : entities.get(EntityType.BG)) {
 			b.onDeath(this);
 		}
 	}
@@ -89,10 +95,6 @@ public class Level {
 		}
 	}
 	
-	public void addLevelListener(LevelListener b) {
-		listeners.add(b);
-	}
-	
 	public void renderGL(long delta) {
 		
 		for (Behavior b : renderBehaviors) {
@@ -101,15 +103,15 @@ public class Level {
 		
 		try {
 			
-			for (Entity b : bgs) {
+			for (Entity b : entities.get(EntityType.BG)) {
 				b.getRenderBehavior().onUpdate(b, this, delta);
 			}
 			
-			for (Entity b : ships) {
+			for (Entity b : entities.get(EntityType.SHIP)) {
 				b.getRenderBehavior().onUpdate(b, this, delta);
 			}
 			
-			for (Entity b : bullets) {
+			for (Entity b : entities.get(EntityType.PROJECTILE)) {
 				b.getRenderBehavior().onUpdate(b, this, delta);
 			}
 			
@@ -123,63 +125,24 @@ public class Level {
 	}
 	
 	private void removeEntityUnsafe(Entity p) {
-		switch (p.entityType) {
-			case SHIP: {
-				shipRecycle.add(p);
-				for (LevelListener listener : listeners)
-					listener.shipRemoved(p);
-				break;
-			}
-			case PROJECTILE: {
-				bulletRecycle.add(p);
-				for (LevelListener listener : listeners)
-					listener.bulletRemoved(p);
-				break;
-			}
-			case BG: {
-				bgRecycle.add(p);
-				break;
-			}
-			default:
-				throw new RuntimeException("Entity with strange type encountered." + p.entityType);
+		
+		if (!recycle.containsKey(p.entityType)) {
+			recycle.put(p.entityType, new LinkedList<Entity>());
 		}
+		
+		if (p.isActive()) {
+			recycle.get(p.entityType).add(p);
+		}
+		
 		p.onDeath(this);
 		p.reset();
 	}
 	
 	private void addEntityUnsafe(Entity p) {
-		switch (p.entityType) {
-			case SHIP: {
-				ships.add(p);
-				for (LevelListener listener : listeners)
-					listener.shipAdded(p);
-				break;
-			}
-			case PROJECTILE: {
-				bullets.add(p);
-				for (LevelListener listener : listeners)
-					listener.bulletAdded(p);
-				break;
-			}
-			case BG: {
-				bgs.add(p);
-				break;
-			}
-			default:
-				throw new RuntimeException("Entity with strange type encountered.");
+		if (!entities.containsKey(p.entityType)) {
+			entities.put(p.entityType, new ArrayList<Entity>());
 		}
-	}
-	
-	public List<Entity> getShips() {
-		return ships;
-	}
-	
-	public List<Entity> getBullets() {
-		return bullets;
-	}
-	
-	public int getEntityCount() {
-		return ships.size() + bullets.size();
+		entities.get(p.entityType).add(p);
 	}
 	
 	@Override
@@ -187,22 +150,12 @@ public class Level {
 		return "Level";
 	}
 	
-	public GeneVector getExplorationVector() {
-		return explorationVector;
+	public List<Entity> getEntities(EntityType type) {
+		return entities.get(type);
 	}
 	
-	public static abstract class LevelListener {
-		public void shipRemoved(Entity ship) {
-		}
-		
-		public void shipAdded(Entity ship) {
-		}
-		
-		public void bulletAdded(Entity bullet) {
-		}
-		
-		public void bulletRemoved(Entity bullet) {
-		}
+	public GeneVector getExplorationVector() {
+		return explorationVector;
 	}
 	
 	/**
@@ -212,32 +165,23 @@ public class Level {
 	 */
 	public Entity getBlankEntity(final EntityType type) {
 		List<Entity> l;
-		switch (type) {
-			case SHIP: {
-				l = shipRecycle;
-				break;
-			}
-			case PROJECTILE: {
-				l = bulletRecycle;
-				break;
-			}
-			case BG: {
-				l = bgRecycle;
-				break;
-			}
-			default:
-				throw new RuntimeException("Entity with strange type requested: " + type);
+		
+		if (recycle.containsKey(type)) {
+			l = recycle.get(type);
+		} else {
+			l = null;
 		}
 		
 		Entity e;
-		if (l.isEmpty()) {
+		if (l == null || l.isEmpty()) {
 			e = new Entity();
 			e.entityType = type;
 			add.add(e);
-		} else
+		} else {
 			e = l.remove(0);
+		}
 		
-		e.isActive = true;
+		e.setActive(true);
 		
 		return e;
 	}

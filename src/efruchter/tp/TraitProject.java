@@ -2,8 +2,6 @@ package efruchter.tp;
 
 import java.awt.Color;
 
-import javax.swing.UIManager;
-
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
@@ -16,7 +14,6 @@ import efruchter.tp.defaults.EntityFactory;
 import efruchter.tp.defaults.EntityType;
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
-import efruchter.tp.entity.Level.LevelListener;
 import efruchter.tp.gui.CoreFrame;
 import efruchter.tp.trait.behavior.BehaviorChain;
 import efruchter.tp.trait.custom.ConstantHealthBoostTrait;
@@ -142,16 +139,6 @@ public class TraitProject {
 		enemy3.addTrait(m3);
 		enemy3.addTrait(new LoopScreenTrait());
 		
-		level.addLevelListener(new LevelListener() {
-			public void shipRemoved(Entity ship) {
-				viewer.setLevel(level);
-			}
-			
-			public void shipAdded(Entity ship) {
-				viewer.setLevel(level);
-			}
-		});
-		
 		viewer.setLevel(level);
 		
 		for (int i = 0; i < 200; i++) {
@@ -194,8 +181,9 @@ public class TraitProject {
 	 */
 	public void updateFPS() {
 		if (getTime() - lastFPS > 1000) {
-			viewer.getStatisticsPanel().setFPS(fps);
-			viewer.getStatisticsPanel().setEntityCount(level.getEntityCount());
+			Display.setTitle("FPS: " + fps);
+			//viewer.getStatisticsPanel().setFPS(fps);
+			//viewer.getStatisticsPanel().setEntityCount(level.getEntityCount());
 			fps = 0;
 			lastFPS += 1000;
 		}
@@ -206,7 +194,7 @@ public class TraitProject {
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
 		GL11.glOrtho(0, 800, 0, 600, 1, -1);
-		//GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 	}
 	
 	public void renderGL(long delta) {
@@ -219,7 +207,7 @@ public class TraitProject {
 	public static void main(String[] argv) {
 		
 		try {
-			UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+			//UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -13,19 +13,16 @@ import javax.swing.JTabbedPane;
 
 import efruchter.tp.TraitProject;
 import efruchter.tp.entity.Level;
-import efruchter.tp.gui.panels.BehaviorEditor;
-import efruchter.tp.gui.panels.OptionPanel;
 import efruchter.tp.gui.panels.StatisticsPanel;
 import efruchter.tp.gui.panels.generegistery.VectorViewPanel;
-import efruchter.tp.gui.panels.level.LevelViewPanel;
 
 public class CoreFrame {
 	
-	private LevelViewPanel levelView;
+	//private LevelViewPanel levelView;
 	private VectorViewPanel vectorView;
 	private StatisticsPanel sPanel;
-	private BehaviorEditor bEditor;
-	private OptionPanel oPanel;
+	//private BehaviorEditor bEditor;
+	//private OptionPanel oPanel;
 	
 	private JButton resetButton;
 	private TraitProject project;
@@ -43,19 +40,19 @@ public class CoreFrame {
 		//Tab view
 		JTabbedPane tabbedPane = new JTabbedPane();
 		//Level
-		tabbedPane.addTab("Level", levelView = new LevelViewPanel(new Level()));
+		//tabbedPane.addTab("Level", levelView = new LevelViewPanel(new Level()));
 		//Gene Reg.
 		tabbedPane.addTab("Vector", vectorView = new VectorViewPanel(new Level()));
 		//Statistics
 		tabbedPane.addTab("Statistics", sPanel = new StatisticsPanel());
 		//Editor
-		tabbedPane.addTab("Script", bEditor = new BehaviorEditor());
+		//tabbedPane.addTab("Script", bEditor = new BehaviorEditor());
 		//Options
-		tabbedPane.addTab("Options", oPanel = new OptionPanel());
+		//tabbedPane.addTab("Options", oPanel = new OptionPanel());
 		
 		//deactivate unused
-		tabbedPane.setEnabledAt(3, false);
-		tabbedPane.setEnabledAt(4, false);
+		//tabbedPane.setEnabledAt(2, false);
+		//tabbedPane.setEnabledAt(3, false);
 		
 		//build Frame
 		JFrame frame = new JFrame("Control Panel");
@@ -86,7 +83,7 @@ public class CoreFrame {
 	}
 	
 	public void setLevel(Level level) {
-		levelView.setLevel(level);
+		//levelView.setLevel(level);
 		vectorView.setLevel(level);
 	}
 	
