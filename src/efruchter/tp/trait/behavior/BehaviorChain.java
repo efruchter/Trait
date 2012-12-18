@@ -117,7 +117,7 @@ public class BehaviorChain extends Trait {
 			if (currTime >= endings.get(index)) {
 				index++;
 				if (loop && index >= actions.size()) {
-					currTime = index = 0;
+					onStart(self, level);
 				}
 			}
 		}
