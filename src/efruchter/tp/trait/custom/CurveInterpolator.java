@@ -14,8 +14,7 @@ import efruchter.tp.trait.behavior.BehaviorChain;
  * 
  */
 public class CurveInterpolator extends Trait {
-	
-	public boolean smooth;
+
 	private long currTime;
 	private long duration;
 	private Point.Float x0, x1, x2, x3;
@@ -36,7 +35,6 @@ public class CurveInterpolator extends Trait {
 	 */
 	public CurveInterpolator(long duration, Point.Float x0, Point.Float x1, Point.Float x2, Point.Float x3) {
 		super("Follow Path", "Follow a designated path");
-		this.smooth = false;
 		this.duration = duration;
 		this.currTime = 0;
 		
