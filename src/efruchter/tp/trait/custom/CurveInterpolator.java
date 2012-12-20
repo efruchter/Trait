@@ -16,8 +16,8 @@ import efruchter.tp.trait.behavior.BehaviorChain;
 public class CurveInterpolator extends Trait {
 
 	private long currTime;
-	private long duration;
-	private Point.Float x0, x1, x2, x3;
+	private final long duration;
+	private final Point.Float x0, x1, x2, x3;
 	
 	/**
 	 * Create an interpolator that interpolates between two points, x1 and x2.
@@ -33,7 +33,7 @@ public class CurveInterpolator extends Trait {
 	 * @param x3
 	 *            x + 2
 	 */
-	public CurveInterpolator(long duration, Point.Float x0, Point.Float x1, Point.Float x2, Point.Float x3) {
+	public CurveInterpolator(final long duration, final Point.Float x0, final Point.Float x1, final Point.Float x2, final Point.Float x3) {
 		super("Follow Path", "Follow a designated path");
 		this.duration = duration;
 		this.currTime = 0;
@@ -45,12 +45,12 @@ public class CurveInterpolator extends Trait {
 	}
 	
 	@Override
-	public void onStart(Entity self, Level level) {
+	public void onStart(final Entity self, final Level level) {
 		currTime = 0;
 	}
 	
 	@Override
-	public void onUpdate(Entity self, Level level, long delta) {
+	public void onUpdate(final Entity self, final Level level, final long delta) {
 		currTime += delta;
 		
 		self.x = cubicInterpolate(x0.x, x1.x, x2.x, x3.x, (float) currTime / duration);
@@ -58,7 +58,7 @@ public class CurveInterpolator extends Trait {
 	}
 	
 	@Override
-	public void onDeath(Entity self, Level level) {
+	public void onDeath(final Entity self, final Level level) {
 		
 	}
 	
@@ -66,8 +66,8 @@ public class CurveInterpolator extends Trait {
 	 * Catmull-Rom cubic interpolation
 	 * 
 	 */
-	private static float cubicInterpolate(float y0, float y1, float y2, float y3, float mu) {
-		float a0, a1, a2, a3, mu2;
+	private static float cubicInterpolate(final float y0, final float y1, final float y2, final float y3, final float mu) {
+        final float a0, a1, a2, a3, mu2;
 		
 		mu2 = mu * mu;
 		
@@ -90,14 +90,14 @@ public class CurveInterpolator extends Trait {
 	 *            the points along the path
 	 * @return the behvaior chain filled with interpolation behaviors.
 	 */
-	public static BehaviorChain buildPath(long duration, boolean loop, Point.Float... points) {
-		BehaviorChain ps = new BehaviorChain(loop);
-		
-		long dur = duration / (points.length + (loop ? 1 : 0));
+	public static BehaviorChain buildPath(final long duration, final boolean loop, final Point.Float... points) {
+        final BehaviorChain ps = new BehaviorChain(loop);
+
+        final long dur = duration / (points.length + (loop ? 1 : 0));
 		
 		for (int i = 0; i < points.length - 1; i++) {
-			
-			Point.Float x0, x1, x2, x3;
+
+            final Point.Float x0, x1, x2, x3;
 			
 			if (i == 0) {
 				if (loop) {

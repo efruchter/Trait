@@ -17,11 +17,11 @@ import efruchter.tp.trait.gene.Gene;
 public class KeyboardControlTrait_Movement extends Trait {
 	
 	private float vx, vy;
-	public Gene drag, thrust;
-	private int upKey, downKey, leftKey, rightKey;
+	public final Gene drag, thrust;
+	private final int upKey, downKey, leftKey, rightKey;
 	private static final float MOVE_ADJUST = 1000f / 60f;
 	
-	public KeyboardControlTrait_Movement(int upKey, int downKey, int leftKey, int rightKey) {
+	public KeyboardControlTrait_Movement(final int upKey, final int downKey, final int leftKey, final int rightKey) {
 		super("Move Control", "Entity movement linked to keyboard inputs.");
 		registerGene(drag = GeneVectorIO.getExplorationVector().storeGene("player.move.drag",
 				new Gene("Air Drag", "Amount of air drag."), false));
@@ -35,17 +35,17 @@ public class KeyboardControlTrait_Movement extends Trait {
 	}
 	
 	@Override
-	public void onStart(Entity self, Level level) {
+	public void onStart(final Entity self, final Level level) {
 		
 	}
 	
 	@Override
-	public void onUpdate(Entity self, Level level, long delta) {
+	public void onUpdate(final Entity self, final Level level, final long delta) {
 		if (delta == 0)
 			return;
 		float ax = 0, ay = 0;
-		
-		float a = thrust.getValue();
+
+        final float a = thrust.getValue();
 		
 		if (Keyboard.isKeyDown(leftKey))
 			ax -= a;
@@ -58,10 +58,10 @@ public class KeyboardControlTrait_Movement extends Trait {
 		
 		vx += ax * delta;
 		vy += ay * delta;
-		
-		float dscale = MOVE_ADJUST / delta;
-		float x = (1.01f - drag.getValue()) * dscale;
-		float y = (1.01f - drag.getValue()) * dscale;
+
+        final float dscale = MOVE_ADJUST / delta;
+        final float x = (1.01f - drag.getValue()) * dscale;
+        final float y = (1.01f - drag.getValue()) * dscale;
 		
 		if (Math.abs(x) > .00001f)
 			vx *= x;
@@ -73,7 +73,7 @@ public class KeyboardControlTrait_Movement extends Trait {
 	}
 	
 	@Override
-	public void onDeath(Entity self, Level level) {
+	public void onDeath(final Entity self, final Level level) {
 		
 	}
 	

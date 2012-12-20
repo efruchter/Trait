@@ -31,7 +31,7 @@ public class GeneExpressionInterpolator extends Trait {
 	 * @param blendTime
 	 *            the total blendTime
 	 */
-	public GeneExpressionInterpolator(Gene g, float startExp, float endExp, long blendTime) {
+	public GeneExpressionInterpolator(final Gene g, final float startExp, final float endExp, final long blendTime) {
 		super(g.getName() + " Blender", g.getInfo());
 		this.g = g;
 		this.startExp = startExp;
@@ -41,13 +41,13 @@ public class GeneExpressionInterpolator extends Trait {
 	}
 	
 	@Override
-	public void onStart(Entity self, Level level) {
+	public void onStart(final Entity self, final Level level) {
 		currTime = 0;
 		g.setExpression(startExp);
 	}
 	
 	@Override
-	public void onUpdate(Entity self, Level level, long delta) {
+	public void onUpdate(final Entity self, final Level level, final long delta) {
 		if (currTime >= blendTime)
 			g.setExpression(startExp + blendExp);
 		else {
@@ -58,7 +58,7 @@ public class GeneExpressionInterpolator extends Trait {
 	}
 	
 	@Override
-	public void onDeath(Entity self, Level level) {
+	public void onDeath(final Entity self, final Level level) {
 		
 	}
 	

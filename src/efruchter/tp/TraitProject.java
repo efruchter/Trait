@@ -3,8 +3,8 @@ package efruchter.tp;
 import java.awt.Color;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 
+import efruchter.tp.defaults.CollisionLabel;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
@@ -12,7 +12,6 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 
-import efruchter.tp.defaults.CollisionLabels;
 import efruchter.tp.defaults.EntityFactory;
 import efruchter.tp.defaults.EntityType;
 import efruchter.tp.entity.Entity;
@@ -51,12 +50,12 @@ public class TraitProject {
 	private long lastFPS;
 	
 	private Level level;
-	private CoreFrame viewer;
-	
-	public void start() {
+	private final CoreFrame viewer;
+
+	public TraitProject() {
 		
 		level = new Level();
-		
+
 		viewer = new CoreFrame(this);
 		
 		resetSim();
@@ -98,7 +97,7 @@ public class TraitProject {
 		
 		// Build Player
 		Entity player = level.getBlankEntity(EntityType.SHIP);
-		EntityFactory.buildShip(player, 100, 100, 10, CollisionLabels.PLAYER_LABEL, Color.CYAN, 100);
+		EntityFactory.buildShip(player, 100, 100, 10, CollisionLabel.PLAYER_LABEL, Color.CYAN, 100);
 		// Add control traits to player with arrow-keys
 		player.addTrait(new KeyboardControlTrait_Movement(Keyboard.KEY_UP, Keyboard.KEY_DOWN, Keyboard.KEY_LEFT,
 				Keyboard.KEY_RIGHT));
@@ -114,7 +113,7 @@ public class TraitProject {
 		
 		//Build enemy 2
 		Entity enemy1 = level.getBlankEntity(EntityType.SHIP);
-		EntityFactory.buildShip(enemy1, 600, 520, 20, CollisionLabels.ENEMY_LABEL, Color.RED, 100);
+		EntityFactory.buildShip(enemy1, 600, 520, 20, CollisionLabel.ENEMY_LABEL, Color.RED, 100);
 		enemy1.name = "Enemy 1";
 		BehaviorChain m2 = new BehaviorChain("Attack Pattern", "Move around and attack.", true);
 		m2.addWait(6000);
@@ -128,7 +127,7 @@ public class TraitProject {
 		
 		//Build enemy 2
 		Entity enemy2 = level.getBlankEntity(EntityType.SHIP);
-		EntityFactory.buildShip(enemy2, 400, 500, 20, CollisionLabels.ENEMY_LABEL, Color.RED, 100);
+		EntityFactory.buildShip(enemy2, 400, 500, 20, CollisionLabel.ENEMY_LABEL, Color.RED, 100);
 		enemy2.name = "Enemy 2";
 		BehaviorChain m = new BehaviorChain("Attack Pattern", "Move around and attack.", true);
 		m.addWait(2000);
@@ -140,7 +139,7 @@ public class TraitProject {
 		
 		//Build enemy 2
 		Entity enemy3 = level.getBlankEntity(EntityType.SHIP);
-		EntityFactory.buildShip(enemy3, 300, 500, 20, CollisionLabels.ENEMY_LABEL, Color.RED, 100);
+		EntityFactory.buildShip(enemy3, 300, 500, 20, CollisionLabel.ENEMY_LABEL, Color.RED, 100);
 		enemy3.name = "Enemy 3";
 		BehaviorChain m3 = new BehaviorChain("Attack Pattern", "Move around and attack.", true);
 		m3.addBehavior(new TravelSimple(-.08f, .4f), 500);
@@ -174,8 +173,8 @@ public class TraitProject {
 	 * @return milliseconds passed since last frame
 	 */
 	public int getDelta() {
-		long time = getTime();
-		int delta = (int) (time - lastFrame);
+		final long time = getTime();
+		final int delta = (int) (time - lastFrame);
 		lastFrame = time;
 		
 		return delta;
@@ -223,6 +222,6 @@ public class TraitProject {
 		//UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
 		
 		//Start the game
-		new TraitProject().start();
+		new TraitProject();
 	}
 }

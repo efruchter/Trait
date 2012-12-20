@@ -17,11 +17,11 @@ import efruchter.tp.trait.gene.Gene;
  */
 public abstract class Trait implements Behavior {
 	
-	protected String name, info;
+	protected final String name, info;
 	protected final List<Gene> genes;
 	private boolean active;
 	
-	public Trait(String name, String info) {
+	public Trait(final String name, final String info) {
 		this.name = name;
 		this.info = info;
 		genes = new ArrayList<Gene>();
@@ -31,20 +31,12 @@ public abstract class Trait implements Behavior {
 	public String getName() {
 		return name;
 	}
-	
-	public void setName(String name) {
-		this.name = name;
-	}
-	
+
 	public String getInfo() {
 		return info;
 	}
 	
-	public void setInfo(String info) {
-		this.info = info;
-	}
-	
-	public void registerGene(Gene... genes) {
+	public void registerGene(final Gene... genes) {
 		for (Gene g : genes)
 			this.genes.add(g);
 	}
@@ -62,7 +54,7 @@ public abstract class Trait implements Behavior {
 		return active;
 	}
 	
-	public void setActive(boolean active) {
+	public void setActive(final boolean active) {
 		this.active = active;
 	}
 	
@@ -73,17 +65,17 @@ public abstract class Trait implements Behavior {
 		}
 		
 		@Override
-		public void onStart(Entity self, Level level) {
+		public void onStart(final Entity self, final Level level) {
 			
 		}
 		
 		@Override
-		public void onUpdate(Entity self, Level level, long delta) {
+		public void onUpdate(final Entity self, final Level level, final long delta) {
 			
 		}
 		
 		@Override
-		public void onDeath(Entity self, Level level) {
+		public void onDeath(final Entity self, final Level level) {
 			
 		}
 	}

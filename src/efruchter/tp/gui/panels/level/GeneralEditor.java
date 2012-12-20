@@ -31,8 +31,8 @@ public class GeneralEditor extends JPanel implements ChangeListener, ActionListe
 	private final JButton removeButton;
 	private final JSlider slider;
 	private final JCheckBox checkBox;
-	private int detail = 1000;
-	private JTree tree;
+	private final int detail = 1000;
+	private final JTree tree;
 	
 	public void refreshView() {
 		name.setText("Nothing Selected");
@@ -76,7 +76,7 @@ public class GeneralEditor extends JPanel implements ChangeListener, ActionListe
 		}
 	}
 	
-	public void setEditing(TreePath editme) {
+	public void setEditing(final TreePath editme) {
 		if (editme != null) {
 			editingEntity = editme.getLastPathComponent();
 			if (editingEntity instanceof GeneWrapper)
@@ -113,7 +113,7 @@ public class GeneralEditor extends JPanel implements ChangeListener, ActionListe
 	}
 	
 	@Override
-	public void stateChanged(ChangeEvent e) {
+	public void stateChanged(final ChangeEvent e) {
 		if (editingEntity instanceof Gene) {
 			((Gene) editingEntity).setExpression((float) slider.getValue() / detail);
 			value.setText("Value: " + ((Gene) editingEntity).getValue());
@@ -122,7 +122,7 @@ public class GeneralEditor extends JPanel implements ChangeListener, ActionListe
 	}
 	
 	@Override
-	public void actionPerformed(ActionEvent arg0) {
+	public void actionPerformed(final ActionEvent arg0) {
 		if (editingEntity instanceof Entity) {
 			((Level) tree.getModel().getRoot()).removeEntity((Entity) editingEntity);
 		} else if (editingEntity instanceof Trait && parent instanceof Entity) {

@@ -23,12 +23,12 @@ import efruchter.tp.entity.Level;
 @SuppressWarnings("serial")
 public class LevelViewPanel extends JPanel implements TreeSelectionListener {
 	
-	private JTree tree;
-	private GeneralEditor genEditor;
+	private final JTree tree;
+	private final GeneralEditor genEditor;
 	
 	public LevelViewPanel(final Level level) {
 		
-		String info = "(E) Entity  (T) Trait  (G) Gene  (B) Behavior  (C) Chain";
+		final String info = "(E) Entity  (T) Trait  (G) Gene  (B) Behavior  (C) Chain";
 		setLayout(new BorderLayout());
 		//Make tree
 		tree = new JTree();
@@ -37,15 +37,15 @@ public class LevelViewPanel extends JPanel implements TreeSelectionListener {
 		tree.setModel(new LevelTreeModel(level));
 		
 		//Add to panel
-		JScrollPane pane = new JScrollPane(tree);
+		final JScrollPane pane = new JScrollPane(tree);
 		pane.setBorder(BorderFactory.createTitledBorder("Hierarchy"));
 		pane.setPreferredSize(new Dimension(500, 500));
 		add(pane, BorderLayout.CENTER);
 		
 		//General editor
 		add(genEditor = new GeneralEditor(tree), BorderLayout.SOUTH);
-		
-		JPanel panel = new JPanel();
+
+        final JPanel panel = new JPanel();
 		panel.add(new JLabel(info));
 		panel.setBorder(BorderFactory.createTitledBorder("Key:"));
 		add(panel, BorderLayout.NORTH);
@@ -54,13 +54,13 @@ public class LevelViewPanel extends JPanel implements TreeSelectionListener {
 		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 	}
 	
-	public void setLevel(Level level) {
+	public void setLevel(final Level level) {
 		tree.setModel(new LevelTreeModel(level));
 		genEditor.setEditing(null);
 	}
 	
 	@Override
-	public void valueChanged(TreeSelectionEvent arg0) {
+	public void valueChanged(final TreeSelectionEvent arg0) {
 		if (tree.getSelectionCount() > 0) {
 			genEditor.setEditing(tree.getSelectionPath());
 		}

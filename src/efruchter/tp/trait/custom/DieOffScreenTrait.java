@@ -14,12 +14,12 @@ public class DieOffScreenTrait extends Trait {
 	}
 	
 	@Override
-	public void onStart(Entity self, Level level) {
+	public void onStart(final Entity self, final Level level) {
 		
 	}
 	
 	@Override
-	public void onUpdate(Entity self, Level level, long delta) {
+	public void onUpdate(final Entity self, final Level level, final long delta) {
 		
 		if (self.x < 0 || self.x > Display.getWidth() || self.y > Display.getHeight() || self.y < 0) {
 			level.removeEntity(self);
@@ -28,7 +28,7 @@ public class DieOffScreenTrait extends Trait {
 	}
 	
 	@Override
-	public void onDeath(Entity self, Level level) {
+	public void onDeath(final Entity self, final Level level) {
 		
 	}
 	

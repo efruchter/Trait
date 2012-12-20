@@ -13,7 +13,7 @@ import efruchter.tp.trait.gene.Gene;
  */
 public class TravelSimple extends Trait {
 	
-	public Gene dx, dy;
+	public final Gene dx, dy;
 	
 	public TravelSimple() {
 		super("Simple Travel", "Move in straight line path.");
@@ -21,25 +21,25 @@ public class TravelSimple extends Trait {
 		registerGene(dy = new Gene("dy", "movement in y direction", -1, 1, 0));
 	}
 	
-	public TravelSimple(float dx, float dy) {
+	public TravelSimple(final float dx, final float dy) {
 		this();
 		this.dx.setExpression(dx);
 		this.dy.setExpression(dy);
 	}
 	
 	@Override
-	public void onStart(Entity self, Level level) {
+	public void onStart(final Entity self, final Level level) {
 		
 	}
 	
 	@Override
-	public void onUpdate(Entity self, Level level, long delta) {
+	public void onUpdate(final Entity self, final Level level, final long delta) {
 		self.x += dx.getValue() * delta;
 		self.y += dy.getValue() * delta;
 	}
 	
 	@Override
-	public void onDeath(Entity self, Level level) {
+	public void onDeath(final Entity self, final Level level) {
 		
 	}
 	

@@ -23,8 +23,8 @@ import efruchter.tp.gui.panels.level.GeneralEditor;
 @SuppressWarnings("serial")
 public class VectorViewPanel extends JPanel implements TreeSelectionListener {
 	
-	private JTree tree;
-	private GeneralEditor genEditor;
+	private final JTree tree;
+	private final GeneralEditor genEditor;
 	
 	public VectorViewPanel(final Level level) {
 		
@@ -36,7 +36,7 @@ public class VectorViewPanel extends JPanel implements TreeSelectionListener {
 		tree.setModel(new ExplorationVectorTreeModel(level));
 		
 		//Add to panel
-		JScrollPane pane = new JScrollPane(tree);
+		final JScrollPane pane = new JScrollPane(tree);
 		pane.setBorder(BorderFactory.createTitledBorder("Genes"));
 		pane.setPreferredSize(new Dimension(500, 500));
 		add(pane, BorderLayout.CENTER);
@@ -48,13 +48,13 @@ public class VectorViewPanel extends JPanel implements TreeSelectionListener {
 		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 	}
 	
-	public void setLevel(Level level) {
+	public void setLevel(final Level level) {
 		tree.setModel(new ExplorationVectorTreeModel(level));
 		genEditor.setEditing(null);
 	}
 	
 	@Override
-	public void valueChanged(TreeSelectionEvent arg0) {
+	public void valueChanged(final TreeSelectionEvent arg0) {
 		if (tree.getSelectionCount() > 0) {
 			genEditor.setEditing(tree.getSelectionPath());
 		}

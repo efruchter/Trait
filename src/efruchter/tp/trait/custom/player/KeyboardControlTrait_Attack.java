@@ -2,9 +2,9 @@ package efruchter.tp.trait.custom.player;
 
 import java.awt.Color;
 
+import efruchter.tp.defaults.CollisionLabel;
 import org.lwjgl.input.Keyboard;
 
-import efruchter.tp.defaults.CollisionLabels;
 import efruchter.tp.defaults.EntityFactory;
 import efruchter.tp.defaults.EntityType;
 import efruchter.tp.entity.Entity;
@@ -28,8 +28,8 @@ import efruchter.tp.trait.gene.GeneExpressionInterpolator;
 public class KeyboardControlTrait_Attack extends Trait {
 	
 	private float cd;
-	public Gene coolDown, spread, wiggleBigness, amount, damage, dx, dy;
-	private int key;
+	public final Gene coolDown, spread, wiggleBigness, amount, damage, dx, dy;
+	private final int key;
 	
 	/**
 	 * Create standard attack controller.
@@ -58,12 +58,12 @@ public class KeyboardControlTrait_Attack extends Trait {
 	}
 	
 	@Override
-	public void onStart(Entity self, Level level) {
+	public void onStart(final Entity self, final Level level) {
 		
 	}
 	
 	@Override
-	public void onUpdate(Entity self, Level level, long delta) {
+	public void onUpdate(final Entity self, final Level level, final long delta) {
 		
 		if (cd < coolDown.getValue()) {
 			cd += delta;
@@ -72,27 +72,27 @@ public class KeyboardControlTrait_Attack extends Trait {
 			if (Keyboard.isKeyDown(key)) {
 				cd = 0;
 				for (int i = 0; i < amount.getValue(); i++) {
-					Entity p = level.getBlankEntity(EntityType.PROJECTILE);
-					EntityFactory.buildProjectile(p, self.x, self.y, 4, CollisionLabels.PLAYER_LABEL,
+                    final Entity p = level.getBlankEntity(EntityType.PROJECTILE);
+					EntityFactory.buildProjectile(p, self.x, self.y, 4, CollisionLabel.PLAYER_LABEL,
 							Color.GREEN, damage.getValue());
 					p.addTrait(new DieOffScreenTrait());
 					p.addTrait(new TimedDeathTrait(10));
-					
-					WiggleTrait w = new WiggleTrait(20 * wiggleBigness.getExpression());
+
+                    final WiggleTrait w = new WiggleTrait(20 * wiggleBigness.getExpression());
 					w.wiggleChance.setExpression(1);
 					w.wiggleIntensity.setExpression(1);
 					
 					p.addTrait(w);
-					
-					TravelSimple t = new TravelSimple();
+
+                    final TravelSimple t = new TravelSimple();
 					
 					t.dx.setExpression(dx.getExpression() + (float) Math.random() * (spread.getExpression())
 							* (Math.random() < .5 ? -1 : 1) / 2);
 					t.dy.setExpression(dy.getExpression());
 					
 					p.addTrait(t);
-					
-					RadiusEditTrait rad = new RadiusEditTrait(3, 10, 10);
+
+                    final RadiusEditTrait rad = new RadiusEditTrait(3, 10, 10);
 					p.addTrait(rad);
 					
 					p.addTrait(new GeneExpressionInterpolator(rad.radius, 0, 1, 200));
@@ -102,7 +102,7 @@ public class KeyboardControlTrait_Attack extends Trait {
 	}
 	
 	@Override
-	public void onDeath(Entity self, Level level) {
+	public void onDeath(final Entity self, final Level level) {
 		
 	}
 	

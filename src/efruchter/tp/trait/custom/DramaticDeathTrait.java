@@ -5,6 +5,7 @@ import efruchter.tp.defaults.EntityType;
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
 import efruchter.tp.trait.Trait;
+import org.lwjgl.opengl.Display;
 
 /**
  * Blow up in a fiery death upon death.
@@ -14,8 +15,8 @@ import efruchter.tp.trait.Trait;
  */
 public class DramaticDeathTrait extends Trait {
 	
-	private int drama;
-	private long delay;
+	private final int drama;
+	private final long delay;
 	
 	/**
 	 * Standard 'splosion.
@@ -25,28 +26,28 @@ public class DramaticDeathTrait extends Trait {
 	 * @param delay
 	 *            how long the splosions last in milli.
 	 */
-	public DramaticDeathTrait(int dramaLevel, long delay) {
+	public DramaticDeathTrait(final int dramaLevel, final long delay) {
 		super("Dramatic Death", "Spawn confetti upon unit death.");
 		this.drama = dramaLevel;
 		this.delay = delay;
 	}
 	
 	@Override
-	public void onStart(Entity self, Level level) {
+	public void onStart(final Entity self, final Level level) {
 		
 	}
 	
 	@Override
-	public void onUpdate(Entity self, Level level, long delta) {
+	public void onUpdate(final Entity self, final Level level, final long delta) {
 		
 	}
 	
 	@Override
-	public void onDeath(Entity self, Level level) {
-		for (int i = 0; i < drama; i++) {
-			Entity e = level.getBlankEntity(EntityType.BG);
-			EntityFactory.buildExplosion(e, self.x, self.y, self.radius, self.baseColor, delay);
-		}
+	public void onDeath(final Entity self, final Level level) {
+        for (int i = 0; i < drama; i++) {
+            final Entity e = level.getBlankEntity(EntityType.BG);
+            EntityFactory.buildExplosion(e, self.x, self.y, self.radius, self.baseColor, delay);
+        }
 	}
 	
 }

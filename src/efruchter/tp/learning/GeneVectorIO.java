@@ -27,8 +27,8 @@ public class GeneVectorIO {
 		return exploration;
 	}
 	
-	public static boolean storeVector(SessionInfo info, GeneVector vector) {
-		Client c = new Client("trait.ericfruchter.com", 8000);
+	public static boolean storeVector(final SessionInfo info, final GeneVector vector) {
+        final Client c = new Client("trait.ericfruchter.com", 8000);
 		try {
 			c.reconnect();
 			c.send("store" + SEPARATOR + info.username + SEPARATOR + info.score + SEPARATOR + info.date + SEPARATOR
@@ -53,11 +53,11 @@ public class GeneVectorIO {
 	 * Request a new vector from the frontier.
 	 */
 	public static void reloadExplorationVector() {
-		Client c = new Client("trait.ericfruchter.com", 8000);
+        final Client c = new Client("trait.ericfruchter.com", 8000);
 		try {
 			c.reconnect();
 			c.send("request");
-			GeneVector geneVector = new GeneVector();
+            final GeneVector geneVector = new GeneVector();
 			geneVector.fromDataString(c.receive());
 			exploration = geneVector;
 			System.out.println("Successfully read gene vector from server!");

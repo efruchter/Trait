@@ -17,8 +17,8 @@ import efruchter.tp.trait.Trait;
  */
 public class BehaviorChain extends Trait {
 	
-	private List<Behavior> actions;
-	private List<Long> endings;
+	private final List<Behavior> actions;
+	private final List<Long> endings;
 	private long currTime;
 	private int index;
 	private boolean loop;
@@ -33,7 +33,7 @@ public class BehaviorChain extends Trait {
 	 * @param loop
 	 *            true if chain loops.
 	 */
-	public BehaviorChain(String name, String info, boolean loop) {
+	public BehaviorChain(final String name, final String info, final boolean loop) {
 		super(name, info);
 		actions = new ArrayList<Behavior>();
 		endings = new ArrayList<Long>();
@@ -47,7 +47,7 @@ public class BehaviorChain extends Trait {
 	 * @param loop
 	 *            true if chain loops.
 	 */
-	public BehaviorChain(boolean loop) {
+	public BehaviorChain(final boolean loop) {
 		this("Behavior Chain", "A chain of behaviors for an entity to perform", loop);
 	}
 	
@@ -64,7 +64,7 @@ public class BehaviorChain extends Trait {
 	 * @param duration
 	 *            the length of the wait in milliseconds
 	 */
-	public void addWait(long duration) {
+	public void addWait(final long duration) {
 		addBehavior(new TraitAdapter("WAIT", "Waiting Period."), duration);
 	}
 	
@@ -82,7 +82,7 @@ public class BehaviorChain extends Trait {
 	}
 	
 	@Override
-	public void onStart(Entity self, Level level) {
+	public void onStart(final Entity self, final Level level) {
 		currTime = index = 0;
 		for (Behavior a : actions) {
 			a.onStart(self, level);
@@ -90,24 +90,26 @@ public class BehaviorChain extends Trait {
 	}
 	
 	@Override
-	public void onUpdate(Entity self, Level level, long delta) {
-		
+	public void onUpdate(final Entity self, final Level level, final long delta) {
+
 		if (loop && index >= actions.size()) {
 			currTime = index = 0;
 		}
+
+        long remainingDelta = delta;
 		
-		while (index < actions.size() && delta > 0) {
-			Behavior b = actions.get(index);
-			
-			boolean active = (!(b instanceof Trait) || (b instanceof Trait && ((Trait) b).isActive()));
-			boolean inactive = b instanceof Trait && !((Trait) b).isActive();
-			
-			long remaining = Math.min(endings.get(index) - currTime, delta);
+		while (index < actions.size() && remainingDelta > 0) {
+            final Behavior b = actions.get(index);
+
+            final boolean active = (!(b instanceof Trait) || (b instanceof Trait && ((Trait) b).isActive()));
+            final boolean inactive = b instanceof Trait && !((Trait) b).isActive();
+
+            final long remaining = Math.min(endings.get(index) - currTime, remainingDelta);
 			
 			currTime += remaining;
 			
 			if (active) {
-				delta -= remaining;
+                remainingDelta -= remaining;
 				actions.get(index).onUpdate(self, level, remaining);
 			}
 			if (inactive) {
@@ -124,7 +126,7 @@ public class BehaviorChain extends Trait {
 	}
 	
 	@Override
-	public void onDeath(Entity self, Level level) {
+	public void onDeath(final Entity self, final Level level) {
 		for (Behavior a : actions) {
 			a.onDeath(self, level);
 		}
@@ -134,13 +136,13 @@ public class BehaviorChain extends Trait {
 		return actions;
 	}
 	
-	public void removeBehavior(Behavior editingEntity) {
-		int index = actions.indexOf(editingEntity);
+	public void removeBehavior(final Behavior editingEntity) {
+        final int index = actions.indexOf(editingEntity);
 		if (index != -1) {
 			currTime = this.index = 0;
 			actions.remove(index);
-			
-			long time = endings.remove(index);
+
+            long time = endings.remove(index);
 			
 			if (index != 0) {
 				time -= endings.get(index - 1);

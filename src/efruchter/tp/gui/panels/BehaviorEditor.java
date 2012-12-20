@@ -22,8 +22,8 @@ public class BehaviorEditor extends JPanel {
 		DefaultSyntaxKit.initKit();
 	}
 	
-	private ScriptSelectorPanel sPan;
-	
+	private final ScriptSelectorPanel sPan;
+
 	public BehaviorEditor() {
 		
 		setLayout(new BorderLayout());
@@ -32,8 +32,8 @@ public class BehaviorEditor extends JPanel {
 		add(sPan, BorderLayout.NORTH);
 		
 		//Center Editor
-		JEditorPane codeEditor = new JEditorPane();
-		JScrollPane scrPane = new JScrollPane(codeEditor);
+        final JEditorPane codeEditor = new JEditorPane();
+        final JScrollPane scrPane = new JScrollPane(codeEditor);
 		add(scrPane, BorderLayout.CENTER);
 		codeEditor.setContentType("text/python");
 		codeEditor.setText("public static void main(String[] args) {\n}");

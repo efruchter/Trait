@@ -47,20 +47,20 @@ public class Level {
 		explorationVector = GeneVectorIO.getExplorationVector();
 	}
 	
-	public void addRenderBehavior(Behavior beh) {
+	public void addRenderBehavior(final Behavior beh) {
 		renderBehaviors.add(beh);
 	}
 	
-	public void onUpdate(long delta) {
-		for (Entity b : entities.get(EntityType.PROJECTILE)) {
+	public void onUpdate(final long delta) {
+		for (final Entity b : entities.get(EntityType.PROJECTILE)) {
 			b.onUpdate(delta, this);
 		}
 		
-		for (Entity b : entities.get(EntityType.SHIP)) {
+		for (final Entity b : entities.get(EntityType.SHIP)) {
 			b.onUpdate(delta, this);
 		}
 		
-		for (Entity b : entities.get(EntityType.BG)) {
+		for (final Entity b : entities.get(EntityType.BG)) {
 			b.onUpdate(delta, this);
 		}
 		
@@ -68,15 +68,15 @@ public class Level {
 	}
 	
 	public void onDeath() {
-		for (Entity b : entities.get(EntityType.SHIP)) {
+		for (final Entity b : entities.get(EntityType.SHIP)) {
 			b.onDeath(this);
 		}
 		
-		for (Entity b : entities.get(EntityType.PROJECTILE)) {
+		for (final Entity b : entities.get(EntityType.PROJECTILE)) {
 			b.onDeath(this);
 		}
 		
-		for (Entity b : entities.get(EntityType.BG)) {
+		for (final Entity b : entities.get(EntityType.BG)) {
 			b.onDeath(this);
 		}
 	}
@@ -96,27 +96,26 @@ public class Level {
 		}
 	}
 	
-	public void renderGL(long delta) {
+	public void renderGL(final long delta) {
 		
-		for (Behavior b : renderBehaviors) {
+		for (final Behavior b : renderBehaviors) {
 			b.onUpdate(null, this, delta);
 		}
 		
 		try {
-			
-			for (Entity b : entities.get(EntityType.BG)) {
+			for (final Entity b : entities.get(EntityType.BG)) {
 				b.getRenderBehavior().onUpdate(b, this, delta);
 			}
 			
-			for (Entity b : entities.get(EntityType.SHIP)) {
+			for (final Entity b : entities.get(EntityType.SHIP)) {
 				b.getRenderBehavior().onUpdate(b, this, delta);
 			}
 			
-			for (Entity b : entities.get(EntityType.PROJECTILE)) {
+			for (final Entity b : entities.get(EntityType.PROJECTILE)) {
 				b.getRenderBehavior().onUpdate(b, this, delta);
 			}
 			
-		} catch (ConcurrentModificationException e) {
+		} catch (final ConcurrentModificationException e) {
 			
 		}
 	}

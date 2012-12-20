@@ -19,12 +19,12 @@ public class ExplorationVectorTreeModel implements TreeModel {
 	}
 	
 	@Override
-	public void addTreeModelListener(TreeModelListener l) {
+	public void addTreeModelListener(final TreeModelListener l) {
 		
 	}
 	
 	@Override
-	public Object getChild(Object parent, int index) {
+	public Object getChild(final Object parent, final int index) {
 		if (parent == root) {
 			return register.get(index);
 		}
@@ -33,7 +33,7 @@ public class ExplorationVectorTreeModel implements TreeModel {
 	}
 	
 	@Override
-	public int getChildCount(Object parent) {
+	public int getChildCount(final Object parent) {
 		
 		if (parent == root) {
 			return register.size();
@@ -43,7 +43,7 @@ public class ExplorationVectorTreeModel implements TreeModel {
 	}
 	
 	@Override
-	public int getIndexOfChild(Object parent, Object child) {
+	public int getIndexOfChild(final Object parent, final Object child) {
 		if (parent == root && child instanceof GeneWrapper) {
 			return register.indexOf(child);
 		}
@@ -57,17 +57,17 @@ public class ExplorationVectorTreeModel implements TreeModel {
 	}
 	
 	@Override
-	public boolean isLeaf(Object node) {
+	public boolean isLeaf(final Object node) {
 		return node instanceof GeneWrapper;
 	}
 	
 	@Override
-	public void removeTreeModelListener(TreeModelListener l) {
+	public void removeTreeModelListener(final TreeModelListener l) {
 		
 	}
 	
 	@Override
-	public void valueForPathChanged(TreePath path, Object newValue) {
+	public void valueForPathChanged(final TreePath path, final Object newValue) {
 		
 	}
 }

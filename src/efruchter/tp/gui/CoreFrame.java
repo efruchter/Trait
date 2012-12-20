@@ -18,14 +18,14 @@ import efruchter.tp.gui.panels.generegistery.VectorViewPanel;
 
 public class CoreFrame {
 	
-	//private LevelViewPanel levelView;
-	private VectorViewPanel vectorView;
-	private StatisticsPanel sPanel;
-	//private BehaviorEditor bEditor;
-	//private OptionPanel oPanel;
+	//private final LevelViewPanel levelView;
+	private final VectorViewPanel vectorView;
+	private final StatisticsPanel sPanel;
+	//private final BehaviorEditor bEditor;
+	//private final OptionPanel oPanel;
 	
-	private JButton resetButton;
-	private TraitProject project;
+	private final JButton resetButton;
+	private final TraitProject project;
 	
 	/**
 	 * Core GUI control panel.
@@ -33,12 +33,12 @@ public class CoreFrame {
 	 * @param project
 	 *            project controller
 	 */
-	public CoreFrame(TraitProject project) {
+	public CoreFrame(final TraitProject project) {
 		
 		this.project = project;
 		
 		//Tab view
-		JTabbedPane tabbedPane = new JTabbedPane();
+        final JTabbedPane tabbedPane = new JTabbedPane();
 		//Level
 		//tabbedPane.addTab("Level", levelView = new LevelViewPanel(new Level()));
 		//Gene Reg.
@@ -55,11 +55,11 @@ public class CoreFrame {
 		//tabbedPane.setEnabledAt(3, false);
 		
 		//build Frame
-		JFrame frame = new JFrame("Control Panel");
+        final JFrame frame = new JFrame("Control Panel");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		// Global Controls
-		JPanel cont = new JPanel();
+        final JPanel cont = new JPanel();
 		frame.add(cont, BorderLayout.NORTH);
 		cont.setLayout(new GridLayout(1, 3));
 		//comps
@@ -76,13 +76,13 @@ public class CoreFrame {
 		});
 	}
 	
-	private static JPanel wrapInPanel(Component s) {
+	private static JPanel wrapInPanel(final Component s) {
 		JPanel p = new JPanel();
 		p.add(s);
 		return p;
 	}
 	
-	public void setLevel(Level level) {
+	public void setLevel(final Level level) {
 		//levelView.setLevel(level);
 		vectorView.setLevel(level);
 	}

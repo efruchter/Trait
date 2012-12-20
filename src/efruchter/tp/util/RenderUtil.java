@@ -15,8 +15,10 @@ public class RenderUtil {
 	 * Pre-compute sin/cos tables for circle.
 	 */
 	private final static int FAST_SUB = 8;
-	private static float[] COS_FAST = new float[FAST_SUB + 1], SIN_FAST = new float[FAST_SUB + 1];
-	static {
+
+    private static float[] COS_FAST = new float[FAST_SUB + 1], SIN_FAST = new float[FAST_SUB + 1];
+
+    static {
 		for (int i = 0; i <= FAST_SUB; i++) {
 			double angle = Math.PI * 2 * i / FAST_SUB;
 			COS_FAST[i] = (float) Math.cos(angle);
@@ -31,7 +33,7 @@ public class RenderUtil {
 	 * @param radius
 	 *            radius of circle.
 	 */
-	public static void drawCircleFast(float radius) {
+	public static void drawCircleFast(final float radius) {
 		GL11.glPushMatrix();
 		{
 			GL11.glScalef(radius, radius, 1);
@@ -50,7 +52,7 @@ public class RenderUtil {
 		GL11.glPopMatrix();
 	}
 	
-	public static void drawCircle(float radius, float subdivisions) {
+	public static void drawCircle(final float radius, final float subdivisions) {
 		GL11.glPushMatrix();
 		{
 			GL11.glScalef(radius, radius, 1);
@@ -72,12 +74,12 @@ public class RenderUtil {
 	public final static Behavior GENERIC_RENDER = new Behavior() {
 		
 		@Override
-		public void onStart(Entity self, Level l) {
+		public void onStart(final Entity self, final Level l) {
 			
 		}
 		
 		@Override
-		public void onUpdate(Entity self, Level l, long delta) {
+		public void onUpdate(final Entity self, final Level l, final long delta) {
 			if (self.isHurtAnimFrame())
 				return;
 			GL11.glPushMatrix();
@@ -91,7 +93,7 @@ public class RenderUtil {
 		}
 		
 		@Override
-		public void onDeath(Entity self, Level l) {
+		public void onDeath(final Entity self, final Level l) {
 			
 		}
 		

@@ -17,9 +17,9 @@ public class CSVDatabase implements Database {
 	}
 	
 	@Override
-	public boolean storeVector(SessionInfo userInfo, GeneVector vector) {
+	public boolean storeVector(final SessionInfo userInfo, final GeneVector vector) {
 
-        String[] headers;
+        final String[] headers;
 
 		try {
 			CsvReader r = new CsvReader("database.csv");
@@ -32,7 +32,7 @@ public class CSVDatabase implements Database {
 			return false;
 		}
 
-        CsvWriter write = null;
+        final CsvWriter write;
 
         try {
             write = new CsvWriter(new FileWriter("database.csv", true), ',');
@@ -41,7 +41,7 @@ public class CSVDatabase implements Database {
         }
 
 
-        String[] record = new String[headers.length];
+        final String[] record = new String[headers.length];
 		for (int i = 0; i < headers.length; i++) {
 			if (headers[i].equals("username")) {
 				record[i] = userInfo.username;
@@ -64,8 +64,8 @@ public class CSVDatabase implements Database {
 		return true;
 	}
 	
-	public static void main(String[] args) {
-		Database d = new CSVDatabase();
+	public static void main(final String[] args) {
+        final Database d = new CSVDatabase();
 		d.init();
 	}
 	

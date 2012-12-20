@@ -22,7 +22,7 @@ public class GeneVector {
         geneMap = new HashMap<String, Gene>();
     }
     
-    public GeneVector(String data) {
+    public GeneVector(final String data) {
         this();
         fromDataString(data);
     }
@@ -34,7 +34,7 @@ public class GeneVector {
      * @param g    gene
      * @return gene entry in library
      */
-    public Gene storeGene(String path, Gene g) {
+    public Gene storeGene(final String path, final Gene g) {
         return storeGene(path, g, true);
     }
 
@@ -47,7 +47,7 @@ public class GeneVector {
      *                  gene.
      * @return gene entry in library
      */
-    public Gene storeGene(String path, Gene g, boolean overwrite) {
+    public Gene storeGene(final String path, final Gene g, final boolean overwrite) {
 
         if (overwrite || !geneMap.containsKey(path)) {
             geneMap.put(path, g);
@@ -62,7 +62,7 @@ public class GeneVector {
      * @return list of genes in vector
      */
     public List<GeneWrapper> getGenes() {
-        List<GeneWrapper> g = new ArrayList<GeneWrapper>();
+        final List<GeneWrapper> g = new ArrayList<GeneWrapper>();
         for (Entry<String, Gene> s : geneMap.entrySet()) {
             g.add(new GeneWrapper(s.getValue(), s.getKey()));
         }
@@ -73,7 +73,7 @@ public class GeneVector {
         public final Gene gene;
         public final String path;
 
-        public GeneWrapper(Gene gene, String path) {
+        public GeneWrapper(final Gene gene, final String path) {
             this.gene = gene;
             this.path = path;
         }
@@ -88,7 +88,7 @@ public class GeneVector {
     }
 
     public String toDataString() {
-        StringBuffer s = new StringBuffer();
+        final StringBuffer s = new StringBuffer();
         for (Entry<String, Gene> entry : geneMap.entrySet()) {
             s.append(SEPARATOR).append(entry.getKey())
                     .append(SEPARATOR).append(entry.getValue().getInfo())
@@ -99,9 +99,9 @@ public class GeneVector {
         return s.toString().replaceFirst(SEPARATOR, "");
     }
 
-    public void fromDataString(String data) {
+    public void fromDataString(final String data) {
         geneMap.clear();
-        String[] strings = data.split(SEPARATOR);
+        final String[] strings = data.split(SEPARATOR);
         for (int i = 0; i < strings.length; i += 5) {
             float min = Float.parseFloat(strings[i + 2]);
             float max = Float.parseFloat(strings[i + 3]);
@@ -110,7 +110,7 @@ public class GeneVector {
         }
     }
 
-	public Gene getGene(String string) {
+	public Gene getGene(final String string) {
 		return geneMap.get(string);
 	}
 }

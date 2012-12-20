@@ -22,12 +22,12 @@ public class ScriptUtil {
 	 *            ship 2
 	 * @return true if overlapping, false otherwise.
 	 */
-	public static boolean isColliding(Entity a, Entity b) {
+	public static boolean isColliding(final Entity a, final Entity b) {
 		return isWithin(a, b.x, b.y, b.radius);
 	}
 	
-	public static boolean isWithin(Entity a, float x, float y, float radius) {
-		float dx, dy;
+	public static boolean isWithin(final Entity a, final float x, final float y, final float radius) {
+		final float dx, dy;
 		dx = a.x - x;
 		dy = a.y - y;
 		if (((a.radius + radius) * (a.radius + radius)) > (dx * dx) + (dy * dy))

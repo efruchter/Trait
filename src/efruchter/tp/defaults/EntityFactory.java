@@ -25,7 +25,7 @@ import efruchter.tp.util.RenderUtil;
  * 
  */
 public class EntityFactory {
-	public static void buildProjectile(final Entity e, float x, float y, float radius, int collisionLabel, Color color, float damage) {
+	public static void buildProjectile(final Entity e, final float x, final float y, final float radius, final CollisionLabel collisionLabel, final Color color, final float damage) {
 		e.x = x;
 		e.y = y;
 		e.radius = radius;
@@ -34,10 +34,10 @@ public class EntityFactory {
 		e.entityType = EntityType.PROJECTILE;
 		e.setRenderBehavior(RenderUtil.GENERIC_RENDER);
 		e.addTrait(new CollideDamageTrait(damage));
-		e.addTrait(new DramaticDeathTrait(10, 200));
+		e.addTrait(new DramaticDeathTrait(5, 200));
 	}
 	
-	public static void buildShip(final Entity e, float x, float y, float radius, int collisionLabel, Color color, int initialHealth) {
+	public static void buildShip(final Entity e, final float x, final float y, final float radius, final CollisionLabel collisionLabel, final Color color, final int initialHealth) {
 		e.x = x;
 		e.y = y;
 		e.radius = radius;
@@ -57,7 +57,7 @@ public class EntityFactory {
 	 */
 	public static void buildBackgroundStar(final Entity e) {
 		e.baseColor = Math.random() < .99 ? new Color(82, 82, 82) : Color.WHITE;
-		e.collisionLabel = CollisionLabels.NO_COLLISION;
+		e.collisionLabel = CollisionLabel.NO_COLLISION;
 		e.entityType = EntityType.BG;
 		e.setRenderBehavior(RenderUtil.GENERIC_RENDER);
 		e.health = 0;
@@ -67,17 +67,17 @@ public class EntityFactory {
 	/**
 	 * Move pattern for stars.
 	 */
-	private static Trait starMove = new Trait("Move star", " star move") {
+	private final static Trait starMove = new Trait("Move star", " star move") {
 		
 		@Override
-		public void onStart(Entity self, Level level) {
+		public void onStart(final Entity self, final Level level) {
 			self.radius = .5f + (float) Math.random() * 3;
 			self.x = ((float) Math.random()) * Display.getWidth();
 			self.y = ((float) Math.random()) * Display.getHeight();
 		}
 		
 		@Override
-		public void onUpdate(Entity self, Level level, long delta) {
+		public void onUpdate(final Entity self, final Level level, final long delta) {
 			if (self.y - self.radius < 0) {
 				self.radius = .5f + (float) Math.random() * 3;
 				self.x = ((float) Math.random()) * Display.getWidth();
@@ -88,13 +88,13 @@ public class EntityFactory {
 		}
 		
 		@Override
-		public void onDeath(Entity self, Level level) {
+		public void onDeath(final Entity self, final Level level) {
 			
 		}
 		
 	};
 	
-	public static void buildExplosion(final Entity e, float x, float y, float radius, Color color, long delay) {
+	public static void buildExplosion(final Entity e, final float x, final float y, final float radius, final Color color, final long delay) {
 		e.x = x;
 		e.y = y;
 		e.radius = radius;
@@ -104,12 +104,12 @@ public class EntityFactory {
 		e.addTrait(new DieOffScreenTrait());
 		e.addTrait(new TimedDeathTrait(delay));
 		
-		WiggleTrait w = new WiggleTrait(20);
+		final WiggleTrait w = new WiggleTrait(20);
 		w.wiggleChance.setExpression(1);
 		w.wiggleIntensity.setExpression(1);
 		e.addTrait(w);
 		
-		RadiusEditTrait rad = new RadiusEditTrait(0, radius, radius);
+		final RadiusEditTrait rad = new RadiusEditTrait(0, radius, radius);
 		e.addTrait(rad);
 		e.addTrait(new GeneExpressionInterpolator(rad.radius, 1, 0, (long) (Math.random() * delay)));
 	}

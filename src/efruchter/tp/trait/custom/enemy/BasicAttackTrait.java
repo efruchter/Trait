@@ -2,7 +2,7 @@ package efruchter.tp.trait.custom.enemy;
 
 import java.awt.Color;
 
-import efruchter.tp.defaults.CollisionLabels;
+import efruchter.tp.defaults.CollisionLabel;
 import efruchter.tp.defaults.EntityFactory;
 import efruchter.tp.defaults.EntityType;
 import efruchter.tp.entity.Entity;
@@ -24,14 +24,11 @@ import efruchter.tp.trait.gene.GeneExpressionInterpolator;
 public class BasicAttackTrait extends Trait {
 	
 	private float cd;
-	public Gene coolDown, spread, amount, damage;
-	public TravelSimple movePlasmid;
+	public final Gene coolDown, spread, amount, damage;
+	public final TravelSimple movePlasmid;
 	
 	/**
 	 * Create standard attack controller.
-	 * 
-	 * @param keyChar
-	 *            character to launch salvo.
 	 */
 	public BasicAttackTrait() {
 		super("Basic Attack", "An auto-attack.");
@@ -44,12 +41,12 @@ public class BasicAttackTrait extends Trait {
 	}
 	
 	@Override
-	public void onStart(Entity self, Level level) {
+	public void onStart(final Entity self, final Level level) {
 		cd = coolDown.getValue();
 	}
 	
 	@Override
-	public void onUpdate(Entity self, Level level, long delta) {
+	public void onUpdate(final Entity self, final Level level, final long delta) {
 		
 		if (cd < coolDown.getValue()) {
 			cd += delta;
@@ -57,21 +54,21 @@ public class BasicAttackTrait extends Trait {
 		if (cd >= coolDown.getValue()) {
 			cd = 0;
 			for (int i = 0; i < amount.getValue(); i++) {
-				Entity p = level.getBlankEntity(EntityType.PROJECTILE);
-				EntityFactory.buildProjectile(p ,self.x, self.y, 4, CollisionLabels.ENEMY_LABEL, Color.ORANGE,
+                final Entity p = level.getBlankEntity(EntityType.PROJECTILE);
+				EntityFactory.buildProjectile(p ,self.x, self.y, 4, CollisionLabel.ENEMY_LABEL, Color.ORANGE,
 						damage.getValue());
 				p.addTrait(new DieOffScreenTrait());
 				p.addTrait(new TimedDeathTrait(10));
-				
-				TravelSimple t = new TravelSimple();
+
+                final TravelSimple t = new TravelSimple();
 				
 				t.dx.setExpression(movePlasmid.dx.getExpression() + (float) Math.random() * (spread.getExpression())
 						* (Math.random() < .5 ? -1 : 1) / 2);
 				t.dy.setExpression(movePlasmid.dy.getExpression());
 				
 				p.addTrait(t);
-				
-				RadiusEditTrait rad = new RadiusEditTrait(3, 10, 10);
+
+                final RadiusEditTrait rad = new RadiusEditTrait(3, 10, 10);
 				p.addTrait(rad);
 				
 				p.addTrait(new GeneExpressionInterpolator(rad.radius, 0, 1, 200));
@@ -80,7 +77,7 @@ public class BasicAttackTrait extends Trait {
 	}
 	
 	@Override
-	public void onDeath(Entity self, Level level) {
+	public void onDeath(final Entity self, final Level level) {
 		
 	}
 	
