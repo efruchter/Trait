@@ -24,6 +24,8 @@ import efruchter.tp.trait.custom.player.KeyboardControlTrait_Attack;
 import efruchter.tp.trait.custom.player.KeyboardControlTrait_Movement;
 import efruchter.tp.trait.custom.player.PlayerRadiusEditTrait;
 
+import javax.swing.*;
+
 /**
  * LWJGL Trait-based shmup.
  * 
@@ -33,17 +35,17 @@ import efruchter.tp.trait.custom.player.PlayerRadiusEditTrait;
 public class TraitProject {
 	
 	/** time at last frame */
-	long lastFrame;
+	private long lastFrame;
 	
 	/** frames per second */
-	int fps;
+	private int fps;
 	/** last fps time */
-	long lastFPS;
+	private long lastFPS;
 	
 	private Level level;
 	private CoreFrame viewer;
 	
-	public void start() {
+    public void start() {
 		
 		level = new Level();
 		
@@ -204,15 +206,11 @@ public class TraitProject {
 		level.renderGL(delta);
 	}
 	
-	public static void main(String[] argv) {
-		
-		try {
-			//UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		//Start the game
+	public static void main(String[] argv) throws Exception {
+
+        //UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+
+        //Start the game
 		new TraitProject().start();
 	}
 }
