@@ -29,7 +29,7 @@ public class GeneVectorIO {
      * Request a new vector from the frontier.
      */
     public static void reloadExplorationVector() {
-        Client c = new Client();
+        Client c = new Client("trait.ericfruchter.com", 8000);
         try {
             c.reconnect();
             c.send("request");
