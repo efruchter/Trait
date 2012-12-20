@@ -41,9 +41,6 @@ public class Server implements Runnable {
     }
 
     synchronized void handle(String clientName, String message) {
-        if (!clients.containsKey(clientName))
-            return;
-        
         String response = listener.messageReceived(message);
         
         if (response != null && !response.isEmpty())

@@ -40,7 +40,13 @@ public class ServerThread extends Thread {
     public void run() {
         while (true) {
             try {
-                server.handle(clientName, in.readLine());
+                String str = in.readLine();
+                
+                if (str == null) 
+                    // End of stream reached, so terminate this thread
+                    throw new IOException();
+                
+                server.handle(clientName, str);
             } catch (IOException e) {
                 server.disconnect(clientName);
                 break;
