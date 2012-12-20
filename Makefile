@@ -2,22 +2,14 @@ JAVAC=javac
 SRCDIR=src
 SERVERCLASS=efruchter/tp/TraitProjectServer.java
 MAINCLASS=efruchter/tp/TraitProject.java
+BASEPATH=$(dirname "$0")
+CLASSPATH=$(echo dep/*.jar | tr ' ' ':')
 
-.PHONY: all
 all: clean build
 
-.PHONY: build
 build:
-	$(SRCDIR)/build.sh
+	set -v
+	find $(BASEPATH) -name "*.java" | xargs javac -cp $(CLASSPATH)
 
-.PHONY: clean
 clean:
 	find $(SRCDIR) -type f -name "*.class" | xargs rm -f
-
-.PHONY: runServer
-runServer: build 
-	java -classpath dep/*:src efruchter.tp.TraitProjectServer
-
-.PHONY: runClient
-runClient: build
-	java -classpath dep/*:src -Djava.library.path=dep efruchter.tp.TraitProject
