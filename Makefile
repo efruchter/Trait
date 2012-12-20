@@ -1,6 +1,5 @@
 JAVAC=javac
 SRCDIR=src
-MAINCLASS=efruchter/tp/TraitProject.java
 SERVERCLASS=efruchter/tp/TraitProjectServer.java
 
 .PHONY: all
@@ -15,5 +14,5 @@ clean:
 	find $(SRCDIR) -type f -name "*.class" | xargs rm -f
 
 .PHONY: runServer
-runServer: all
+runServer: build 
 	java -cp $(SRCDIR) efruchter.tp.TraitProjectServer
