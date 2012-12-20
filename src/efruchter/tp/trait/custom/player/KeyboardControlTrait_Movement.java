@@ -1,5 +1,6 @@
 package efruchter.tp.trait.custom.player;
 
+import efruchter.tp.learning.GeneVectorIO;
 import org.lwjgl.input.Keyboard;
 
 import efruchter.tp.entity.Entity;
@@ -23,9 +24,9 @@ public class KeyboardControlTrait_Movement extends Trait {
 	
 	public KeyboardControlTrait_Movement(int upKey, int downKey, int leftKey, int rightKey) {
 		super("Move Control", "Entity movement linked to keyboard inputs.");
-		registerGene(drag = GeneVector.getExplorationVector().storeGene("player.move.drag",
+		registerGene(drag = GeneVectorIO.getExplorationVector().storeGene("player.move.drag",
 				new Gene("Air Drag", "Amount of air drag."), false));
-		registerGene(thrust = GeneVector.getExplorationVector().storeGene("player.move.thrust",
+		registerGene(thrust = GeneVectorIO.getExplorationVector().storeGene("player.move.thrust",
 				new Gene("Thrust", "Control the acceleration of movement.", 0, .09f, .04f), false));
 		this.upKey = upKey;
 		this.downKey = downKey;

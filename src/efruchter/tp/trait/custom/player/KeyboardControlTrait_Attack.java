@@ -2,6 +2,7 @@ package efruchter.tp.trait.custom.player;
 
 import java.awt.Color;
 
+import efruchter.tp.learning.GeneVectorIO;
 import org.lwjgl.input.Keyboard;
 
 import efruchter.tp.defaults.CollisionLabels;
@@ -39,19 +40,19 @@ public class KeyboardControlTrait_Attack extends Trait {
 	 */
 	public KeyboardControlTrait_Attack(final int keyChar) {
 		super("Attack Control", "Entity attack linked to keyboard inputs.");
-		registerGene(coolDown = GeneVector.getExplorationVector().storeGene("player.attack.cooldown",
+		registerGene(coolDown = GeneVectorIO.getExplorationVector().storeGene("player.attack.cooldown",
 				new Gene("Cool Down Delay", "The projectile cooldown.", 0, 1000, 64), false));
-		registerGene(spread = GeneVector.getExplorationVector().storeGene("player.attack.spread",
+		registerGene(spread = GeneVectorIO.getExplorationVector().storeGene("player.attack.spread",
 				new Gene("Launch Spread", "Bullet spread.", 0, 1, 0), false));
-		registerGene(wiggleBigness = GeneVector.getExplorationVector().storeGene("player.attack.wiggle",
+		registerGene(wiggleBigness = GeneVectorIO.getExplorationVector().storeGene("player.attack.wiggle",
 				new Gene("Wiggle", "Maximum wiggle magnitude."), false));
-		registerGene(amount = GeneVector.getExplorationVector().storeGene("player.attack.amount",
+		registerGene(amount = GeneVectorIO.getExplorationVector().storeGene("player.attack.amount",
 				new Gene("# of Bullets", "Amount of bullets per salvo.", 0, 100, 1), false));
-		registerGene(damage = GeneVector.getExplorationVector().storeGene("player.attack.damage",
+		registerGene(damage = GeneVectorIO.getExplorationVector().storeGene("player.attack.damage",
 				new Gene("Damage Per Bullet", "Amount of damage per bullet.", 0, 10, 5), false));
-		registerGene(dx = GeneVector.getExplorationVector().storeGene("player.attack.dx",
+		registerGene(dx = GeneVectorIO.getExplorationVector().storeGene("player.attack.dx",
 				new Gene("dx", "dx travel per step", -1, 1, 0), false));
-		registerGene(dy = GeneVector.getExplorationVector().storeGene("player.attack.dy",
+		registerGene(dy = GeneVectorIO.getExplorationVector().storeGene("player.attack.dy",
 				new Gene("dy", "dy travel per step", -1, 1, 1), false));
 		
 		this.key = keyChar;
