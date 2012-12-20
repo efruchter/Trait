@@ -1,6 +1,7 @@
 JAVAC=javac
 SRCDIR=src
 SERVERCLASS=efruchter/tp/TraitProjectServer.java
+MAINCLASS=efruchter/tp/TraitProject.java
 
 .PHONY: all
 all: clean build
