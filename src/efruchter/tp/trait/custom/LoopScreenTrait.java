@@ -32,7 +32,6 @@ public class LoopScreenTrait extends Trait {
 		} else if (self.y < 0) {
 			self.y = Display.getHeight() + self.y;
 		}
-		
 	}
 	
 	@Override
