@@ -1,11 +1,10 @@
 package efruchter.tp.trait.custom.player;
 
-import efruchter.tp.learning.GeneVectorIO;
 import org.lwjgl.input.Keyboard;
 
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
-import efruchter.tp.learning.GeneVector;
+import efruchter.tp.learning.GeneVectorIO;
 import efruchter.tp.trait.Trait;
 import efruchter.tp.trait.gene.Gene;
 

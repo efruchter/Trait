@@ -1,11 +1,10 @@
 package efruchter.tp;
 
+import java.io.IOException;
+
 import efruchter.tp.learning.GeneVector;
 import efruchter.tp.networking.NetworkingListener;
 import efruchter.tp.networking.Server;
-
-import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
-import java.io.IOException;
 
 /**
  *

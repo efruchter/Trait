@@ -1,10 +1,7 @@
 package efruchter.tp;
 
 import java.awt.Color;
-import java.io.IOException;
-import java.util.Scanner;
 
-import efruchter.tp.networking.Client;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
@@ -26,8 +23,6 @@ import efruchter.tp.trait.custom.enemy.BasicAttackTrait;
 import efruchter.tp.trait.custom.player.KeyboardControlTrait_Attack;
 import efruchter.tp.trait.custom.player.KeyboardControlTrait_Movement;
 import efruchter.tp.trait.custom.player.PlayerRadiusEditTrait;
-
-import javax.swing.*;
 
 /**
  * LWJGL Trait-based shmup.

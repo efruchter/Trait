@@ -2,7 +2,6 @@ package efruchter.tp.trait.custom.player;
 
 import java.awt.Color;
 
-import efruchter.tp.learning.GeneVectorIO;
 import org.lwjgl.input.Keyboard;
 
 import efruchter.tp.defaults.CollisionLabels;
@@ -10,7 +9,7 @@ import efruchter.tp.defaults.EntityFactory;
 import efruchter.tp.defaults.EntityType;
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
-import efruchter.tp.learning.GeneVector;
+import efruchter.tp.learning.GeneVectorIO;
 import efruchter.tp.trait.Trait;
 import efruchter.tp.trait.custom.DieOffScreenTrait;
 import efruchter.tp.trait.custom.RadiusEditTrait;

@@ -36,6 +36,7 @@ public class GeneVectorIO {
             GeneVector geneVector = new GeneVector();
             geneVector.fromDataString(c.receive());
             exploration = geneVector;
+            System.out.println("Successfully read gene vector from server!");
             return;
         } catch (IOException e) {
             //e.printStackTrace();
