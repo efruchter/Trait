@@ -16,3 +16,7 @@ clean:
 .PHONY: runServer
 runServer: build 
 	java -classpath dep/*:src efruchter.tp.TraitProjectServer
+
+.PHONY: runClient
+runClient: build
+	java -classpath dep/*:src -Djava.library.path=dep efruchter.tp.TraitProject
