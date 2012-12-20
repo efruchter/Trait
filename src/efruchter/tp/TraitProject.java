@@ -1,6 +1,9 @@
 package efruchter.tp;
 
 import java.awt.Color;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
@@ -155,7 +158,9 @@ public class TraitProject {
 		
 		this.level = level;
 		
-		GeneVectorIO.storeVector(new SessionInfo("efruchter", "-1", "09052000"), GeneVectorIO.getExplorationVector());
+		GeneVectorIO.storeVector(new SessionInfo("efruchter", "-1",
+                new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime())),
+                GeneVectorIO.getExplorationVector());
 	}
 	
 	public void update(int delta) {

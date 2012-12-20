@@ -1,6 +1,7 @@
 package efruchter.tp.learning.database;
 
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import com.csvreader.CsvReader;
@@ -10,38 +11,37 @@ import efruchter.tp.learning.GeneVector;
 
 public class CSVDatabase implements Database {
 	
-	private String[] headers;
-	
 	@Override
 	public void init() {
-		try {
-			CsvReader r = new CsvReader("database.csv");
-			r.readHeaders();
-			headers = r.getHeaders();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+
 	}
 	
 	@Override
 	public boolean storeVector(SessionInfo userInfo, GeneVector vector) {
-		
-		CsvWriter write = new CsvWriter("database.csv");
-		
+
+        String[] headers;
+
 		try {
 			CsvReader r = new CsvReader("database.csv");
-			while (r.readRecord()) {
-				write.writeRecord(r.getValues());
-			}
+            r.readHeaders();
+            headers = r.getHeaders();
+            r.close();
 		} catch (FileNotFoundException e1) {
 			return false;
 		} catch (IOException e) {
 			return false;
 		}
-		
-		String[] record = new String[headers.length];
+
+        CsvWriter write = null;
+
+        try {
+            write = new CsvWriter(new FileWriter("database.csv", true), ',');
+        } catch (Exception e) {
+            return false;
+        }
+
+
+        String[] record = new String[headers.length];
 		for (int i = 0; i < headers.length; i++) {
 			if (headers[i].equals("username")) {
 				record[i] = userInfo.username;
