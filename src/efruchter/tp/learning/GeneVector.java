@@ -21,6 +21,11 @@ public class GeneVector {
     public GeneVector() {
         geneMap = new HashMap<String, Gene>();
     }
+    
+    public GeneVector(String data) {
+        this();
+        fromDataString(data);
+    }
 
     /**
      * Store a gene in the registry. Overwrite existing.
@@ -104,4 +109,8 @@ public class GeneVector {
             geneMap.put(strings[i], new Gene(strings[i], strings[i + 1], min, max, val));
         }
     }
+
+	public Gene getGene(String string) {
+		return geneMap.get(string);
+	}
 }
