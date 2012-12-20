@@ -15,4 +15,4 @@ clean:
 
 .PHONY: runServer
 runServer: build 
-	java -cp $(SRCDIR) efruchter.tp.TraitProjectServer
+	java -classpath dep/*:src efruchter.tp.TraitProjectServer
