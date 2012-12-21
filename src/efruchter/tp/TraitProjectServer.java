@@ -53,31 +53,29 @@ public class TraitProjectServer implements NetworkingListener {
 
 	@Override
 	public String messageReceived(String message) {
+		
+		String result = null;
+
 		try {
-			System.out.println("Request received.");
-
 			if (message.startsWith("versioncheck")) {
-				return "" + TraitProjectServer.VERSION.equals(message
+				result = "" + TraitProjectServer.VERSION.equals(message
 								.replaceFirst("versioncheck", ""));
+			} else if ("request".equals(message)) {
+				result = current.toDataString();
 			}
-
-			if ("request".equals(message)) {
-				return current.toDataString();
-			}
-
 			// username | score | date | vector
-			if (message.startsWith("store" + GeneVectorIO.SEPARATOR)) {
+			else if (message.startsWith("store" + GeneVectorIO.SEPARATOR)) {
 				String[] data = message.replaceFirst(
 						"store" + GeneVectorIO.SEPARATOR, "").split(
 						GeneVectorIO.SEPARATOR);
-				return "" + store(new SessionInfo(data[0], data[1], data[2]),
+				result = "" + store(new SessionInfo(data[0], data[1], data[2]),
 								new GeneVector(data[3]));
 			}
 		} catch (Exception e) {
-
+			e.printStackTrace();
 		}
 
-		return null;
+		return result;
 	}
 
 	public synchronized boolean store(SessionInfo userInfo, GeneVector vector) {
