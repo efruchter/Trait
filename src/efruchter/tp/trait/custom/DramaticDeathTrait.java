@@ -5,7 +5,6 @@ import efruchter.tp.defaults.EntityType;
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
 import efruchter.tp.trait.Trait;
-import org.lwjgl.opengl.Display;
 
 /**
  * Blow up in a fiery death upon death.

@@ -54,7 +54,6 @@ public class Gene {
 			val = maxVal;
 		else if (val < minVal)
 			val = minVal;
-		this.val = val;
 		exp = (val - minVal) / (maxVal - minVal);
 	}
 	
