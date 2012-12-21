@@ -61,10 +61,12 @@ public class TraitProjectClient {
 	private final CoreFrame viewer;
 
 	public TraitProjectClient() {
-
+		
+		viewer = new CoreFrame(this);
+		
 		level = new Level();
 
-		viewer = new CoreFrame(this);
+		versionCheck();
 
 		resetSim();
 
@@ -273,8 +275,6 @@ public class TraitProjectClient {
 		List<String> params = Arrays.asList(argv);
 
 		isLocalServer = params.contains("-l");
-		
-		versionCheck();
 
 		// UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
 

@@ -13,20 +13,23 @@ import javax.swing.JTabbedPane;
 
 import efruchter.tp.TraitProjectClient;
 import efruchter.tp.entity.Level;
+import efruchter.tp.gui.panels.ConsolePanel;
 import efruchter.tp.gui.panels.StatisticsPanel;
 import efruchter.tp.gui.panels.generegistery.VectorViewPanel;
 
 public class CoreFrame {
-	
-	//private final LevelViewPanel levelView;
+
+	// private final LevelViewPanel levelView;
 	private final VectorViewPanel vectorView;
 	private final StatisticsPanel sPanel;
-	//private final BehaviorEditor bEditor;
-	//private final OptionPanel oPanel;
-	
+	@SuppressWarnings("unused")
+	private final ConsolePanel consoleView;
+	// private final BehaviorEditor bEditor;
+	// private final OptionPanel oPanel;
+
 	private final JButton resetButton;
 	private final TraitProjectClient project;
-	
+
 	/**
 	 * Core GUI control panel.
 	 * 
@@ -34,59 +37,62 @@ public class CoreFrame {
 	 *            project controller
 	 */
 	public CoreFrame(final TraitProjectClient project) {
-		
+
 		this.project = project;
-		
-		//Tab view
-        final JTabbedPane tabbedPane = new JTabbedPane();
-		//Level
-		//tabbedPane.addTab("Level", levelView = new LevelViewPanel(new Level()));
-		//Gene Reg.
+
+		// Tab view
+		final JTabbedPane tabbedPane = new JTabbedPane();
+		// console
+		tabbedPane.addTab("Console", consoleView = new ConsolePanel());
+		// Level
+		// tabbedPane.addTab("Level", levelView = new LevelViewPanel(new
+		// Level()));
+		// Gene Reg.
 		tabbedPane.addTab("Vector", vectorView = new VectorViewPanel(new Level()));
-		//Statistics
+		// Statistics
 		tabbedPane.addTab("Statistics", sPanel = new StatisticsPanel());
-		//Editor
-		//tabbedPane.addTab("Script", bEditor = new BehaviorEditor());
-		//Options
-		//tabbedPane.addTab("Options", oPanel = new OptionPanel());
-		
-		//deactivate unused
-		//tabbedPane.setEnabledAt(2, false);
-		//tabbedPane.setEnabledAt(3, false);
-		
-		//build Frame
-        final JFrame frame = new JFrame("Control Panel");
+		// Editor
+		// tabbedPane.addTab("Script", bEditor = new BehaviorEditor());
+		// Options
+		// tabbedPane.addTab("Options", oPanel = new OptionPanel());
+
+		// deactivate unused
+		// tabbedPane.setEnabledAt(2, false);
+		// tabbedPane.setEnabledAt(3, false);
+
+		// build Frame
+		final JFrame frame = new JFrame("Control Panel");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
+
 		// Global Controls
-        final JPanel cont = new JPanel();
+		final JPanel cont = new JPanel();
 		frame.add(cont, BorderLayout.NORTH);
 		cont.setLayout(new GridLayout(1, 3));
-		//comps
+		// comps
 		cont.add(wrapInPanel(resetButton = new JButton("Quick Reset")));
-		
+
 		frame.add(tabbedPane, BorderLayout.CENTER);
 		frame.pack();
 		frame.setVisible(true);
-		
+
 		resetButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				CoreFrame.this.project.resetSim();
 			}
 		});
 	}
-	
+
 	private static JPanel wrapInPanel(final Component s) {
 		JPanel p = new JPanel();
 		p.add(s);
 		return p;
 	}
-	
+
 	public void setLevel(final Level level) {
-		//levelView.setLevel(level);
+		// levelView.setLevel(level);
 		vectorView.setLevel(level);
 	}
-	
+
 	public StatisticsPanel getStatisticsPanel() {
 		return sPanel;
 	}

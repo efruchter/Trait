@@ -36,7 +36,7 @@ public class GeneVectorIO {
 					+ vector.toDataString());
 			boolean suc = Boolean.parseBoolean(c.receive());
 			if (suc)
-				System.out.println("Successfully stored gene vector in database!");
+				System.out.println("Successfully stored gene vector in database.");
 			return suc;
 		} catch (IOException e) {
 			
@@ -61,7 +61,7 @@ public class GeneVectorIO {
             final GeneVector geneVector = new GeneVector();
 			geneVector.fromDataString(c.receive());
 			exploration = geneVector;
-			System.out.println("Successfully read gene vector from server!");
+			System.out.println("Successfully read gene vector from server.");
 			return;
 		} catch (IOException e) {
 			//e.printStackTrace();
