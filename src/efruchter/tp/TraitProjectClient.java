@@ -246,6 +246,7 @@ public class TraitProjectClient {
 								"Your client is out-of-date, please download the latest version.");
 				System.exit(0);
 			} else {
+				System.out.println("Client and Server versions match.");
 				return;
 			}
 		} catch (Exception e) {

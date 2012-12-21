@@ -2,6 +2,7 @@ package efruchter.tp.learning;
 
 import java.io.IOException;
 
+import efruchter.tp.TraitProjectClient;
 import efruchter.tp.learning.database.Database.SessionInfo;
 import efruchter.tp.networking.Client;
 
@@ -28,7 +29,7 @@ public class GeneVectorIO {
 	}
 	
 	public static boolean storeVector(final SessionInfo info, final GeneVector vector) {
-        final Client c = new Client("trait.ericfruchter.com", 8000);
+        final Client c = TraitProjectClient.getClient();
 		try {
 			c.reconnect();
 			c.send("store" + SEPARATOR + info.username + SEPARATOR + info.score + SEPARATOR + info.date + SEPARATOR
@@ -53,7 +54,7 @@ public class GeneVectorIO {
 	 * Request a new vector from the frontier.
 	 */
 	public static void reloadExplorationVector() {
-        final Client c = new Client("trait.ericfruchter.com", 8000);
+        final Client c = TraitProjectClient.getClient();
 		try {
 			c.reconnect();
 			c.send("request");
