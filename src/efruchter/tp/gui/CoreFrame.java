@@ -11,7 +11,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
-import efruchter.tp.TraitProject;
+import efruchter.tp.TraitProjectClient;
 import efruchter.tp.entity.Level;
 import efruchter.tp.gui.panels.StatisticsPanel;
 import efruchter.tp.gui.panels.generegistery.VectorViewPanel;
@@ -25,7 +25,7 @@ public class CoreFrame {
 	//private final OptionPanel oPanel;
 	
 	private final JButton resetButton;
-	private final TraitProject project;
+	private final TraitProjectClient project;
 	
 	/**
 	 * Core GUI control panel.
@@ -33,7 +33,7 @@ public class CoreFrame {
 	 * @param project
 	 *            project controller
 	 */
-	public CoreFrame(final TraitProject project) {
+	public CoreFrame(final TraitProjectClient project) {
 		
 		this.project = project;
 		
