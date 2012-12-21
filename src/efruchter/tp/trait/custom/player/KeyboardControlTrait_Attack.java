@@ -46,7 +46,7 @@ public class KeyboardControlTrait_Attack extends Trait {
 		registerGene(wiggleBigness = GeneVectorIO.getExplorationVector().storeGene("player.attack.wiggle",
 				new Gene("Wiggle", "Maximum wiggle magnitude."), false));
 		registerGene(amount = GeneVectorIO.getExplorationVector().storeGene("player.attack.amount",
-				new Gene("# of Bullets", "Amount of bullets per salvo.", 0, 100, 1), false));
+				new Gene("# of Bullets", "Amount of bullets per salvo.", 0, 10, 1), false));
 		registerGene(damage = GeneVectorIO.getExplorationVector().storeGene("player.attack.damage",
 				new Gene("Damage Per Bullet", "Amount of damage per bullet.", 0, 10, 5), false));
 		registerGene(dx = GeneVectorIO.getExplorationVector().storeGene("player.attack.dx",

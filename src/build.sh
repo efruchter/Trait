@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -v
-
 BASEPATH=$(dirname "$0")
 CLASSPATH=$(echo dep/*.jar | tr ' ' ':')
 
