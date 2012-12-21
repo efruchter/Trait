@@ -93,7 +93,7 @@ public class RenderUtil {
 				GL11.glColor3f(self.baseColor.getRed() / 255f, self.baseColor.getGreen() / 255f,
 						self.baseColor.getBlue() / 255f);
 				GL11.glTranslatef(self.x, self.y, 0);
-				RenderUtil.drawCircleFast(self.radius, 15);
+				RenderUtil.drawCircleFast(self.radius, 10);
 			}
 			GL11.glPopMatrix();
 		}
@@ -153,7 +153,7 @@ public class RenderUtil {
                         self.baseColor.getBlue() / 255f);
                 GL11.glTranslatef(self.x, self.y, 0);
                 GL11.glRotatef(rotate, 0, 0, 1);
-                RenderUtil.drawCircleFast(self.radius, 5);
+                RenderUtil.drawCircleFast(self.radius, 4);
             }
             GL11.glPopMatrix();
         }
