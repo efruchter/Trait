@@ -212,9 +212,8 @@ public class TraitProjectClient {
 	 */
 	public void updateFPS() {
 		if (getTime() - lastFPS > 1000) {
-			Display.setTitle("FPS: " + fps);
-			// viewer.getStatisticsPanel().setFPS(fps);
-			// viewer.getStatisticsPanel().setEntityCount(level.getEntityCount());
+			//Display.setTitle("FPS: " + fps);
+			viewer.getStatisticsPanel().setFPS(fps);
 			fps = 0;
 			lastFPS += 1000;
 		}

@@ -7,6 +7,8 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import efruchter.tp.TraitProjectClient;
+
 @SuppressWarnings("serial")
 public class StatisticsPanel extends JPanel {
 	
@@ -26,7 +28,7 @@ public class StatisticsPanel extends JPanel {
 		overll.setBorder(BorderFactory.createTitledBorder("Global Statistics"));
 		overll.setLayout(new BoxLayout(overll, BoxLayout.Y_AXIS));
 		add(overll, BorderLayout.CENTER);
-		overll.add(new JLabel("No Session Statistics Available."));
+		overll.add(new JLabel("Client Version: " + TraitProjectClient.VERSION));
 	}
 	
 	private long fps, entities;
