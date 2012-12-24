@@ -43,23 +43,12 @@ public class TraitProjectClient {
 
 	public static final String VERSION = "pre-release";
 	private static boolean isLocalServer;
-
-	/**
-	 * time at last frame
-	 */
-	private long lastFrame;
-
-	/**
-	 * frames per second
-	 */
-	private int fps;
-	/**
-	 * last fps time
-	 */
-	private long lastFPS;
-
 	private Level level;
 	private final CoreFrame viewer;
+
+	private long lastFrame;
+	private int fps;
+	private long lastFPS;
 
 	public TraitProjectClient() {
 
