@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
+import java.util.prefs.Preferences;
 
 import javax.swing.JOptionPane;
 
@@ -61,9 +62,9 @@ public class TraitProjectClient {
 	private final CoreFrame viewer;
 
 	public TraitProjectClient() {
-		
+
 		viewer = new CoreFrame(this);
-		
+
 		level = new Level();
 
 		versionCheck();
@@ -174,10 +175,18 @@ public class TraitProjectClient {
 
 		this.level = level;
 
-		GeneVectorIO.storeVector(
-				new SessionInfo("efruchter", "-1", new SimpleDateFormat(
-						"yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance()
-						.getTime())), GeneVectorIO.getExplorationVector());
+		final String username = PREFERENCES.get("username", null);
+
+		if (username != null) {
+			GeneVectorIO.storeVector(
+					new SessionInfo(username, "-1", new SimpleDateFormat(
+							"yyyy/MM/dd HH:mm:ss").format(Calendar
+							.getInstance().getTime())), GeneVectorIO
+							.getExplorationVector());
+		} else {
+			System.err
+					.println("No username set, cannot push vector to server.");
+		}
 	}
 
 	public void update(int delta) {
@@ -212,7 +221,7 @@ public class TraitProjectClient {
 	 */
 	public void updateFPS() {
 		if (getTime() - lastFPS > 1000) {
-			//Display.setTitle("FPS: " + fps);
+			// Display.setTitle("FPS: " + fps);
 			viewer.getStatisticsPanel().setFPS(fps);
 			fps = 0;
 			lastFPS += 1000;
@@ -267,6 +276,12 @@ public class TraitProjectClient {
 		} else {
 			return new Client("trait.ericfruchter.com", 8000);
 		}
+	}
+
+	// User data
+	public final static Preferences PREFERENCES;
+	static {
+		PREFERENCES = Preferences.userNodeForPackage(TraitProjectClient.class);
 	}
 
 	public static void main(String[] argv) throws Exception {
