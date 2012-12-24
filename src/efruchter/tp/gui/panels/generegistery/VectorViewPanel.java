@@ -57,7 +57,7 @@ public class VectorViewPanel extends JPanel implements TreeSelectionListener {
 		add(new JPanel() {
 			{
 				setBorder(BorderFactory.createTitledBorder("Username"));
-				final JLabel a = new JLabel("Username: " + TraitProjectClient.PREFERENCES.get("username", "No Username set!"));
+				final JLabel a = new JLabel(TraitProjectClient.PREFERENCES.get("username", "No Username set!"));
 				add(a);
 				final JButton b = new JButton("Set");
 				add(b);
@@ -67,7 +67,7 @@ public class VectorViewPanel extends JPanel implements TreeSelectionListener {
 						        .showInputDialog("Please set a username. This username will be used\nwhen sending your data to the server.");
 						if (username != null && !username.isEmpty()) {
 							TraitProjectClient.PREFERENCES.put("username", username);
-							a.setText("Username: " + TraitProjectClient.PREFERENCES.get("username", "No Username set!"));
+							a.setText(TraitProjectClient.PREFERENCES.get("username", "No Username set!"));
 						}
 					}
 				});
