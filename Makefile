@@ -7,7 +7,7 @@ MAINCLASS=efruchter/tp/TraitProject.java
 all: clean build
 
 build:
-	./$(SRCDIR)/build.sh
+	$(SRCDIR)/build
 
 clean:
 	find $(SRCDIR) -type f -name "*.class" | xargs rm -f
