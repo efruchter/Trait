@@ -39,7 +39,7 @@ import efruchter.tp.trait.custom.player.PlayerRadiusEditTrait;
  */
 public class TraitProjectClient {
 
-	public static final String VERSION = "pre-release";
+	public static final String VERSION = "00.00.00.00";
 	private static boolean isLocalServer;
 	private Level level;
 	private final CoreFrame viewer;

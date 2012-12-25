@@ -88,6 +88,9 @@ public class GeneVector {
     }
 
     public String toDataString() {
+    	if (geneMap.isEmpty()) {
+    		return "";
+    	}
         final StringBuffer s = new StringBuffer();
         for (Entry<String, Gene> entry : geneMap.entrySet()) {
             s.append(SEPARATOR).append(entry.getKey())

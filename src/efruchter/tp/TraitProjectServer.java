@@ -15,8 +15,6 @@ import efruchter.tp.networking.Server;
  */
 public class TraitProjectServer implements NetworkingListener {
 
-	public static final String VERSION = "pre-release";
-
 	private static GeneVector current;
 	private static final Database db;
 
@@ -57,10 +55,10 @@ public class TraitProjectServer implements NetworkingListener {
 
 		try {
 			if (message.startsWith("versioncheck")) {
-				result = "" + TraitProjectServer.VERSION.equals(message
+				result = "" + TraitProjectClient.VERSION.equals(message
 								.replaceFirst("versioncheck", ""));
 			} else if ("request".equals(message)) {
-				result = current.toDataString();
+				result = "EXPLORE" + GeneVectorIO.SEPARATOR + current.toDataString();
 			}
 			// username | score | date | vector
 			else if (message.startsWith("store" + GeneVectorIO.SEPARATOR)) {
