@@ -101,6 +101,9 @@ public class GeneVector {
 
     public void fromDataString(final String data) {
         geneMap.clear();
+        if (data == null || data.isEmpty()) {
+        	return;
+        }
         final String[] strings = data.split(SEPARATOR);
         for (int i = 0; i < strings.length; i += 5) {
             float min = Float.parseFloat(strings[i + 2]);
