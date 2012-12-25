@@ -21,6 +21,7 @@ import efruchter.tp.defaults.EntityFactory;
 import efruchter.tp.defaults.EntityType;
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
+import efruchter.tp.generators.LevelGenerator_Chainer;
 import efruchter.tp.gui.CoreFrame;
 import efruchter.tp.learning.GeneVectorIO;
 import efruchter.tp.learning.database.Database.SessionInfo;
@@ -97,11 +98,9 @@ public class TraitProjectClient {
 
 		// Build Player
 		Entity player = level.getBlankEntity(EntityType.SHIP);
-		EntityFactory.buildShip(player, 100, 100, 10,
-				CollisionLabel.PLAYER_LABEL, Color.CYAN, 100);
+		EntityFactory.buildShip(player, 100, 100, 10, CollisionLabel.PLAYER_LABEL, Color.CYAN, 100);
 		// Add control traits to player with arrow-keys
-		player.addTrait(new KeyboardControlTrait_Movement(Keyboard.KEY_UP,
-				Keyboard.KEY_DOWN, Keyboard.KEY_LEFT, Keyboard.KEY_RIGHT));
+		player.addTrait(new KeyboardControlTrait_Movement(Keyboard.KEY_UP, Keyboard.KEY_DOWN, Keyboard.KEY_LEFT, Keyboard.KEY_RIGHT));
 
 		player.addTrait(new KeyboardControlTrait_Attack(Keyboard.KEY_SPACE));
 		// Radius editing trait
@@ -112,48 +111,7 @@ public class TraitProjectClient {
 		player.addTrait(new LoopScreenTrait());
 		player.addTrait(new ConstantHealthBoostTrait());
 
-		// Build enemy 2
-		Entity enemy1 = level.getBlankEntity(EntityType.SHIP);
-		EntityFactory.buildShip(enemy1, 600, 520, 20,
-				CollisionLabel.ENEMY_LABEL, Color.RED, 100);
-		enemy1.name = "Enemy 1";
-		BehaviorChain m2 = new BehaviorChain("Attack Pattern",
-				"Move around and attack.", true);
-		m2.addWait(6000);
-		m2.addBehavior(new TravelSimple(.4f, .6f), 500);
-		m2.addBehavior(new TravelSimple(.3f, .4f), 500);
-		BasicAttackTrait b;
-		m2.addBehavior(b = new BasicAttackTrait(), 600);
-		b.movePlasmid.dy.setExpression(0.40f);
-		enemy1.addTrait(m2);
-		enemy1.addTrait(new LoopScreenTrait());
-
-		// Build enemy 2
-		Entity enemy2 = level.getBlankEntity(EntityType.SHIP);
-		EntityFactory.buildShip(enemy2, 400, 500, 20,
-				CollisionLabel.ENEMY_LABEL, Color.RED, 100);
-		enemy2.name = "Enemy 2";
-		BehaviorChain m = new BehaviorChain("Attack Pattern",
-				"Move around and attack.", true);
-		m.addWait(2000);
-		m.addBehavior(new TravelSimple(.8f, .4f), 500);
-		m.addBehavior(new TravelSimple(.5f, .6f), 500);
-		m.addBehavior(new BasicAttackTrait(), 500);
-		enemy2.addTrait(m);
-		enemy2.addTrait(new LoopScreenTrait());
-
-		// Build enemy 2
-		Entity enemy3 = level.getBlankEntity(EntityType.SHIP);
-		EntityFactory.buildShip(enemy3, 300, 500, 20,
-				CollisionLabel.ENEMY_LABEL, Color.RED, 100);
-		enemy3.name = "Enemy 3";
-		BehaviorChain m3 = new BehaviorChain("Attack Pattern",
-				"Move around and attack.", true);
-		m3.addBehavior(new TravelSimple(-.08f, .4f), 500);
-		m3.addBehavior(new TravelSimple(.5f, .6f), 500);
-		m3.addBehavior(new BasicAttackTrait(), 500);
-		enemy3.addTrait(m3);
-		enemy3.addTrait(new LoopScreenTrait());
+		level.getBlankEntity(EntityType.GENERATOR).addTrait(new LevelGenerator_Chainer());
 
 		viewer.setLevel(level);
 
@@ -168,13 +126,10 @@ public class TraitProjectClient {
 
 		if (username != null) {
 			GeneVectorIO.storeVector(
-					new SessionInfo(username, "-1", new SimpleDateFormat(
-							"yyyy/MM/dd HH:mm:ss").format(Calendar
-							.getInstance().getTime())), GeneVectorIO
-							.getExplorationVector());
+			        new SessionInfo(username, "-1", new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime())),
+			        GeneVectorIO.getExplorationVector());
 		} else {
-			System.err
-					.println("No username set, cannot push vector to server.");
+			System.err.println("No username set, cannot push vector to server.");
 		}
 	}
 
@@ -240,9 +195,7 @@ public class TraitProjectClient {
 			c.send("versioncheck" + VERSION);
 			boolean sameVersion = Boolean.parseBoolean(c.receive());
 			if (!sameVersion) {
-				JOptionPane
-						.showMessageDialog(null,
-								"Your client is out-of-date, please download the latest version.");
+				JOptionPane.showMessageDialog(null, "Your client is out-of-date, please download the latest version.");
 				System.exit(0);
 			} else {
 				System.out.println("Client and Server versions match.");

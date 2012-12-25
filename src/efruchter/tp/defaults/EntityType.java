@@ -7,5 +7,5 @@ package efruchter.tp.defaults;
  * 
  */
 public enum EntityType {
-	PROJECTILE, SHIP, BG, NONE;
+	PROJECTILE, SHIP, BG, NONE, GENERATOR;
 }
