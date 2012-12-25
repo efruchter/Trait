@@ -26,11 +26,8 @@ import efruchter.tp.gui.CoreFrame;
 import efruchter.tp.learning.GeneVectorIO;
 import efruchter.tp.learning.database.Database.SessionInfo;
 import efruchter.tp.networking.Client;
-import efruchter.tp.trait.behavior.BehaviorChain;
 import efruchter.tp.trait.custom.ConstantHealthBoostTrait;
 import efruchter.tp.trait.custom.LoopScreenTrait;
-import efruchter.tp.trait.custom.TravelSimple;
-import efruchter.tp.trait.custom.enemy.BasicAttackTrait;
 import efruchter.tp.trait.custom.player.KeyboardControlTrait_Attack;
 import efruchter.tp.trait.custom.player.KeyboardControlTrait_Movement;
 import efruchter.tp.trait.custom.player.PlayerRadiusEditTrait;
@@ -50,6 +47,9 @@ public class TraitProjectClient {
 	private long lastFrame;
 	private int fps;
 	private long lastFPS;
+
+	private LevelGenerator_Chainer chainer;
+	private long guiUpdateDelay = 1000;
 
 	public TraitProjectClient() {
 
@@ -111,9 +111,10 @@ public class TraitProjectClient {
 		player.addTrait(new LoopScreenTrait());
 		player.addTrait(new ConstantHealthBoostTrait());
 
-		level.getBlankEntity(EntityType.GENERATOR).addTrait(new LevelGenerator_Chainer());
+		level.getBlankEntity(EntityType.GENERATOR).addTrait(chainer = new LevelGenerator_Chainer());
 
 		viewer.setLevel(level);
+		viewer.getStatisticsPanel().setGenInfo(chainer);
 
 		for (int i = 0; i < 200; i++) {
 			Entity e = level.getBlankEntity(EntityType.BG);
@@ -135,7 +136,12 @@ public class TraitProjectClient {
 
 	public void update(int delta) {
 		level.onUpdate(delta);
-		updateFPS(); // update FPS Counter
+		updateFPS();
+		if ((guiUpdateDelay -= delta) < 0) {
+			guiUpdateDelay = 1000;
+			if (chainer != null)
+				viewer.getStatisticsPanel().setGenInfo(chainer);
+		}
 	}
 
 	/**
@@ -165,7 +171,6 @@ public class TraitProjectClient {
 	 */
 	public void updateFPS() {
 		if (getTime() - lastFPS > 1000) {
-			// Display.setTitle("FPS: " + fps);
 			viewer.getStatisticsPanel().setFPS(fps);
 			fps = 0;
 			lastFPS += 1000;

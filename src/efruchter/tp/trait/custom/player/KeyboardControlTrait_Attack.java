@@ -44,7 +44,7 @@ public class KeyboardControlTrait_Attack extends Trait {
 		registerGene(spread = GeneVectorIO.getExplorationVector().storeGene("player.attack.spread",
 				new Gene("Launch Spread", "Bullet spread.", 0, 1, 0), false));
 		registerGene(wiggleBigness = GeneVectorIO.getExplorationVector().storeGene("player.attack.wiggle",
-				new Gene("Wiggle", "Maximum wiggle magnitude."), false));
+				new Gene("Wiggle", "Maximum wiggle magnitude.", 0 , 1, .5f), false));
 		registerGene(amount = GeneVectorIO.getExplorationVector().storeGene("player.attack.amount",
 				new Gene("# of Bullets", "Amount of bullets per salvo.", 0, 10, 1), false));
 		registerGene(damage = GeneVectorIO.getExplorationVector().storeGene("player.attack.damage",
@@ -78,9 +78,9 @@ public class KeyboardControlTrait_Attack extends Trait {
 					p.addTrait(new DieOffScreenTrait());
 					p.addTrait(new TimedDeathTrait(10));
 
-                    final WiggleTrait w = new WiggleTrait(20 * wiggleBigness.getExpression());
+                    final WiggleTrait w = new WiggleTrait(20);
 					w.wiggleChance.setExpression(1);
-					w.wiggleIntensity.setExpression(1);
+					w.wiggleIntensity.setExpression(wiggleBigness.getExpression());
 					
 					p.addTrait(w);
 
