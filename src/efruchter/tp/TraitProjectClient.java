@@ -57,8 +57,6 @@ public class TraitProjectClient {
 
 		level = new Level();
 
-		versionCheck();
-
 		resetSim();
 
 		try {
@@ -237,7 +235,9 @@ public class TraitProjectClient {
 
 		isLocalServer = params.contains("-l");
 
-		// UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+		versionCheck();
+		
+		//UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
 
 		// Start the game
 		new TraitProjectClient();
