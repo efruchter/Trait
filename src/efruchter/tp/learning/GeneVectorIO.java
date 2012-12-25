@@ -22,7 +22,10 @@ public class GeneVectorIO {
 	 */
 	public static GeneVector getExplorationVector() {
 		if (exploration == null) {
-			reloadExplorationVector();
+			if(TraitProjectClient.versionVerified)
+				reloadExplorationVector();
+			else
+				return new GeneVector();
 		}
 
 		return exploration;

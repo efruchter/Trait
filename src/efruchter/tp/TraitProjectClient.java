@@ -50,10 +50,13 @@ public class TraitProjectClient {
 
 	private LevelGenerator_Chainer chainer;
 	private long guiUpdateDelay = 1000;
+	public static boolean versionVerified = false;
 
 	public TraitProjectClient() {
 
 		viewer = new CoreFrame(this);
+
+		versionCheck();
 
 		level = new Level();
 
@@ -202,6 +205,7 @@ public class TraitProjectClient {
 				System.exit(0);
 			} else {
 				System.out.println("Client and Server versions match.");
+				versionVerified = true;
 				return;
 			}
 		} catch (Exception e) {
@@ -235,9 +239,7 @@ public class TraitProjectClient {
 
 		isLocalServer = params.contains("-l");
 
-		versionCheck();
-		
-		//UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+		// UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
 
 		// Start the game
 		new TraitProjectClient();
