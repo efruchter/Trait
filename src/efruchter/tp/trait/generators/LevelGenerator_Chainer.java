@@ -21,6 +21,7 @@ import efruchter.tp.trait.behavior.custom.KillBehavior;
 import efruchter.tp.trait.custom.CurveInterpolator;
 import efruchter.tp.trait.custom.enemy.BasicAttackTrait;
 import efruchter.tp.trait.gene.Gene;
+import efruchter.tp.trait.gene.GeneCurve;
 import efruchter.tp.util.MathUtil;
 
 /**
@@ -34,12 +35,12 @@ public class LevelGenerator_Chainer extends Trait {
 	public long time = 0;
 
 	// Chance of a new chain forming
-	final private Gene[] chainProb;
 	final private List<Chain> chains;
 	final public long LEVEL_LENGTH = 60000;
 
-	final public Gene probChainCont, intensity, chainDelay;
-
+	final public GeneCurve chainProb, chainDelay, probChainCont, enemySize, enemySizeVariance;
+	final public Gene intensity;
+	
 	final public static Random random = new Random();
 	public float probNewChain = 0;
 
@@ -59,6 +60,13 @@ public class LevelGenerator_Chainer extends Trait {
 		        new Gene("Chain Delay", "Delay until enemy is spawned to continue a chain.", 0, 1000, 500), false);
 		probChainCont = GeneVectorIO.getExplorationVector().storeGene("spawner.probChainCont", new Gene("probChainCont", "P(continue chain)", 0, 1, .90f), false);
 		chains = new LinkedList<Chain>();
+		
+		enemySize = GeneVectorIO.getExplorationVector().storeGene("spawner.enemy.radius",
+		        new Gene("Base Radius", "Base enemy radius.", 2, 50, 15), false);
+		
+		enemySizeVariance = GeneVectorIO.getExplorationVector().storeGene("spawner.enemy.radiusVar",
+		        new Gene("Radius variance", "Amount to possibly vary radius by.", 2, 50, 15), false);
+		
 	}
 
 	@Override

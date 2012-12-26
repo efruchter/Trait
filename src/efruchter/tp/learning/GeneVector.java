@@ -55,6 +55,15 @@ public class GeneVector {
 
         return geneMap.get(path);
     }
+    
+    public Gene storeGene(final String path, final Gene g, final boolean overwrite) {
+
+        if (overwrite || !geneMap.containsKey(path)) {
+            geneMap.put(path, g);
+        }
+
+        return geneMap.get(path);
+    }
 
     /**
      * Get a list of genes as GeneWrappers. No order guarantee.
