@@ -47,17 +47,17 @@ public class LevelGenerator_Chainer extends Trait {
 		super("Level Generator : Spawner", "");
 
 		chainProb = new Gene[4];
-		chainProb[0] = GeneVectorIO.getExplorationVector().storeGene("spawner.c1", new Gene(0, 1, 0f), false);
-		chainProb[1] = GeneVectorIO.getExplorationVector().storeGene("spawner.c2", new Gene(0, 1, 0f), false);
-		chainProb[2] = GeneVectorIO.getExplorationVector().storeGene("spawner.c3", new Gene(0, 1, .25f), false);
-		chainProb[3] = GeneVectorIO.getExplorationVector().storeGene("spawner.c4", new Gene(0, 1, .25f), false);
+		chainProb[0] = GeneVectorIO.getExplorationVector().storeGene("spawner.c1", new Gene("c0", "P(new chain). c0 on curve.", 0, 1, 0f), false);
+		chainProb[1] = GeneVectorIO.getExplorationVector().storeGene("spawner.c2", new Gene("c1", "P(new chain). c1 on curve.", 0, 1, 0f), false);
+		chainProb[2] = GeneVectorIO.getExplorationVector().storeGene("spawner.c3", new Gene("c2", "P(new chain). c2 on curve.", 0, 1, .16f), false);
+		chainProb[3] = GeneVectorIO.getExplorationVector().storeGene("spawner.c4", new Gene("c3", "P(new chain). c3 on curve.", 0, 1, .25f), false);
 
 		intensity = GeneVectorIO.getExplorationVector().storeGene("spawner.intensity",
 		        new Gene("Intensity", "Intensity of everything.", 0, 1, 1f / 2f), false);
 
 		chainDelay = GeneVectorIO.getExplorationVector().storeGene("spawner.chainDelay",
-		        new Gene("Chain Delay", "Delay until", 0, 1000, 500), false);
-		probChainCont = GeneVectorIO.getExplorationVector().storeGene("spawner.probChainCont", new Gene(0, 1, .90f), false);
+		        new Gene("Chain Delay", "Delay until enemy is spawned to continue a chain.", 0, 1000, 500), false);
+		probChainCont = GeneVectorIO.getExplorationVector().storeGene("spawner.probChainCont", new Gene("probChainCont", "P(continue chain)", 0, 1, .90f), false);
 		chains = new LinkedList<Chain>();
 	}
 
@@ -111,7 +111,7 @@ public class LevelGenerator_Chainer extends Trait {
 
 			public Entity gen(final Level level) {
 				Entity e = level.getBlankEntity(EntityType.SHIP);
-				EntityFactory.buildShip(e, -100, -100, 20, CollisionLabel.ENEMY_LABEL, Color.RED, 10);
+				EntityFactory.buildShip(e, -100, -100, 15, CollisionLabel.ENEMY_LABEL, Color.RED, 10);
 
 				// Pathing
 				final BehaviorChain c = new BehaviorChain(false);
@@ -135,7 +135,8 @@ public class LevelGenerator_Chainer extends Trait {
 			public void precalc() {
 				// TODO Auto-generated method stub
 				curve = new Point.Float[]{new Point.Float(Display.getWidth() * random.nextFloat(), Display.getHeight() + 20),
-				        new Point.Float(Display.getWidth() * random.nextFloat(), Display.getHeight() * random.nextFloat()),
+				        new Point.Float(Display.getWidth() * random.nextFloat(), Display.getHeight() - Display.getHeight() * random.nextFloat() * .25f),
+				        new Point.Float(Display.getWidth() * random.nextFloat(), Display.getHeight() * random.nextFloat() * .75f),
 				        new Point.Float(Display.getWidth() * random.nextFloat(), -20)};
 				tracking = random.nextFloat() < intensity.getExpression();
 			}

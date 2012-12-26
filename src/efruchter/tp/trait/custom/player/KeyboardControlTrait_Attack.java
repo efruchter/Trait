@@ -29,7 +29,6 @@ public class KeyboardControlTrait_Attack extends Trait {
 
 	private float cd;
 	public final Gene coolDown, spread, wiggleBigness, amount, damage, dx, dy;
-	private final int key;
 
 	/**
 	 * Create standard attack controller.
@@ -37,7 +36,7 @@ public class KeyboardControlTrait_Attack extends Trait {
 	 * @param keyChar
 	 *            character to launch salvo.
 	 */
-	public KeyboardControlTrait_Attack(final int keyChar) {
+	public KeyboardControlTrait_Attack() {
 		super("Attack Control", "Entity attack linked to keyboard inputs.");
 		registerGene(coolDown = GeneVectorIO.getExplorationVector().storeGene("player.attack.cooldown",
 		        new Gene("Cool Down Delay", "The projectile cooldown.", 0, 1000, 64), false));
@@ -53,8 +52,6 @@ public class KeyboardControlTrait_Attack extends Trait {
 		        false));
 		registerGene(dy = GeneVectorIO.getExplorationVector().storeGene("player.attack.dy", new Gene("dy", "dy travel per step", -1, 1, 1),
 		        false));
-
-		this.key = keyChar;
 	}
 
 	@Override
@@ -69,7 +66,7 @@ public class KeyboardControlTrait_Attack extends Trait {
 			cd += delta;
 		}
 		if (cd >= coolDown.getValue()) {
-			if (Keyboard.isKeyDown(key)) {
+			if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
 				cd = 0;
 				for (int i = 0; i < amount.getValue(); i++) {
 					final Entity p = level.getBlankEntity(EntityType.PROJECTILE);

@@ -8,6 +8,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import efruchter.tp.TraitProjectClient;
+import efruchter.tp.entity.Entity;
 import efruchter.tp.trait.generators.LevelGenerator_Chainer;
 
 @SuppressWarnings("serial")
@@ -40,18 +41,20 @@ public class StatisticsPanel extends JPanel {
 			fpsLabel.setText("FPS: " + (this.fps = fps));
 	}
 
-	public void setEntityCount(long entities) {
+	private void setEntityCount(long entities) {
 		if (this.entities != entities)
 			entitesLabel.setText("Entities: " + (this.entities = entities));
 	}
 
-	public void setGenInfo(final LevelGenerator_Chainer chainer) {
+	public void setInfo(final LevelGenerator_Chainer chainer) {
 		StringBuffer b = new StringBuffer();
-		//time
+		// time
 		b.append("Time: ").append(chainer.time).append("/").append(chainer.LEVEL_LENGTH);
 		b.append(" | ");
-		b.append("P(NC): ").append(chainer.probNewChain);
-		
+		b.append("P(new chain): ").append(chainer.probNewChain);
+
 		genChainerInfo.setText(b.toString());
+
+		setEntityCount(Entity.getActiveEntityCount());
 	}
 }

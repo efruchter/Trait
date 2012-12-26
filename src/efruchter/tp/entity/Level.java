@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import efruchter.tp.defaults.EntityType;
 import efruchter.tp.learning.GeneVector;
@@ -75,20 +76,11 @@ public class Level {
 	}
 
 	public void onDeath() {
-		for (final Entity b : entities.get(EntityType.SHIP)) {
-			b.onDeath(this);
-		}
-
-		for (final Entity b : entities.get(EntityType.PROJECTILE)) {
-			b.onDeath(this);
-		}
-
-		for (final Entity b : entities.get(EntityType.BG)) {
-			b.onDeath(this);
-		}
-
-		for (final Entity b : entities.get(EntityType.GENERATOR)) {
-			b.onDeath(this);
+		for (final Entry<EntityType, ArrayList<Entity>> entry : entities.entrySet()) {
+			for (Entity e : entry.getValue()) {
+				e.setActive(false);
+				e.onDeath(this);
+			}
 		}
 	}
 

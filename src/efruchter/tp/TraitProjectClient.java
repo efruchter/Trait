@@ -11,7 +11,6 @@ import javax.swing.JOptionPane;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
@@ -102,9 +101,9 @@ public class TraitProjectClient {
 		Entity player = level.getBlankEntity(EntityType.SHIP);
 		EntityFactory.buildShip(player, 100, 100, 10, CollisionLabel.PLAYER_LABEL, Color.CYAN, 100);
 		// Add control traits to player with arrow-keys
-		player.addTrait(new KeyboardControlTrait_Movement(Keyboard.KEY_UP, Keyboard.KEY_DOWN, Keyboard.KEY_LEFT, Keyboard.KEY_RIGHT));
+		player.addTrait(new KeyboardControlTrait_Movement());
 
-		player.addTrait(new KeyboardControlTrait_Attack(Keyboard.KEY_SPACE));
+		player.addTrait(new KeyboardControlTrait_Attack());
 		// Radius editing trait
 		PlayerRadiusEditTrait rad = new PlayerRadiusEditTrait(3, 20, 10);
 		player.addTrait(rad);
@@ -117,13 +116,14 @@ public class TraitProjectClient {
 		level.getBlankEntity(EntityType.GENERATOR).addTrait(chainer = new LevelGenerator_Chainer());
 
 		viewer.setLevel(level);
-		viewer.getStatisticsPanel().setGenInfo(chainer);
+		viewer.getStatisticsPanel().setInfo(chainer);
 
 		for (int i = 0; i < 200; i++) {
 			Entity e = level.getBlankEntity(EntityType.BG);
 			EntityFactory.buildBackgroundStar(e);
 		}
 
+		this.level.onDeath();
 		this.level = level;
 
 		final String username = PREFERENCES.get("username", null);
@@ -143,7 +143,7 @@ public class TraitProjectClient {
 		if ((guiUpdateDelay -= delta) < 0) {
 			guiUpdateDelay = 1000;
 			if (chainer != null)
-				viewer.getStatisticsPanel().setGenInfo(chainer);
+				viewer.getStatisticsPanel().setInfo(chainer);
 		}
 	}
 

@@ -48,7 +48,7 @@ public class BasicAttackTrait extends Trait {
 		if (cd >= coolDown.getValue()) {
 			cd = 0;
 			final Entity p = level.getBlankEntity(EntityType.PROJECTILE);
-			EntityFactory.buildProjectile(p, self.x, self.y, 4, CollisionLabel.ENEMY_LABEL, Color.ORANGE, damage.getValue());
+			EntityFactory.buildProjectile(p, self.x, self.y, 2, CollisionLabel.ENEMY_LABEL, Color.ORANGE, damage.getValue());
 			p.addTrait(new DieOffScreenTrait());
 			p.addTrait(new TimedDeathTrait(10));
 
@@ -61,7 +61,7 @@ public class BasicAttackTrait extends Trait {
 
 			p.addTrait(t);
 
-			final RadiusEditTrait rad = new RadiusEditTrait(3, 10, 10);
+			final RadiusEditTrait rad = new RadiusEditTrait(1, 8, 0);
 			p.addTrait(rad);
 
 			p.addTrait(new GeneExpressionInterpolator(rad.radius, 0, 1, 200));
