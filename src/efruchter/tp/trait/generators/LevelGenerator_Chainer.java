@@ -17,11 +17,11 @@ import efruchter.tp.learning.GeneVectorIO;
 import efruchter.tp.trait.Trait;
 import efruchter.tp.trait.behavior.Behavior;
 import efruchter.tp.trait.behavior.BehaviorChain;
-import efruchter.tp.trait.behavior.KillBehavior;
+import efruchter.tp.trait.behavior.custom.KillBehavior;
 import efruchter.tp.trait.custom.CurveInterpolator;
 import efruchter.tp.trait.custom.enemy.BasicAttackTrait;
 import efruchter.tp.trait.gene.Gene;
-import efruchter.tp.util.CurveUtil;
+import efruchter.tp.util.MathUtil;
 
 /**
  * Not really sure how to approach this. Trying some stuff.
@@ -38,8 +38,7 @@ public class LevelGenerator_Chainer extends Trait {
 	final private List<Chain> chains;
 	final public long LEVEL_LENGTH = 60000;
 
-	final public Gene probChainCont, intensity;
-	final public long chaindelay = 500;
+	final public Gene probChainCont, intensity, chainDelay;
 
 	final public static Random random = new Random();
 	public float probNewChain = 0;
@@ -56,6 +55,7 @@ public class LevelGenerator_Chainer extends Trait {
 		intensity = GeneVectorIO.getExplorationVector().storeGene("spawner.intensity",
 		        new Gene("Intensity", "Intensity of everything.", 0, 1, 1f / 2f), false);
 
+		chainDelay = GeneVectorIO.getExplorationVector().storeGene("spawner.chainDelay", new Gene("Chain Delay", "Delay until", 0, 1000, 500), false);
 		probChainCont = GeneVectorIO.getExplorationVector().storeGene("spawner.probChainCont", new Gene(0, 1, .90f), false);
 		chains = new LinkedList<Chain>();
 	}
@@ -78,7 +78,7 @@ public class LevelGenerator_Chainer extends Trait {
 		final float randNum = (float) Math.random();
 
 		// Gen
-		probNewChain = CurveUtil.cubicInterpolate(chainProb[0].getExpression(), chainProb[1].getExpression(), chainProb[2].getExpression(),
+		probNewChain = MathUtil.cubicInterpolate(chainProb[0].getExpression(), chainProb[1].getExpression(), chainProb[2].getExpression(),
 		        chainProb[3].getExpression(), (float) time / LEVEL_LENGTH);
 
 		// start new chain?
@@ -97,7 +97,7 @@ public class LevelGenerator_Chainer extends Trait {
 				} else {
 					killChain = true;
 				}
-				chain.remaining = chaindelay;
+				chain.remaining = (long) chainDelay.getValue();
 			}
 			if (killChain) {
 				chains.remove(chain);

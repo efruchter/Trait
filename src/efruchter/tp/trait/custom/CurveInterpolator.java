@@ -6,7 +6,7 @@ import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
 import efruchter.tp.trait.Trait;
 import efruchter.tp.trait.behavior.BehaviorChain;
-import efruchter.tp.util.CurveUtil;
+import efruchter.tp.util.MathUtil;
 
 /**
  * Cubic-spline interpolation between two points. (Catmull-Rom).
@@ -54,8 +54,8 @@ public class CurveInterpolator extends Trait {
 	public void onUpdate(final Entity self, final Level level, final long delta) {
 		currTime += delta;
 		
-		self.x = CurveUtil.cubicInterpolate(x0.x, x1.x, x2.x, x3.x, (float) currTime / duration);
-		self.y = CurveUtil.cubicInterpolate(x0.y, x1.y, x2.y, x3.y, (float) currTime / duration);
+		self.x = MathUtil.cubicInterpolate(x0.x, x1.x, x2.x, x3.x, (float) currTime / duration);
+		self.y = MathUtil.cubicInterpolate(x0.y, x1.y, x2.y, x3.y, (float) currTime / duration);
 	}
 	
 	@Override

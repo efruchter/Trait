@@ -29,12 +29,7 @@ public class Gene {
 	}
 
 	public Gene(final float minVal, final float maxVal, final float initialVal) {
-		this.name = "NO_NAME";
-		this.info = "NO_INFO";
-		this.minVal = minVal;
-		this.maxVal = maxVal;
-		setValue(initialVal);
-
+		this("NO_NAME", "NO_INFO", minVal, maxVal, initialVal);
 	}
 	/**
 	 * Build a gene with min/max value of 0/1, and initial value set to .5f.

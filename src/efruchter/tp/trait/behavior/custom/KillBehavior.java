@@ -1,7 +1,8 @@
-package efruchter.tp.trait.behavior;
+package efruchter.tp.trait.behavior.custom;
 
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
+import efruchter.tp.trait.behavior.Behavior;
 
 public class KillBehavior implements Behavior {
 
