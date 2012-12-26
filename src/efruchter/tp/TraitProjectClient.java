@@ -30,6 +30,7 @@ import efruchter.tp.trait.custom.LoopScreenTrait;
 import efruchter.tp.trait.custom.player.KeyboardControlTrait_Attack;
 import efruchter.tp.trait.custom.player.KeyboardControlTrait_Movement;
 import efruchter.tp.trait.custom.player.PlayerRadiusEditTrait;
+import efruchter.tp.trait.custom.player.SetPlayerTrait;
 import efruchter.tp.trait.generators.LevelGenerator_Chainer;
 
 /**
@@ -111,6 +112,7 @@ public class TraitProjectClient {
 		// Add screen loop trait
 		player.addTrait(new LoopScreenTrait());
 		player.addTrait(new ConstantHealthBoostTrait());
+		player.addTrait(new SetPlayerTrait());
 
 		level.getBlankEntity(EntityType.GENERATOR).addTrait(chainer = new LevelGenerator_Chainer());
 

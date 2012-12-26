@@ -55,7 +55,8 @@ public class LevelGenerator_Chainer extends Trait {
 		intensity = GeneVectorIO.getExplorationVector().storeGene("spawner.intensity",
 		        new Gene("Intensity", "Intensity of everything.", 0, 1, 1f / 2f), false);
 
-		chainDelay = GeneVectorIO.getExplorationVector().storeGene("spawner.chainDelay", new Gene("Chain Delay", "Delay until", 0, 1000, 500), false);
+		chainDelay = GeneVectorIO.getExplorationVector().storeGene("spawner.chainDelay",
+		        new Gene("Chain Delay", "Delay until", 0, 1000, 500), false);
 		probChainCont = GeneVectorIO.getExplorationVector().storeGene("spawner.probChainCont", new Gene(0, 1, .90f), false);
 		chains = new LinkedList<Chain>();
 	}
@@ -121,13 +122,14 @@ public class LevelGenerator_Chainer extends Trait {
 				// attacking
 				final BehaviorChain a = new BehaviorChain(true);
 				a.addBehavior(Behavior.EMPTY, 1000);
-				a.addBehavior(new BasicAttackTrait(), 500);
+				a.addBehavior(new BasicAttackTrait(tracking), 500);
 				e.addTrait(a);
 
 				return e;
 			}
 
 			private Point.Float[] curve;
+			private boolean tracking;
 
 			@Override
 			public void precalc() {
@@ -135,6 +137,7 @@ public class LevelGenerator_Chainer extends Trait {
 				curve = new Point.Float[]{new Point.Float(Display.getWidth() * random.nextFloat(), Display.getHeight() + 20),
 				        new Point.Float(Display.getWidth() * random.nextFloat(), Display.getHeight() * random.nextFloat()),
 				        new Point.Float(Display.getWidth() * random.nextFloat(), -20)};
+				tracking = random.nextFloat() < intensity.getExpression();
 			}
 		};
 	}

@@ -27,6 +27,8 @@ public class Level {
 	private final GeneVector explorationVector;
 	private final List<Behavior> renderBehaviors;
 
+	private Entity player;
+
 	public Level() {
 		entities = new HashMap<EntityType, ArrayList<Entity>>();
 		recycle = new HashMap<EntityType, LinkedList<Entity>>();
@@ -193,5 +195,13 @@ public class Level {
 		e.setActive(true);
 
 		return e;
+	}
+
+	public Entity getPlayer() {
+		return player;
+	}
+
+	public void setPlayer(Entity player) {
+		this.player = player;
 	}
 }

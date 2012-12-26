@@ -30,7 +30,6 @@ public class Entity {
 	private final List<Trait> traits;
 	private long damageTimer = 0;
 	
-	private static long entityNum = 0;
 	private static long activeEntities = 0;
 	
 	public Entity() {
@@ -137,7 +136,7 @@ public class Entity {
 	}
 	
 	public void reset() {
-		this.name = "" + entityNum++;
+		this.name = "";
 		this.baseColor = Color.BLACK;
 		x = y = radius = 0;
 		health = 10;

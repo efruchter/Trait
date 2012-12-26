@@ -7,11 +7,11 @@ import efruchter.tp.defaults.EntityFactory;
 import efruchter.tp.defaults.EntityType;
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
+import efruchter.tp.trait.MoveTrait;
 import efruchter.tp.trait.Trait;
 import efruchter.tp.trait.custom.DieOffScreenTrait;
 import efruchter.tp.trait.custom.RadiusEditTrait;
 import efruchter.tp.trait.custom.TimedDeathTrait;
-import efruchter.tp.trait.custom.TravelSimple;
 import efruchter.tp.trait.gene.Gene;
 import efruchter.tp.trait.gene.GeneExpressionInterpolator;
 
@@ -25,14 +25,13 @@ public class BasicAttackTrait extends Trait {
 
 	private float cd;
 	public final Gene coolDown, damage;
+	public boolean tracking;
 
-	/**
-	 * Create standard attack controller.
-	 */
-	public BasicAttackTrait() {
+	public BasicAttackTrait(final boolean tracking) {
 		super("Basic Attack", "An auto-attack.");
 		registerGene(coolDown = new Gene("Cool Down Delay", "The projectile cooldown.", 0, 1000, 250));
 		registerGene(damage = new Gene("Damage Per Bullet", "Amount of damage per bullet.", 0, 10, 1));
+		this.tracking = tracking;
 	}
 
 	@Override
@@ -48,22 +47,25 @@ public class BasicAttackTrait extends Trait {
 		}
 		if (cd >= coolDown.getValue()) {
 			cd = 0;
-				final Entity p = level.getBlankEntity(EntityType.PROJECTILE);
-				EntityFactory.buildProjectile(p, self.x, self.y, 4, CollisionLabel.ENEMY_LABEL, Color.ORANGE, damage.getValue());
-				p.addTrait(new DieOffScreenTrait());
-				p.addTrait(new TimedDeathTrait(10));
+			final Entity p = level.getBlankEntity(EntityType.PROJECTILE);
+			EntityFactory.buildProjectile(p, self.x, self.y, 4, CollisionLabel.ENEMY_LABEL, Color.ORANGE, damage.getValue());
+			p.addTrait(new DieOffScreenTrait());
+			p.addTrait(new TimedDeathTrait(10));
 
-				final TravelSimple t = new TravelSimple();
+			final MoveTrait t;
+			if (tracking && level.getPlayer() != null) {
+				t = new MoveTrait(level.getPlayer().x - self.x, level.getPlayer().y - self.y, .25f, true);
+			} else {
+				t = new MoveTrait(0, -1, .25f);
+			}
 
-				t.dy.setExpression(.4f);
+			p.addTrait(t);
 
-				p.addTrait(t);
+			final RadiusEditTrait rad = new RadiusEditTrait(3, 10, 10);
+			p.addTrait(rad);
 
-				final RadiusEditTrait rad = new RadiusEditTrait(3, 10, 10);
-				p.addTrait(rad);
+			p.addTrait(new GeneExpressionInterpolator(rad.radius, 0, 1, 200));
 
-				p.addTrait(new GeneExpressionInterpolator(rad.radius, 0, 1, 200));
-			
 		}
 	}
 
