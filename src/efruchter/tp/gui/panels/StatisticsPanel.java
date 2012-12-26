@@ -8,7 +8,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import efruchter.tp.TraitProjectClient;
-import efruchter.tp.generators.LevelGenerator_Chainer;
+import efruchter.tp.trait.generators.LevelGenerator_Chainer;
 
 @SuppressWarnings("serial")
 public class StatisticsPanel extends JPanel {

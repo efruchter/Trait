@@ -21,7 +21,6 @@ import efruchter.tp.defaults.EntityFactory;
 import efruchter.tp.defaults.EntityType;
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
-import efruchter.tp.generators.LevelGenerator_Chainer;
 import efruchter.tp.gui.CoreFrame;
 import efruchter.tp.learning.GeneVectorIO;
 import efruchter.tp.learning.database.Database.SessionInfo;
@@ -31,6 +30,7 @@ import efruchter.tp.trait.custom.LoopScreenTrait;
 import efruchter.tp.trait.custom.player.KeyboardControlTrait_Attack;
 import efruchter.tp.trait.custom.player.KeyboardControlTrait_Movement;
 import efruchter.tp.trait.custom.player.PlayerRadiusEditTrait;
+import efruchter.tp.trait.generators.LevelGenerator_Chainer;
 
 /**
  * LWJGL Trait-based shmup.

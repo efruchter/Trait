@@ -1,4 +1,4 @@
-package efruchter.tp.generators;
+package efruchter.tp.trait.generators;
 
 import java.awt.Color;
 import java.awt.Point;
@@ -105,8 +105,8 @@ public class LevelGenerator_Chainer extends Trait {
 		}
 	}
 
-	private efruchter.tp.generators.LevelGenerator_Chainer.Chain.GenFunction getNewChainFunction() {
-		return new efruchter.tp.generators.LevelGenerator_Chainer.Chain.GenFunction() {
+	private efruchter.tp.trait.generators.LevelGenerator_Chainer.Chain.GenFunction getNewChainFunction() {
+		return new efruchter.tp.trait.generators.LevelGenerator_Chainer.Chain.GenFunction() {
 
 			public Entity gen(final Level level) {
 				Entity e = level.getBlankEntity(EntityType.SHIP);
