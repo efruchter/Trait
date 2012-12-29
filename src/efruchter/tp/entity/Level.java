@@ -9,8 +9,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import efruchter.tp.defaults.EntityType;
-import efruchter.tp.learning.GeneVector;
-import efruchter.tp.learning.GeneVectorIO;
 import efruchter.tp.trait.behavior.Behavior;
 
 /**
@@ -25,7 +23,6 @@ public class Level {
 	private final Map<EntityType, LinkedList<Entity>> recycle;
 
 	private final List<Entity> add, remove;
-	private final GeneVector explorationVector;
 	private final List<Behavior> renderBehaviors;
 
 	private Entity player;
@@ -48,7 +45,6 @@ public class Level {
 		remove = new LinkedList<Entity>();
 
 		renderBehaviors = new LinkedList<Behavior>();
-		explorationVector = GeneVectorIO.getExplorationVector();
 	}
 
 	public void addRenderBehavior(final Behavior beh) {
@@ -155,10 +151,6 @@ public class Level {
 
 	public List<Entity> getEntities(EntityType type) {
 		return entities.get(type);
-	}
-
-	public GeneVector getExplorationVector() {
-		return explorationVector;
 	}
 
 	/**

@@ -21,24 +21,22 @@ public class GeneVectorIO {
 	 * @return the current exploration vector.
 	 */
 	public static GeneVector getExplorationVector() {
-		if (exploration == null) {
-			if(TraitProjectClient.versionVerified)
-				reloadExplorationVector();
-			else
-				return new GeneVector();
-		}
-
+		if (exploration == null)
+			reloadExplorationVector();
 		return exploration;
 	}
 
-	public static boolean storeVector(final SessionInfo info, final GeneVector vector) {
+	public static boolean storeVector(final SessionInfo info,
+			final GeneVector vector) {
 		final Client c = TraitProjectClient.getClient();
 		try {
 			c.reconnect();
-			c.send("store" + SEPARATOR + info.username + SEPARATOR + info.score + SEPARATOR + info.date + SEPARATOR + vector.toDataString());
+			c.send("store" + SEPARATOR + info.username + SEPARATOR + info.score
+					+ SEPARATOR + info.date + SEPARATOR + vector.toDataString());
 			boolean suc = Boolean.parseBoolean(c.receive());
 			if (suc)
-				System.out.println("Successfully stored gene vector in database.");
+				System.out
+						.println("Successfully stored gene vector in database.");
 			return suc;
 		} catch (IOException e) {
 
@@ -61,7 +59,8 @@ public class GeneVectorIO {
 			c.reconnect();
 			c.send("request");
 			final GeneVector geneVector = new GeneVector();
-			geneVector.fromDataString(c.receive().replace("EXPLORE" + GeneVectorIO.SEPARATOR, ""));
+			geneVector.fromDataString(c.receive().replace(
+					"EXPLORE" + GeneVectorIO.SEPARATOR, ""));
 			exploration = geneVector;
 			System.out.println("Successfully read gene vector from server.");
 			return;
@@ -76,6 +75,7 @@ public class GeneVectorIO {
 				e.printStackTrace();
 			}
 		}
-		System.err.println("Cannot get Gene Vector from server, using defaults.");
+		System.err
+				.println("Cannot get Gene Vector from server, using defaults.");
 	}
 }
