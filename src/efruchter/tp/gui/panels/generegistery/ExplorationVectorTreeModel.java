@@ -6,7 +6,7 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
-import efruchter.tp.entity.Level;
+import efruchter.tp.learning.GeneVector;
 import efruchter.tp.learning.GeneVector.GeneWrapper;
 
 public class ExplorationVectorTreeModel implements TreeModel {
@@ -14,8 +14,8 @@ public class ExplorationVectorTreeModel implements TreeModel {
 	final private List<GeneWrapper> register;
 	final private String root = "Current Gene Vector";
 	
-	public ExplorationVectorTreeModel(final Level level) {
-		this.register = level.getExplorationVector().getGenes();
+	public ExplorationVectorTreeModel(final GeneVector vector) {
+		this.register = vector.getGenes();
 	}
 	
 	@Override

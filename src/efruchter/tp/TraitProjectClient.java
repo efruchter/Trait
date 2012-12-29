@@ -33,7 +33,7 @@ import efruchter.tp.trait.custom.player.SetPlayerTrait;
 import efruchter.tp.trait.generators.LevelGenerator_Chainer;
 
 /**
- * LWJGL Trait-based shmup.
+ * LWJGL Trait-based shmup. This class is a bit messy, needs some splitting up.
  * 
  * @author toriscope
  */
@@ -50,7 +50,6 @@ public class TraitProjectClient {
 
 	private LevelGenerator_Chainer chainer;
 	private long guiUpdateDelay = 1000;
-	public static boolean versionVerified = false;
 
 	public TraitProjectClient() {
 
@@ -191,7 +190,6 @@ public class TraitProjectClient {
 	public void renderGL(long delta) {
 		// Clear The Screen And The Depth Buffer
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-
 		level.renderGL(delta);
 	}
 
@@ -207,7 +205,6 @@ public class TraitProjectClient {
 				System.exit(0);
 			} else {
 				System.out.println("Client and Server versions match.");
-				versionVerified = true;
 				return;
 			}
 		} catch (Exception e) {

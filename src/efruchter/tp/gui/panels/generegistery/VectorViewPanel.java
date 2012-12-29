@@ -19,6 +19,8 @@ import javax.swing.tree.TreeSelectionModel;
 import efruchter.tp.TraitProjectClient;
 import efruchter.tp.entity.Level;
 import efruchter.tp.gui.panels.level.GeneralEditor;
+import efruchter.tp.learning.GeneVector;
+import efruchter.tp.learning.GeneVectorIO;
 
 /**
  * INCOMING
@@ -39,7 +41,7 @@ public class VectorViewPanel extends JPanel implements TreeSelectionListener {
 		tree = new JTree();
 		tree.setExpandsSelectedPaths(true);
 		tree.setEditable(false);
-		tree.setModel(new ExplorationVectorTreeModel(level));
+		tree.setModel(new ExplorationVectorTreeModel(new GeneVector()));
 
 		// Add to panel
 		final JScrollPane pane = new JScrollPane(tree);
@@ -76,7 +78,7 @@ public class VectorViewPanel extends JPanel implements TreeSelectionListener {
 	}
 
 	public void setLevel(final Level level) {
-		tree.setModel(new ExplorationVectorTreeModel(level));
+		tree.setModel(new ExplorationVectorTreeModel(GeneVectorIO.getExplorationVector()));
 		genEditor.setEditing(null);
 	}
 
