@@ -35,8 +35,7 @@ public class GeneVectorIO {
 					+ SEPARATOR + info.date + SEPARATOR + vector.toDataString());
 			boolean suc = Boolean.parseBoolean(c.receive());
 			if (suc)
-				System.out
-						.println("Successfully stored gene vector in database.");
+				System.out.println("Successfully stored gene vector in database.");
 			return suc;
 		} catch (IOException e) {
 
@@ -59,8 +58,7 @@ public class GeneVectorIO {
 			c.reconnect();
 			c.send("request");
 			final GeneVector geneVector = new GeneVector();
-			geneVector.fromDataString(c.receive().replace(
-					"EXPLORE" + GeneVectorIO.SEPARATOR, ""));
+			geneVector.fromDataString(c.receive().replace("EXPLORE" + GeneVectorIO.SEPARATOR, ""));
 			exploration = geneVector;
 			System.out.println("Successfully read gene vector from server.");
 			return;
@@ -75,7 +73,6 @@ public class GeneVectorIO {
 				e.printStackTrace();
 			}
 		}
-		System.err
-				.println("Cannot get Gene Vector from server, using defaults.");
+		System.err.println("Cannot get Gene Vector from server, using defaults.");
 	}
 }

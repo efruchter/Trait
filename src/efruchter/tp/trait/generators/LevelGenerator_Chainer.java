@@ -22,7 +22,6 @@ import efruchter.tp.trait.custom.CurveInterpolator;
 import efruchter.tp.trait.custom.enemy.BasicAttackTrait;
 import efruchter.tp.trait.gene.Gene;
 import efruchter.tp.trait.gene.GeneCurve;
-import efruchter.tp.util.MathUtil;
 
 /**
  * Not really sure how to approach this. Trying some stuff.
@@ -38,7 +37,7 @@ public class LevelGenerator_Chainer extends Trait {
 	final private List<Chain> chains;
 	final public long LEVEL_LENGTH = 60000;
 
-	final public GeneCurve chainProb, chainDelay, probChainCont, enemySize, enemySizeVariance;
+	final public GeneCurve chainProb, chainDelay, probChainCont, enemySize, enemyHealth;
 	final public Gene intensity;
 	
 	final public static Random random = new Random();
@@ -47,25 +46,23 @@ public class LevelGenerator_Chainer extends Trait {
 	public LevelGenerator_Chainer() {
 		super("Level Generator : Spawner", "");
 
-		chainProb = new Gene[4];
-		chainProb[0] = GeneVectorIO.getExplorationVector().storeGene("spawner.c1", new Gene("c0", "P(new chain). c0 on curve.", 0, 1, 0f), false);
-		chainProb[1] = GeneVectorIO.getExplorationVector().storeGene("spawner.c2", new Gene("c1", "P(new chain). c1 on curve.", 0, 1, 0f), false);
-		chainProb[2] = GeneVectorIO.getExplorationVector().storeGene("spawner.c3", new Gene("c2", "P(new chain). c2 on curve.", 0, 1, .16f), false);
-		chainProb[3] = GeneVectorIO.getExplorationVector().storeGene("spawner.c4", new Gene("c3", "P(new chain). c3 on curve.", 0, 1, .25f), false);
-
-		intensity = GeneVectorIO.getExplorationVector().storeGene("spawner.intensity",
-		        new Gene("Intensity", "Intensity of everything.", 0, 1, 1f / 2f), false);
-
-		chainDelay = GeneVectorIO.getExplorationVector().storeGene("spawner.chainDelay",
-		        new Gene("Chain Delay", "Delay until enemy is spawned to continue a chain.", 0, 1000, 500), false);
-		probChainCont = GeneVectorIO.getExplorationVector().storeGene("spawner.probChainCont", new Gene("probChainCont", "P(continue chain)", 0, 1, .90f), false);
+		intensity = GeneVectorIO.getExplorationVector().storeGene("spawner.intensity", new Gene("Intensity", "Intensity of everything.", 0, 1, 1f / 2f), false);
+		
+		chainProb = GeneVectorIO.getExplorationVector().storeGeneCurve("spawner.newChainProb", new GeneCurve("newChainProb", "P(new chain)", 0, 1, 0), false);
+		{
+			chainProb.genes[0].setValue(0f);
+			chainProb.genes[1].setValue(0f);
+			chainProb.genes[2].setValue(.15f);
+			chainProb.genes[3].setValue(.15f);
+		}
+		
+		chainDelay = GeneVectorIO.getExplorationVector().storeGeneCurve("spawner.chainDelay", new GeneCurve("chainDelay", "Delay until enemy is spawned to continue a chain.", 0, 1000, 500), false);
+		probChainCont = GeneVectorIO.getExplorationVector().storeGeneCurve("spawner.probChainCont", new GeneCurve("probChainCont", "P(continue chain)", 0, 1, .90f), false);
+		
 		chains = new LinkedList<Chain>();
 		
-		enemySize = GeneVectorIO.getExplorationVector().storeGene("spawner.enemy.radius",
-		        new Gene("Base Radius", "Base enemy radius.", 2, 50, 15), false);
-		
-		enemySizeVariance = GeneVectorIO.getExplorationVector().storeGene("spawner.enemy.radiusVar",
-		        new Gene("Radius variance", "Amount to possibly vary radius by.", 2, 50, 15), false);
+		enemySize = GeneVectorIO.getExplorationVector().storeGeneCurve("spawner.enemy.radius", new GeneCurve("baseRadius", "Base enemy radius.", 2, 50, 15), false);
+		enemyHealth = GeneVectorIO.getExplorationVector().storeGeneCurve("spawner.enemy.health", new GeneCurve("enemyHealth", "Default enemy health on spawn.", 2, 100, 10), false);
 		
 	}
 
@@ -83,16 +80,16 @@ public class LevelGenerator_Chainer extends Trait {
 		if (time > LEVEL_LENGTH) {
 			onStart(self, level);
 		}
-
+		
+		final float mu = (float) time / LEVEL_LENGTH;
 		final float randNum = (float) Math.random();
 
 		// Gen
-		probNewChain = MathUtil.cubicInterpolate(chainProb[0].getExpression(), chainProb[1].getExpression(), chainProb[2].getExpression(),
-		        chainProb[3].getExpression(), (float) time / LEVEL_LENGTH);
+		probNewChain = chainProb.getValue(mu);
 
 		// start new chain?
 		if (randNum < probNewChain * intensity.getExpression()) {
-			Chain c = new Chain(getNewChainFunction());
+			Chain c = new Chain(getNewChainFunction(level, mu), level, mu);
 			chains.add(c);
 		}
 
@@ -101,12 +98,12 @@ public class LevelGenerator_Chainer extends Trait {
 			boolean killChain = false;
 			chain.remaining -= delta;
 			if (chain.remaining <= 0) {
-				if (random.nextFloat() < probChainCont.getExpression() * intensity.getExpression()) {
-					chain.genFunc.gen(level);
+				if (random.nextFloat() < probChainCont.getValue(mu) * intensity.getExpression()) {
+					chain.genFunc.gen(level, mu);
 				} else {
 					killChain = true;
 				}
-				chain.remaining = (long) chainDelay.getValue();
+				chain.remaining = (long) chainDelay.getValue(mu);
 			}
 			if (killChain) {
 				chains.remove(chain);
@@ -114,12 +111,12 @@ public class LevelGenerator_Chainer extends Trait {
 		}
 	}
 
-	private efruchter.tp.trait.generators.LevelGenerator_Chainer.Chain.GenFunction getNewChainFunction() {
+	private efruchter.tp.trait.generators.LevelGenerator_Chainer.Chain.GenFunction getNewChainFunction(final Level level, final float mu) {
 		return new efruchter.tp.trait.generators.LevelGenerator_Chainer.Chain.GenFunction() {
 
-			public Entity gen(final Level level) {
+			public Entity gen(final Level level, final float mu) {
 				Entity e = level.getBlankEntity(EntityType.SHIP);
-				EntityFactory.buildShip(e, -100, -100, 15, CollisionLabel.ENEMY_LABEL, Color.RED, 10);
+				EntityFactory.buildShip(e, -100f, -100f, radius, CollisionLabel.ENEMY_LABEL, Color.RED, health);
 
 				// Pathing
 				final BehaviorChain c = new BehaviorChain(false);
@@ -138,35 +135,36 @@ public class LevelGenerator_Chainer extends Trait {
 
 			private Point.Float[] curve;
 			private boolean tracking;
+			private float radius, health;
 
 			@Override
-			public void precalc() {
-				// TODO Auto-generated method stub
+			public void precalc(final Level level, final float mu) {
 				curve = new Point.Float[]{new Point.Float(Display.getWidth() * random.nextFloat(), Display.getHeight() + 20),
 				        new Point.Float(Display.getWidth() * random.nextFloat(), Display.getHeight() - Display.getHeight() * random.nextFloat() * .25f),
 				        new Point.Float(Display.getWidth() * random.nextFloat(), Display.getHeight() * random.nextFloat() * .75f),
 				        new Point.Float(Display.getWidth() * random.nextFloat(), -20)};
 				tracking = random.nextFloat() < intensity.getExpression();
+				radius = enemySize.getValue(mu);
+				health = enemyHealth.getValue(mu);
 			}
 		};
 	}
 	@Override
 	public void onDeath(Entity self, Level level) {
-		// TODO Auto-generated method stub
-
+		
 	}
 
 	private static class Chain {
 		final private GenFunction genFunc;
 		private long remaining = 0;
-		public Chain(final GenFunction genFunc) {
+		public Chain(final GenFunction genFunc, final Level level, final float mu) {
 			this.genFunc = genFunc;
-			genFunc.precalc();
+			genFunc.precalc(level, mu);
 		}
 
 		private static interface GenFunction {
-			void precalc();
-			Entity gen(final Level level);
+			void precalc(final Level level, final float mu);
+			Entity gen(final Level level, final float mu);
 		}
 	}
 }

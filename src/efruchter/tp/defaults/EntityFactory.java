@@ -31,7 +31,7 @@ public class EntityFactory {
 		e.addTrait(new DramaticDeathTrait(5, 200));
 	}
 	
-	public static void buildShip(final Entity e, final float x, final float y, final float radius, final CollisionLabel collisionLabel, final Color color, final int initialHealth) {
+	public static void buildShip(final Entity e, final float x, final float y, final float radius, final CollisionLabel collisionLabel, final Color color, final float initialHealth) {
 		e.x = x;
 		e.y = y;
 		e.radius = radius;

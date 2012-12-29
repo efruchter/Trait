@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import efruchter.tp.trait.gene.Gene;
+import efruchter.tp.trait.gene.GeneCurve;
 
 /**
  * Structure for holding a gene vector, as well as server communication code.
@@ -27,16 +28,7 @@ public class GeneVector {
         fromDataString(data);
     }
 
-    /**
-     * Store a gene in the registry. Overwrite existing.
-     *
-     * @param path path to gene in dot form
-     * @param g    gene
-     * @return gene entry in library
-     */
-    public Gene storeGene(final String path, final Gene g) {
-        return storeGene(path, g, true);
-    }
+    
 
     /**
      * Store a gene in the registry.
@@ -56,13 +48,12 @@ public class GeneVector {
         return geneMap.get(path);
     }
     
-    public Gene storeGene(final String path, final Gene g, final boolean overwrite) {
-
-        if (overwrite || !geneMap.containsKey(path)) {
-            geneMap.put(path, g);
-        }
-
-        return geneMap.get(path);
+    public GeneCurve storeGeneCurve(final String path, final GeneCurve g, final boolean overwrite) {
+    	for (int i = 0; i < g.genes.length; i++) {
+    		g.genes[i] = storeGene(path + ".c" + i, g.genes[i], overwrite);
+    	}
+    	
+    	return g;
     }
 
     /**
