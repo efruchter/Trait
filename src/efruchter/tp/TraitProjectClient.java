@@ -9,6 +9,9 @@ import java.util.prefs.Preferences;
 
 import javax.swing.JOptionPane;
 
+import efruchter.tp.trait.behavior.Behavior;
+import efruchter.tp.trait.generators.LevelGeneratorCore;
+import efruchter.tp.util.RenderUtil;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
 import org.lwjgl.opengl.Display;
@@ -24,13 +27,11 @@ import efruchter.tp.gui.CoreFrame;
 import efruchter.tp.learning.GeneVectorIO;
 import efruchter.tp.learning.database.Database.SessionInfo;
 import efruchter.tp.networking.Client;
-import efruchter.tp.trait.custom.ConstantHealthBoostTrait;
 import efruchter.tp.trait.custom.LoopScreenTrait;
 import efruchter.tp.trait.custom.player.KeyboardControlTrait_Attack;
 import efruchter.tp.trait.custom.player.KeyboardControlTrait_Movement;
 import efruchter.tp.trait.custom.player.PlayerRadiusEditTrait;
 import efruchter.tp.trait.custom.player.SetPlayerTrait;
-import efruchter.tp.trait.generators.LevelGenerator_Chainer;
 
 /**
  * LWJGL Trait-based shmup. This class is a bit messy, needs some splitting up.
@@ -48,7 +49,6 @@ public class TraitProjectClient {
 	private int fps;
 	private long lastFPS;
 
-	private LevelGenerator_Chainer chainer;
 	private long guiUpdateDelay = 1000;
 
 	public TraitProjectClient() {
@@ -97,8 +97,8 @@ public class TraitProjectClient {
 		final Level level = new Level();
 
 		// Build Player
-		Entity player = level.getBlankEntity(EntityType.SHIP);
-		EntityFactory.buildShip(player, 100, 100, 10, CollisionLabel.PLAYER_LABEL, Color.CYAN, 100);
+		final Entity player = level.getBlankEntity(EntityType.SHIP);
+		EntityFactory.buildShip(player, 100, 100, 10, CollisionLabel.PLAYER_LABEL, Color.CYAN, 50f);
 		// Add control traits to player with arrow-keys
 		player.addTrait(new KeyboardControlTrait_Movement());
 
@@ -109,10 +109,12 @@ public class TraitProjectClient {
 		player.name = "Player Ship";
 		// Add screen loop trait
 		player.addTrait(new LoopScreenTrait());
-		player.addTrait(new ConstantHealthBoostTrait());
+		//player.addTrait(new ConstantHealthBoostTrait());
 		player.addTrait(new SetPlayerTrait());
 
-		level.getBlankEntity(EntityType.GENERATOR).addTrait(chainer = new LevelGenerator_Chainer());
+        final LevelGeneratorCore chainer;
+		level.getBlankEntity(EntityType.GENERATOR).addTrait(chainer = new LevelGeneratorCore());
+        level.setGeneratorCore(chainer);
 
 		viewer.setLevel(level);
 		viewer.getStatisticsPanel().setInfo(chainer);
@@ -121,6 +123,20 @@ public class TraitProjectClient {
 			Entity e = level.getBlankEntity(EntityType.BG);
 			EntityFactory.buildBackgroundStar(e);
 		}
+
+        level.addRenderBehavior(new Behavior(){
+            public void onStart(Entity self, Level level) {}
+            public void onUpdate(final Entity self, final Level level, final long delta) {
+                RenderUtil.setColor(Color.CYAN);
+                final String playerHealth = level.getPlayer() == null ? "XX" : "" + level.getPlayer().getHealth();
+                RenderUtil.drawString(new StringBuffer()
+                                      .append("wave ").append(level.getGeneratorCore().getWaveCount())
+                                      .append("\n").append("\n")
+                                      .append("health ").append(playerHealth)
+                                      .toString(), 5, 25);
+            }
+            public void onDeath(Entity self, Level level) {}
+        });
 
 		this.level.onDeath();
 		this.level = level;
@@ -141,8 +157,9 @@ public class TraitProjectClient {
 		updateFPS();
 		if ((guiUpdateDelay -= delta) < 0) {
 			guiUpdateDelay = 1000;
-			if (chainer != null)
-				viewer.getStatisticsPanel().setInfo(chainer);
+			if (level.getGeneratorCore() != null) {
+				viewer.getStatisticsPanel().setInfo(level.getGeneratorCore());
+            }
 		}
 	}
 
@@ -173,7 +190,7 @@ public class TraitProjectClient {
 	 */
 	public void updateFPS() {
 		if (getTime() - lastFPS > 1000) {
-			viewer.getStatisticsPanel().setFPS(fps);
+            viewer.getStatisticsPanel().setFPS(fps);
 			fps = 0;
 			lastFPS += 1000;
 		}

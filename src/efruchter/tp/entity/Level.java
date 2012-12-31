@@ -10,7 +10,7 @@ import java.util.Map.Entry;
 
 import efruchter.tp.defaults.EntityType;
 import efruchter.tp.trait.behavior.Behavior;
-import efruchter.tp.util.RenderUtil;
+import efruchter.tp.trait.generators.LevelGeneratorCore;
 
 /**
  * Stores and coordinates entities.
@@ -27,6 +27,7 @@ public class Level {
 	private final List<Behavior> renderBehaviors;
 
 	private Entity player;
+    private LevelGeneratorCore generatorCore;
 
 	public Level() {
 		entities = new HashMap<EntityType, ArrayList<Entity>>();
@@ -98,10 +99,6 @@ public class Level {
 
 	public void renderGL(final long delta) {
 
-		for (final Behavior b : renderBehaviors) {
-			b.onUpdate(null, this, delta);
-		}
-
 		try {
 			for (final Entity b : entities.get(EntityType.BG)) {
 				b.getRenderBehavior().onUpdate(b, this, delta);
@@ -114,6 +111,10 @@ public class Level {
 			for (final Entity b : entities.get(EntityType.PROJECTILE)) {
 				b.getRenderBehavior().onUpdate(b, this, delta);
 			}
+
+            for (final Behavior b : renderBehaviors) {
+                b.onUpdate(null, this, delta);
+            }
 
 		} catch (final ConcurrentModificationException e) {
 
@@ -189,4 +190,12 @@ public class Level {
 	public void setPlayer(Entity player) {
 		this.player = player;
 	}
+
+    public LevelGeneratorCore getGeneratorCore() {
+        return generatorCore;
+    }
+
+    public void setGeneratorCore(LevelGeneratorCore generatorCore) {
+        this.generatorCore = generatorCore;
+    }
 }

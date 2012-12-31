@@ -6,6 +6,8 @@ import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
 import efruchter.tp.trait.behavior.Behavior;
 
+import java.awt.*;
+
 public class RenderUtil {
 
     private RenderUtil() {
@@ -88,7 +90,7 @@ public class RenderUtil {
                 return;
             GL11.glPushMatrix();
             {
-                GL11.glColor3f(self.baseColor.getRed() / 255f, self.baseColor.getGreen() / 255f, self.baseColor.getBlue() / 255f);
+                setColor(self.baseColor);
                 GL11.glTranslatef(self.x, self.y, 0);
                 RenderUtil.drawCircleFast(self.radius, 10);
             }
@@ -116,7 +118,7 @@ public class RenderUtil {
             GL11.glPushMatrix();
             {
                 rotate += Math.random();
-                GL11.glColor3f(self.baseColor.getRed() / 255f, self.baseColor.getGreen() / 255f, self.baseColor.getBlue() / 255f);
+                setColor(self.baseColor);
                 GL11.glTranslatef(self.x, self.y, 0);
                 GL11.glRotatef(rotate, 0, 0, 1);
                 RenderUtil.drawCircleFast(self.radius, 3);
@@ -145,7 +147,7 @@ public class RenderUtil {
             rotate += .1f;
             GL11.glPushMatrix();
             {
-                GL11.glColor3f(self.baseColor.getRed() / 255f, self.baseColor.getGreen() / 255f, self.baseColor.getBlue() / 255f);
+                setColor(self.baseColor);
                 GL11.glTranslatef(self.x, self.y, 0);
                 GL11.glRotatef(rotate, 0, 0, 1);
                 RenderUtil.drawCircleFast(self.radius, 4);
@@ -159,6 +161,10 @@ public class RenderUtil {
         }
 
     };
+
+    public static void setColor(final Color color) {
+        GL11.glColor3f(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f);
+    }
 
     /**
      * Renders a string in all caps. Poor sub for billboarded font. Only renders

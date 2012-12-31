@@ -29,22 +29,25 @@ import efruchter.tp.trait.gene.GeneCurve;
  * @author toriscope
  * 
  */
-public class LevelGenerator_Chainer extends Trait {
+public class LevelGeneratorCore extends Trait {
 
-	public long time = 0;
+	private long time = 0;
 
 	// Chance of a new chain forming
 	final private List<Chain> chains;
 	final public long LEVEL_LENGTH = 60000;
 
-	final public GeneCurve chainProb, chainDelay, probChainCont, enemySize, enemyHealth;
-	final public Gene intensity;
+	final private GeneCurve chainProb, chainDelay, probChainCont, enemySize, enemyHealth;
+	final private Gene intensity;
 	
 	final public static Random random = new Random();
-	public float probNewChain = 0;
 
-	public LevelGenerator_Chainer() {
+    public long waveCount;
+
+	public LevelGeneratorCore() {
 		super("Level Generator : Spawner", "");
+
+        waveCount = 0;
 
 		intensity = GeneVectorIO.getExplorationVector().storeGene("spawner.intensity", new Gene("Intensity", "Intensity of everything.", 0, 1, 1f / 2f), false);
 		
@@ -71,6 +74,7 @@ public class LevelGenerator_Chainer extends Trait {
 		time = 0;
 		chains.clear();
 		System.out.println("Level generator rebooted.");
+        waveCount++;
 	}
 
 	@Override
@@ -85,7 +89,7 @@ public class LevelGenerator_Chainer extends Trait {
 		final float randNum = (float) Math.random();
 
 		// Gen
-		probNewChain = chainProb.getValue(mu);
+		final float probNewChain = chainProb.getValue(mu);
 
 		// start new chain?
 		if (randNum < probNewChain * intensity.getExpression()) {
@@ -111,8 +115,8 @@ public class LevelGenerator_Chainer extends Trait {
 		}
 	}
 
-	private efruchter.tp.trait.generators.LevelGenerator_Chainer.Chain.GenFunction getNewChainFunction(final Level level, final float mu) {
-		return new efruchter.tp.trait.generators.LevelGenerator_Chainer.Chain.GenFunction() {
+	private LevelGeneratorCore.Chain.GenFunction getNewChainFunction(final Level level, final float mu) {
+		return new LevelGeneratorCore.Chain.GenFunction() {
 
 			public Entity gen(final Level level, final float mu) {
 				Entity e = level.getBlankEntity(EntityType.SHIP);
@@ -167,4 +171,16 @@ public class LevelGenerator_Chainer extends Trait {
 			Entity gen(final Level level, final float mu);
 		}
 	}
+
+    public long getWaveCount() {
+        return waveCount;
+    }
+
+    public void resetWaveCount() {
+        waveCount = 0;
+    }
+
+    public long getTime() {
+        return time;
+    }
 }

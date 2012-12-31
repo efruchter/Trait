@@ -9,7 +9,7 @@ import javax.swing.JPanel;
 
 import efruchter.tp.TraitProjectClient;
 import efruchter.tp.entity.Entity;
-import efruchter.tp.trait.generators.LevelGenerator_Chainer;
+import efruchter.tp.trait.generators.LevelGeneratorCore;
 
 @SuppressWarnings("serial")
 public class StatisticsPanel extends JPanel {
@@ -46,12 +46,10 @@ public class StatisticsPanel extends JPanel {
 			entitesLabel.setText("Entities: " + (this.entities = entities));
 	}
 
-	public void setInfo(final LevelGenerator_Chainer chainer) {
+	public void setInfo(final LevelGeneratorCore chainer) {
 		StringBuffer b = new StringBuffer();
 		// time
-		b.append("Time: ").append(chainer.time).append("/").append(chainer.LEVEL_LENGTH);
-		b.append(" | ");
-		b.append("P(new chain): ").append(chainer.probNewChain);
+		b.append("Time: ").append(chainer.getTime()).append("/").append(chainer.LEVEL_LENGTH);
 
 		genChainerInfo.setText(b.toString());
 
