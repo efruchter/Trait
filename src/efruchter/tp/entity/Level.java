@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 
 import efruchter.tp.defaults.EntityType;
 import efruchter.tp.trait.behavior.Behavior;
+import efruchter.tp.util.RenderUtil;
 
 /**
  * Stores and coordinates entities.
