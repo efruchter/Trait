@@ -25,13 +25,13 @@ public class StatisticsPanel extends JPanel {
 		add(current);
 		current.add(fpsLabel = new JLabel(""));
 		current.add(entitesLabel = new JLabel(""));
+	    current.add(genChainerInfo = new JLabel("Generator Info"));
 
 		final JPanel overll = new JPanel();
 		overll.setBorder(BorderFactory.createTitledBorder("Global Statistics"));
 		overll.setLayout(new BoxLayout(overll, BoxLayout.Y_AXIS));
 		add(overll);
 		overll.add(new JLabel("Client Version: " + TraitProjectClient.VERSION));
-		overll.add(genChainerInfo = new JLabel("Generator Info"));
 	}
 
 	private long fps, entities;

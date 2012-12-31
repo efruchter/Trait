@@ -128,7 +128,7 @@ public class TraitProjectClient {
             public void onStart(Entity self, Level level) {}
             public void onUpdate(final Entity self, final Level level, final long delta) {
                 RenderUtil.setColor(Color.CYAN);
-                final String playerHealth = level.getPlayer() == null ? "XX" : "" + level.getPlayer().getHealth();
+                final String playerHealth = level.getPlayer() == null ? "XX" : Integer.toString((int) level.getPlayer().getHealth());
                 RenderUtil.drawString(new StringBuffer()
                                       .append("wave ").append(level.getGeneratorCore().getWaveCount())
                                       .append("\n").append("\n")
