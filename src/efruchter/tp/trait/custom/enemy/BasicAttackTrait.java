@@ -29,7 +29,7 @@ public class BasicAttackTrait extends Trait {
 
 	public BasicAttackTrait(final boolean tracking) {
 		super("Basic Attack", "An auto-attack.");
-		registerGene(coolDown = new Gene("Cool Down Delay", "The projectile cooldown.", 0, 1000, 250));
+		registerGene(coolDown = new Gene("Cool Down Delay", "The projectile cooldown.", 0, 1000, 500));
 		registerGene(damage = new Gene("Damage Per Bullet", "Amount of damage per bullet.", 0, 10, 1));
 		this.tracking = tracking;
 	}

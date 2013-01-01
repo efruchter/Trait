@@ -86,10 +86,10 @@ public class LevelGeneratorCore extends Trait {
         intensity = GeneVectorIO.getExplorationVector().storeGene("spawner.intensity", new Gene("Intensity", "Intensity of everything.", 0, 1, 1f / 2f), false);
 
         chainProb = GeneVectorIO.getExplorationVector().storeGeneCurve("spawner.newChainProb", new GeneCurve("newChainProb", "P(new chain)", 0, 1, 0), false);
-        chainProb.genes[0].setValue(.04f);
-        chainProb.genes[1].setValue(.04f);
-        chainProb.genes[2].setValue(.08f);
-        chainProb.genes[3].setValue(.08f);
+        chainProb.genes[0].setValue(.02f);
+        chainProb.genes[1].setValue(.02f);
+        chainProb.genes[2].setValue(.045f);
+        chainProb.genes[3].setValue(.045f);
 
         chainDelay = GeneVectorIO.getExplorationVector().storeGeneCurve("spawner.chainDelay", new GeneCurve("chainDelay", "Delay until enemy is spawned to continue a chain.", 0, 1000, 500), false);
         probChainCont = GeneVectorIO.getExplorationVector().storeGeneCurve("spawner.probChainCont", new GeneCurve("probChainCont", "P(continue chain)", 0, 1, .90f), false);
@@ -145,7 +145,7 @@ public class LevelGeneratorCore extends Trait {
 
 				// Pathing
 				final BehaviorChain c = new BehaviorChain(false);
-				c.addBehavior(CurveInterpolator.buildPath(10000, false, curve), 10000);
+				c.addBehavior(CurveInterpolator.buildPath(12000, false, curve), 12000);
 				c.addBehavior(new KillBehavior(), 1);
 				e.addTrait(c);
 
@@ -164,11 +164,34 @@ public class LevelGeneratorCore extends Trait {
 
 			@Override
 			public void precalc(final Level level, final float mu) {
-				curve = new Point.Float[]{new Point.Float(Display.getWidth() * random.nextFloat(), Display.getHeight() + 20),
-				        new Point.Float(Display.getWidth() * random.nextFloat(), Display.getHeight() - Display.getHeight() * random.nextFloat() * .25f),
-				        new Point.Float(Display.getWidth() * random.nextFloat(), Display.getHeight() * random.nextFloat() * .75f),
-				        new Point.Float(Display.getWidth() * random.nextFloat(), -20)};
-				tracking = random.nextFloat() < intensity.getExpression();
+
+                curve = new Point.Float[3];
+
+                switch (random.nextInt(5)) {
+                    case 0:
+                            curve[0] = new Point.Float(Display.getWidth() + 20 , Display.getHeight() - Display.getHeight() * random.nextFloat() * .25f);
+                            break;
+                    case 1:
+                            curve[0] = new Point.Float(-20 , Display.getHeight() - Display.getHeight() * random.nextFloat() * .25f);
+                            break;
+                    default:
+                            curve[0] = new Point.Float(Display.getWidth() * random.nextFloat(), Display.getHeight() + 20);
+                }
+
+                curve[1] = new Point.Float(Display.getWidth() * random.nextFloat(), Display.getHeight() - Display.getHeight() * random.nextFloat() * .75f);
+
+                switch (random.nextInt(5)) {
+                    case 0:
+                        curve[2] = new Point.Float(Display.getWidth() + 20 , Display.getHeight() - Display.getHeight() * random.nextFloat() * .25f);
+                        break;
+                    case 1:
+                        curve[2] = new Point.Float(-20 , Display.getHeight() - Display.getHeight() * random.nextFloat() * .25f);
+                        break;
+                    default:
+                        curve[2] = new Point.Float(Display.getWidth() * random.nextFloat(), - 20);
+                }
+
+                tracking = random.nextFloat() < intensity.getExpression();
 				radius = enemySize.getValue(mu);
 				health = enemyHealth.getValue(mu);
 			}
