@@ -10,6 +10,11 @@ import java.util.Random;
 
 import efruchter.tp.TraitProjectClient;
 import efruchter.tp.learning.database.Database;
+import efruchter.tp.trait.custom.LoopScreenTrait;
+import efruchter.tp.trait.custom.player.KeyboardControlTrait_Attack;
+import efruchter.tp.trait.custom.player.KeyboardControlTrait_Movement;
+import efruchter.tp.trait.custom.player.PlayerRadiusEditTrait;
+import efruchter.tp.trait.custom.player.SetPlayerTrait;
 import org.lwjgl.opengl.Display;
 
 import efruchter.tp.defaults.CollisionLabel;
@@ -39,7 +44,7 @@ public class LevelGeneratorCore extends Trait {
 
 	// Chance of a new chain forming
 	final private List<Chain> chains;
-	final public long LEVEL_LENGTH = 60000;
+	final public long LEVEL_LENGTH = 5000;
 
 	private GeneCurve chainProb, chainDelay, probChainCont, enemySize, enemyHealth;
 	private Gene intensity;
@@ -61,7 +66,8 @@ public class LevelGeneratorCore extends Trait {
             final String username = TraitProjectClient.PREFERENCES.get("username", null);
             if (username != null) {
                 GeneVectorIO.storeVector(
-                        new Database.SessionInfo(username, Long.toString(TraitProjectClient.getScore()), new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime())),
+                        new Database.SessionInfo(username, Long.toString(TraitProjectClient.getScore()),
+                        new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime())),
                         GeneVectorIO.getExplorationVector());
             } else {
                 System.err.println("No username set, cannot push vector to server.");
@@ -73,29 +79,57 @@ public class LevelGeneratorCore extends Trait {
         chains.clear();
 
         /*
-         * Build the gene vectors over again.
-         */
-
-
-        /*
          * Takes care of the case where the GUI has already loaded the vector.
          */
         if (waveCount > 1)
             GeneVectorIO.reloadExplorationVector();
+
+        /*
+         * Build the gene vectors over again.
+         */
 
         intensity = GeneVectorIO.getExplorationVector().storeGene("spawner.intensity", new Gene("Intensity", "Intensity of everything.", 0, 1, 1f / 2f), false);
 
         chainProb = GeneVectorIO.getExplorationVector().storeGeneCurve("spawner.newChainProb", new GeneCurve("newChainProb", "P(new chain)", 0, 1, 0), false);
         chainProb.genes[0].setValue(.02f);
         chainProb.genes[1].setValue(.02f);
-        chainProb.genes[2].setValue(.045f);
-        chainProb.genes[3].setValue(.045f);
+        chainProb.genes[2].setValue(.05f);
+        chainProb.genes[3].setValue(.05f);
 
         chainDelay = GeneVectorIO.getExplorationVector().storeGeneCurve("spawner.chainDelay", new GeneCurve("chainDelay", "Delay until enemy is spawned to continue a chain.", 0, 1000, 500), false);
         probChainCont = GeneVectorIO.getExplorationVector().storeGeneCurve("spawner.probChainCont", new GeneCurve("probChainCont", "P(continue chain)", 0, 1, .90f), false);
 
         enemySize = GeneVectorIO.getExplorationVector().storeGeneCurve("spawner.enemy.radius", new GeneCurve("baseRadius", "Base enemy radius.", 2, 50, 15), false);
         enemyHealth = GeneVectorIO.getExplorationVector().storeGeneCurve("spawner.enemy.health", new GeneCurve("enemyHealth", "Default enemy health on spawn.", 2, 100, 10), false);
+
+        /*
+         * Canned player position.
+         */
+        final float playerX, playerY;
+        if (level.getPlayer() != null) {
+            playerX = level.getPlayer().x;
+            playerY = level.getPlayer().y;
+            level.removeEntity(level.getPlayer());
+        } else {
+            playerX = Display.getWidth() / 2;
+            playerY = Display.getHeight() * .15f;
+        }
+
+        // Build Player
+        final Entity player = level.getBlankEntity(EntityType.SHIP);
+        EntityFactory.buildShip(player, playerX, playerY, 10, CollisionLabel.PLAYER_LABEL, Color.CYAN, 50f);
+        // Add control traits to player with arrow-keys
+        player.addTrait(new KeyboardControlTrait_Movement());
+
+        player.addTrait(new KeyboardControlTrait_Attack());
+        // Radius editing trait
+        PlayerRadiusEditTrait rad = new PlayerRadiusEditTrait(3, 20, 10);
+        player.addTrait(rad);
+        player.name = "Player Ship";
+        // Add screen loop trait
+        player.addTrait(new LoopScreenTrait());
+        //player.addTrait(new ConstantHealthBoostTrait());
+        level.setPlayer(player);
     }
 
 	@Override

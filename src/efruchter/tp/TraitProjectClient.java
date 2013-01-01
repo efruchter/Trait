@@ -1,17 +1,12 @@
 package efruchter.tp;
 
 import java.awt.Color;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
 import java.util.prefs.Preferences;
 
-import javax.swing.*;
+import javax.swing.JOptionPane;
 
-import efruchter.tp.trait.behavior.Behavior;
-import efruchter.tp.trait.generators.LevelGeneratorCore;
-import efruchter.tp.util.RenderUtil;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
 import org.lwjgl.opengl.Display;
@@ -24,14 +19,15 @@ import efruchter.tp.defaults.EntityType;
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
 import efruchter.tp.gui.CoreFrame;
-import efruchter.tp.learning.GeneVectorIO;
-import efruchter.tp.learning.database.Database.SessionInfo;
 import efruchter.tp.networking.Client;
+import efruchter.tp.trait.behavior.Behavior;
 import efruchter.tp.trait.custom.LoopScreenTrait;
 import efruchter.tp.trait.custom.player.KeyboardControlTrait_Attack;
 import efruchter.tp.trait.custom.player.KeyboardControlTrait_Movement;
 import efruchter.tp.trait.custom.player.PlayerRadiusEditTrait;
 import efruchter.tp.trait.custom.player.SetPlayerTrait;
+import efruchter.tp.trait.generators.LevelGeneratorCore;
+import efruchter.tp.util.RenderUtil;
 
 /**
  * LWJGL Trait-based shmup. This class is a bit messy, needs some splitting up.
@@ -99,22 +95,6 @@ public class TraitProjectClient {
 	public void resetSim() {
 
 		final Level level = new Level();
-
-		// Build Player
-		final Entity player = level.getBlankEntity(EntityType.SHIP);
-		EntityFactory.buildShip(player, 100, 100, 10, CollisionLabel.PLAYER_LABEL, Color.CYAN, 50f);
-		// Add control traits to player with arrow-keys
-		player.addTrait(new KeyboardControlTrait_Movement());
-
-		player.addTrait(new KeyboardControlTrait_Attack());
-		// Radius editing trait
-		PlayerRadiusEditTrait rad = new PlayerRadiusEditTrait(3, 20, 10);
-		player.addTrait(rad);
-		player.name = "Player Ship";
-		// Add screen loop trait
-		player.addTrait(new LoopScreenTrait());
-		//player.addTrait(new ConstantHealthBoostTrait());
-		player.addTrait(new SetPlayerTrait());
 
         final LevelGeneratorCore chainer;
 		level.getBlankEntity(EntityType.GENERATOR).addTrait(chainer = new LevelGeneratorCore());

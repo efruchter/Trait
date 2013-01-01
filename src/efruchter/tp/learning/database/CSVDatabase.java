@@ -40,26 +40,29 @@ public class CSVDatabase implements Database {
             return false;
         }
 
+        try {
+            final String[] record = new String[headers.length];
+            for (int i = 0; i < headers.length; i++) {
+                if (headers[i].equals("username")) {
+                    record[i] = userInfo.username;
+                } else if (headers[i].equals("date")) {
+                    record[i] = userInfo.date;
+                } else if (headers[i].equals("score")) {
+                    record[i] = userInfo.score;
+                } else {
+                    record[i] = "" + vector.getGene(headers[i]).getValue();
+                }
+            }
+            try {
+                write.writeRecord(record);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
+        } catch (final NullPointerException e) {
+            return false;
+        }
 
-        final String[] record = new String[headers.length];
-		for (int i = 0; i < headers.length; i++) {
-			if (headers[i].equals("username")) {
-				record[i] = userInfo.username;
-			} else if (headers[i].equals("date")) {
-				record[i] = userInfo.date;
-			} else if (headers[i].equals("score")) {
-				record[i] = userInfo.score;
-			} else {
-				record[i] = "" + vector.getGene(headers[i]).getValue();
-			}
-		}
-		
-		try {
-			write.writeRecord(record);
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
-		}
 		write.close();
 		return true;
 	}
