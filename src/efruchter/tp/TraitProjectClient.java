@@ -7,7 +7,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.prefs.Preferences;
 
-import javax.swing.JOptionPane;
+import javax.swing.*;
 
 import efruchter.tp.trait.behavior.Behavior;
 import efruchter.tp.trait.generators.LevelGeneratorCore;
@@ -48,10 +48,14 @@ public class TraitProjectClient {
 	private long lastFrame;
 	private int fps;
 	private long lastFPS;
+    private static long score;
+
 
 	private long guiUpdateDelay = 1000;
 
 	public TraitProjectClient() {
+
+        score = 0;
 
 		viewer = new CoreFrame(this);
 
@@ -129,27 +133,20 @@ public class TraitProjectClient {
             public void onUpdate(final Entity self, final Level level, final long delta) {
                 RenderUtil.setColor(Color.CYAN);
                 final String playerHealth = level.getPlayer() == null ? "XX" : Integer.toString((int) level.getPlayer().getHealth());
+                final String score = level.getPlayer() == null ? "XX" : Long.toString(getScore());
                 RenderUtil.drawString(new StringBuffer()
-                                      .append("wave ").append(level.getGeneratorCore().getWaveCount())
-                                      .append("\n").append("\n")
-                                      .append("health ").append(playerHealth)
-                                      .toString(), 5, 25);
+                        .append("health ").append(playerHealth)
+                        .append("\n").append("\n")
+                        .append("score ").append(score)
+                        .append("\n").append("\n")
+                        .append("wave ").append(level.getGeneratorCore().getWaveCount())
+                        .toString(), 5, 45);
             }
             public void onDeath(Entity self, Level level) {}
         });
 
 		this.level.onDeath();
 		this.level = level;
-
-		final String username = PREFERENCES.get("username", null);
-
-		if (username != null) {
-			GeneVectorIO.storeVector(
-			        new SessionInfo(username, "-1", new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime())),
-			        GeneVectorIO.getExplorationVector());
-		} else {
-			System.err.println("No username set, cannot push vector to server.");
-		}
 	}
 
 	public void update(int delta) {
@@ -235,6 +232,14 @@ public class TraitProjectClient {
 		System.err.println("Cannot check server version.");
 	}
 
+    public static long getScore() {
+        return score;
+    }
+
+    public static void setScore(final long newScore) {
+        score = newScore;
+    }
+
 	public static Client getClient() {
 		if (isLocalServer) {
 			return new Client();
@@ -255,7 +260,7 @@ public class TraitProjectClient {
 
 		isLocalServer = params.contains("-l");
 
-		// UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+		//UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
 
 		// Start the game
 		new TraitProjectClient();
