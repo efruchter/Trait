@@ -44,7 +44,7 @@ public class LevelGeneratorCore extends Trait {
 
 	// Chance of a new chain forming
 	final private List<Chain> chains;
-	final public long LEVEL_LENGTH = 5000;
+	final public long LEVEL_LENGTH = 60000;
 
 	private GeneCurve chainProb, chainDelay, probChainCont, enemySize, enemyHealth;
 	private Gene intensity;
@@ -129,7 +129,10 @@ public class LevelGeneratorCore extends Trait {
         // Add screen loop trait
         player.addTrait(new LoopScreenTrait());
         //player.addTrait(new ConstantHealthBoostTrait());
-        level.setPlayer(player);
+        player.addTrait(new SetPlayerTrait());
+
+        //Add the new wave animation
+        EntityFactory.buildNewWaveAnim(level.getBlankEntity(EntityType.BG));
     }
 
 	@Override

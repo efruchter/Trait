@@ -166,6 +166,17 @@ public class RenderUtil {
         GL11.glColor3f(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f);
     }
 
+    public static void drawString(final String string, final float fontSize) {
+        GL11.glPushMatrix();
+        {
+            GL11.glScalef(fontSize, fontSize, 0);
+            GL11.glPointSize(fontSize);
+            RenderUtil.drawString("NEW WAVE", 0, 0);
+            GL11.glPointSize(1);
+        }
+        GL11.glPopMatrix();
+    }
+
     /**
      * Renders a string in all caps. Poor sub for billboarded font. Only renders
      * [a-z0-9].

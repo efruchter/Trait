@@ -70,7 +70,7 @@ public class Level {
 			b.onUpdate(delta, this);
 		}
 
-		maint();
+		handleEntityLists();
 	}
 
 	public void onDeath() {
@@ -82,18 +82,18 @@ public class Level {
 		}
 	}
 
-	private void maint() {
-		if (!add.isEmpty()) {
+	private void handleEntityLists() {
+        if (!remove.isEmpty()) {
+            for (Entity a : remove) {
+                removeEntityUnsafe(a);
+            }
+            remove.clear();
+        }
+        if (!add.isEmpty()) {
 			for (Entity a : add) {
 				addEntityUnsafe(a);
 			}
 			add.clear();
-		}
-		if (!remove.isEmpty()) {
-			for (Entity a : remove) {
-				removeEntityUnsafe(a);
-			}
-			remove.clear();
 		}
 	}
 

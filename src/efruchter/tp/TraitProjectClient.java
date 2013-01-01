@@ -18,7 +18,6 @@ import efruchter.tp.defaults.EntityFactory;
 import efruchter.tp.defaults.EntityType;
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
-import efruchter.tp.gui.CoreFrame;
 import efruchter.tp.networking.Client;
 import efruchter.tp.trait.behavior.Behavior;
 import efruchter.tp.trait.custom.LoopScreenTrait;
@@ -38,22 +37,17 @@ public class TraitProjectClient {
 
 	public static final String VERSION = "00.00.00.00";
 	private static boolean isLocalServer;
-	private Level level;
-	private final CoreFrame viewer;
-
-	private long lastFrame;
-	private int fps;
-	private long lastFPS;
+	private static Level level;
+	private static long lastFrame;
+	private static int fps;
+	private static long lastFPS;
     private static long score;
 
+	private static long guiUpdateDelay = 1000;
 
-	private long guiUpdateDelay = 1000;
-
-	public TraitProjectClient() {
+	public static void start() {
 
         score = 0;
-
-		viewer = new CoreFrame(this);
 
 		versionCheck();
 
@@ -92,16 +86,13 @@ public class TraitProjectClient {
 	 * Build the level and entities from scratch. Update appropriate GUI
 	 * components.
 	 */
-	public void resetSim() {
+	public static void resetSim() {
 
 		final Level level = new Level();
 
         final LevelGeneratorCore chainer;
 		level.getBlankEntity(EntityType.GENERATOR).addTrait(chainer = new LevelGeneratorCore());
         level.setGeneratorCore(chainer);
-
-		viewer.setLevel(level);
-		viewer.getStatisticsPanel().setInfo(chainer);
 
 		for (int i = 0; i < 200; i++) {
 			Entity e = level.getBlankEntity(EntityType.BG);
@@ -125,19 +116,13 @@ public class TraitProjectClient {
             public void onDeath(Entity self, Level level) {}
         });
 
-		this.level.onDeath();
-		this.level = level;
+		level.onDeath();
+		TraitProjectClient.level = level;
 	}
 
-	public void update(int delta) {
+	public static void update(int delta) {
 		level.onUpdate(delta);
 		updateFPS();
-		if ((guiUpdateDelay -= delta) < 0) {
-			guiUpdateDelay = 1000;
-			if (level.getGeneratorCore() != null) {
-				viewer.getStatisticsPanel().setInfo(level.getGeneratorCore());
-            }
-		}
 	}
 
 	/**
@@ -145,7 +130,7 @@ public class TraitProjectClient {
 	 * 
 	 * @return milliseconds passed since last frame
 	 */
-	public int getDelta() {
+	public static int getDelta() {
 		final long time = getTime();
 		final int delta = (int) (time - lastFrame);
 		lastFrame = time;
@@ -158,30 +143,29 @@ public class TraitProjectClient {
 	 * 
 	 * @return The system time in milliseconds
 	 */
-	public long getTime() {
+	public static long getTime() {
 		return (Sys.getTime() * 1000) / Sys.getTimerResolution();
 	}
 
 	/**
 	 * Calculate the FPS and set it in the title bar
 	 */
-	public void updateFPS() {
+	public static void updateFPS() {
 		if (getTime() - lastFPS > 1000) {
-            viewer.getStatisticsPanel().setFPS(fps);
 			fps = 0;
 			lastFPS += 1000;
 		}
 		fps++;
 	}
 
-	public void initGL() {
+	public static void initGL() {
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
 		GL11.glOrtho(0, 800, 0, 600, 1, -1);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 	}
 
-	public void renderGL(long delta) {
+	public static void renderGL(long delta) {
 		// Clear The Screen And The Depth Buffer
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		level.renderGL(delta);
@@ -234,7 +218,7 @@ public class TraitProjectClient {
 		PREFERENCES = Preferences.userNodeForPackage(TraitProjectClient.class);
 	}
 
-	public static void main(String[] argv) throws Exception {
+	public static void main(String[] argv) {
 
 		List<String> params = Arrays.asList(argv);
 
@@ -243,6 +227,6 @@ public class TraitProjectClient {
 		//UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
 
 		// Start the game
-		new TraitProjectClient();
+		TraitProjectClient.start();
 	}
 }

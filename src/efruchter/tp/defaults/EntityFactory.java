@@ -1,7 +1,10 @@
 package efruchter.tp.defaults;
 
-import java.awt.Color;
+import java.awt.*;
 
+import efruchter.tp.trait.behavior.Behavior;
+import efruchter.tp.trait.behavior.BehaviorChain;
+import efruchter.tp.trait.behavior.custom.KillBehavior;
 import efruchter.tp.trait.custom.*;
 import org.lwjgl.opengl.Display;
 
@@ -10,6 +13,7 @@ import efruchter.tp.entity.Level;
 import efruchter.tp.trait.Trait;
 import efruchter.tp.trait.gene.GeneExpressionInterpolator;
 import efruchter.tp.util.RenderUtil;
+import org.lwjgl.opengl.GL11;
 
 /**
  * Methods for creating canned entities that conform to a certain type
@@ -130,4 +134,41 @@ public class EntityFactory {
 		e.addTrait(rad);
 		e.addTrait(new GeneExpressionInterpolator(rad.radius, 1, 0, (long) (Math.random() * delay)));
 	}
+
+    public static void buildNewWaveAnim(final Entity e) {
+
+        final long duration = 7000;
+
+        e.baseColor = Color.CYAN;
+        e.collisionLabel = CollisionLabel.NO_COLLISION;
+        e.entityType = EntityType.BG;
+        e.x = Display.getWidth() / 2 - 150;
+        e.y = Display.getHeight();
+
+        final BehaviorChain chain = new BehaviorChain();
+        chain.addBehavior(CurveInterpolator.buildPath(duration, false,
+                new Point.Float[]{
+                        new Point.Float(e.x, e.y),
+                        new Point.Float(Display.getWidth() / 2 - 150, -50)}),
+                duration);
+        chain.addBehavior(new KillBehavior(), 0);
+
+        e.addTrait(chain);
+
+        e.setRenderBehavior(new Behavior() {
+            public void onStart(Entity self, Level level) {}
+            public void onUpdate(Entity self, Level level, long delta) {
+                GL11.glPushMatrix();
+                {
+                    RenderUtil.setColor(Color.GREEN);
+                    GL11.glTranslatef(self.x, self.y, 0);
+                    RenderUtil.drawString("NEW WAVE", 5);
+                }
+                GL11.glPopMatrix();
+            }
+            public void onDeath(Entity self, Level level) {}
+        });
+
+        e.health = 0;
+    }
 }
