@@ -171,7 +171,7 @@ public class RenderUtil {
         {
             GL11.glScalef(fontSize, fontSize, 0);
             GL11.glPointSize(fontSize);
-            RenderUtil.drawString("NEW WAVE", 0, 0);
+            RenderUtil.drawString(string, 0, 0);
             GL11.glPointSize(1);
         }
         GL11.glPopMatrix();
