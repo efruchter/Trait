@@ -1,22 +1,18 @@
 package efruchter.tp.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.*;
+import java.awt.event.*;
 
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.*;
 
+import efruchter.tp.TraitProjectClient;
+import efruchter.tp.trait.gene.Gene;
 import org.lwjgl.opengl.Display;
 
 import efruchter.tp.state.ClientStateManager;
 import efruchter.tp.state.ClientStateManager.FlowState;
 
-public class CoreGui {
+public class GeneEditPopup {
 
     private static JFrame frame;
 
@@ -33,6 +29,31 @@ public class CoreGui {
                     "A new wave is about to attack! Customize your ship's traits!"
                     ){{setForeground(Color.WHITE); setBackground(Color.BLACK);}});}},
                     BorderLayout.NORTH);
+
+            final Gene[] genes = TraitProjectClient.getPlayerControlledGenes();
+
+            final JPanel traitPanel = new JPanel();
+            traitPanel.setLayout(new GridLayout(genes.length, 1));
+
+            for (final Gene gene : genes) {
+                final JPanel subPanel = new JPanel();
+                traitPanel.add(subPanel);
+
+                subPanel.add(new JLabel(gene.getInfo()){{setForeground(Color.WHITE);}});
+
+                final JSlider slider = new JSlider();
+                subPanel.add(slider);
+            }
+
+            frame.add(traitPanel, BorderLayout.CENTER);
+
+            final JButton goButton = new JButton("Start!");
+            goButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent actionEvent) {
+                    hide();
+                }
+            });
+            frame.add(goButton, BorderLayout.SOUTH);
         }
 
         frame.addWindowFocusListener(new WindowAdapter() {
@@ -60,8 +81,12 @@ public class CoreGui {
         ClientStateManager.setPaused(true);
         ClientStateManager.setFlowState(FlowState.EDITING);
 
-        if (frame == null) {
+        if (frame == null)
             buildGUI();
+
+        if (TraitProjectClient.getPlayerControlledGenes().length == 0) {
+            hide();
+            return;
         }
 
         frame.setVisible(true);

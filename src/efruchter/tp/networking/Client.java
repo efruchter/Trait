@@ -43,7 +43,7 @@ public class Client {
      * 
      * @param ipAddress the IP address of the server to connect to
      * @param portNumber the port number on the server to connect on
-     * @param connnectNow true to connect to the server now; false otherwise
+     * @param connectNow true to connect to the server now; false otherwise
      * @throws IOException if the client fails to connect to the server
      */
     public Client(String ipAddress, int portNumber, boolean connectNow) throws IOException {
@@ -130,7 +130,7 @@ public class Client {
             out.close();
             in.close();
             socket.close();
-        } catch (IOException e) {        
+        } catch (IOException e) {
             socket = null;
             out = null;
             in = null;

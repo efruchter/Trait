@@ -1,7 +1,9 @@
 package efruchter.tp;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import com.csvreader.CsvReader;
 import efruchter.tp.learning.GeneVector;
 import efruchter.tp.learning.GeneVectorIO;
 import efruchter.tp.learning.database.CSVDatabase;
@@ -51,7 +53,7 @@ public class TraitProjectServer implements NetworkingListener {
 	@Override
 	public String messageReceived(String message) {
 		
-		String result = null;
+		String result = " ";
 
 		try {
 			if (message.startsWith("versioncheck")) {
@@ -60,6 +62,24 @@ public class TraitProjectServer implements NetworkingListener {
 			} else if ("request".equals(message)) {
 				result = "EXPLORE" + GeneVectorIO.SEPARATOR + current.toDataString();
 			}
+            else if ("playerControlled".equals(message)) {
+                try {
+                    final CsvReader r = new CsvReader("playerControlled.csv");
+                    if (r.readHeaders()) {
+                        final String[] headers = r.getHeaders();
+                        final StringBuffer b = new StringBuffer();
+                        for(final String str : headers) {
+                            b.append(GeneVectorIO.SEPARATOR).append(str);
+                        }
+                        result = b.toString().replaceFirst(GeneVectorIO.SEPARATOR, "");
+                    } else {
+                        result = " ";
+                    }
+                    r.close();
+                } catch (final Exception e) {
+                    e.printStackTrace();
+                }
+            }
 			// username | score | date | vector
 			else if (message.startsWith("store" + GeneVectorIO.SEPARATOR)) {
 				String[] data = message.replaceFirst(

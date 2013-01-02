@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Random;
 
 import efruchter.tp.TraitProjectClient;
+import efruchter.tp.gui.GeneEditPopup;
 import efruchter.tp.learning.database.Database;
 import efruchter.tp.state.ClientStateManager;
 import efruchter.tp.trait.custom.LoopScreenTrait;
@@ -23,7 +24,6 @@ import efruchter.tp.defaults.EntityFactory;
 import efruchter.tp.defaults.EntityType;
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
-import efruchter.tp.gui.CoreGui;
 import efruchter.tp.learning.GeneVectorIO;
 import efruchter.tp.trait.Trait;
 import efruchter.tp.trait.behavior.Behavior;
@@ -137,7 +137,7 @@ public class LevelGeneratorCore extends Trait {
         EntityFactory.buildNewWaveAnim(level.getBlankEntity(EntityType.BG));
         
         ClientStateManager.setPaused(true);
-        CoreGui.show();
+        GeneEditPopup.show();
     }
 
 	@Override

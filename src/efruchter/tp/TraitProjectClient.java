@@ -1,6 +1,7 @@
 package efruchter.tp;
 
 import java.awt.Color;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.prefs.Preferences;
@@ -8,6 +9,9 @@ import java.util.prefs.Preferences;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
+import efruchter.tp.learning.GeneVector;
+import efruchter.tp.learning.GeneVectorIO;
+import efruchter.tp.trait.gene.Gene;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
@@ -19,7 +23,6 @@ import efruchter.tp.defaults.EntityFactory;
 import efruchter.tp.defaults.EntityType;
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
-import efruchter.tp.gui.CoreGui;
 import efruchter.tp.networking.Client;
 import efruchter.tp.state.ClientStateManager;
 import efruchter.tp.state.ClientStateManager.FlowState;
@@ -35,13 +38,15 @@ import efruchter.tp.util.RenderUtil;
  */
 public class TraitProjectClient {
 
-	public static final String VERSION = "00.00.00.00";
+	public static final String VERSION = "00.00.00.01";
 	private static boolean isLocalServer;
 	private static Level level;
 	private static long lastFrame;
 	private static int fps;
 	private static long lastFPS;
     private static long score;
+
+    private static String[] playerControlled;
 
 	public static void start() {
 
@@ -50,6 +55,8 @@ public class TraitProjectClient {
 		versionCheck();
 
 		level = new Level();
+
+        fetchPlayerControlled();
 
 		resetSim();
 
@@ -80,7 +87,38 @@ public class TraitProjectClient {
 		System.exit(0);
 	}
 
-	/**
+    private static void fetchPlayerControlled() {
+        ClientStateManager.setFlowState(FlowState.LOADING_VECT);
+        try {
+            final Client c = TraitProjectClient.getClient();
+            try {
+                c.reconnect();
+                c.send("playerControlled");
+                final String s = c.receive();
+                if (s.trim().isEmpty())
+                    playerControlled = new String[0];
+                else
+                    playerControlled = s.split(GeneVectorIO.SEPARATOR);
+                System.out.println("Successfully read player-controlled gene list from server.");
+                return;
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    c.close();
+                    return;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            System.err.println("Could not fetch player-controlled gene list from server.");
+            playerControlled = new String[0];
+        } finally {
+            ClientStateManager.setFlowState(FlowState.FREE);
+        }
+    }
+
+    /**
 	 * Build the level and entities from scratch. Update appropriate GUI
 	 * components.
 	 */
@@ -224,6 +262,15 @@ public class TraitProjectClient {
 
     public static void setScore(final long newScore) {
         score = newScore;
+    }
+
+    public static Gene[] getPlayerControlledGenes() {
+        final GeneVector geneVector = GeneVectorIO.getExplorationVector();
+        final Gene[] genes = new Gene[playerControlled.length];
+        for (int i = 0; i < genes.length; i++) {
+            genes[i] = geneVector.getGene(playerControlled[i]);
+        }
+        return genes;
     }
 
 	public static Client getClient() {
