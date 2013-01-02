@@ -155,6 +155,6 @@ public class BehaviorChain extends Trait {
 	
 	@Override
 	public String toString() {
-		return "(C) " + name + " (" + (isActive() ? "ON" : "OFF") + ")";
+		return "(C) " + getName() + " (" + (isActive() ? "ON" : "OFF") + ")";
 	}
 }

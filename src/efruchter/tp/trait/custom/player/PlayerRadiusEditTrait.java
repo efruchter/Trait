@@ -18,8 +18,8 @@ public class PlayerRadiusEditTrait extends Trait {
 	
 	public PlayerRadiusEditTrait(final float minR, final float maxR, final float var) {
 		super("Variable Radius", "Has a variable radius.");
-		registerGene(radius = GeneVectorIO.getExplorationVector().storeGene("player.radius.radius",
-				new Gene("Radius", "The radius value", minR, maxR, var), false));
+		radius = GeneVectorIO.getExplorationVector().storeGene("player.radius.radius",
+				new Gene("Radius", "The radius value", minR, maxR, var), false);
 	}
 	
 	@Override

@@ -13,19 +13,14 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 
-import efruchter.tp.defaults.CollisionLabel;
 import efruchter.tp.defaults.EntityFactory;
 import efruchter.tp.defaults.EntityType;
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
 import efruchter.tp.networking.Client;
 import efruchter.tp.trait.behavior.Behavior;
-import efruchter.tp.trait.custom.LoopScreenTrait;
-import efruchter.tp.trait.custom.player.KeyboardControlTrait_Attack;
-import efruchter.tp.trait.custom.player.KeyboardControlTrait_Movement;
-import efruchter.tp.trait.custom.player.PlayerRadiusEditTrait;
-import efruchter.tp.trait.custom.player.SetPlayerTrait;
 import efruchter.tp.trait.generators.LevelGeneratorCore;
+import efruchter.tp.util.KeyUtil;
 import efruchter.tp.util.RenderUtil;
 
 /**
@@ -42,8 +37,6 @@ public class TraitProjectClient {
 	private static int fps;
 	private static long lastFPS;
     private static long score;
-
-	private static long guiUpdateDelay = 1000;
 
 	public static void start() {
 
@@ -121,6 +114,7 @@ public class TraitProjectClient {
 	}
 
 	public static void update(int delta) {
+	    KeyUtil.update();
 		level.onUpdate(delta);
 		updateFPS();
 	}

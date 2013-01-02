@@ -12,7 +12,7 @@ public class CollideDamageTrait extends Trait {
 	
 	public CollideDamageTrait(final float damage) {
 		super("Damage Dealing", "Deals damage to another entity.");
-		registerGene(this.damage = new Gene("Damage", "Amount of damage to deal.", 0, damage, damage));
+		this.damage = new Gene("Damage", "Amount of damage to deal.", 0, damage, damage);
 	}
 	
 	@Override

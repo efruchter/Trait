@@ -18,6 +18,7 @@ import efruchter.tp.trait.custom.TimedDeathTrait;
 import efruchter.tp.trait.custom.WiggleTrait;
 import efruchter.tp.trait.gene.Gene;
 import efruchter.tp.trait.gene.GeneExpressionInterpolator;
+import efruchter.tp.util.KeyUtil;
 
 /**
  * Govern the attack of an entity with the keyboard.
@@ -38,20 +39,20 @@ public class KeyboardControlTrait_Attack extends Trait {
 	 */
 	public KeyboardControlTrait_Attack() {
 		super("Attack Control", "Entity attack linked to keyboard inputs.");
-		registerGene(coolDown = GeneVectorIO.getExplorationVector().storeGene("player.attack.cooldown",
-		        new Gene("Cool Down Delay", "The projectile cooldown.", 0, 1000, 64), false));
-		registerGene(spread = GeneVectorIO.getExplorationVector().storeGene("player.attack.spread",
-		        new Gene("Launch Spread", "Bullet spread.", 0, 1, 0), false));
-		registerGene(wiggleBigness = GeneVectorIO.getExplorationVector().storeGene("player.attack.wiggle",
-		        new Gene("Wiggle", "Maximum wiggle magnitude.", 0, 1, .5f), false));
-		registerGene(amount = GeneVectorIO.getExplorationVector().storeGene("player.attack.amount",
-		        new Gene("# of Bullets", "Amount of bullets per salvo.", 0, 10, 1), false));
-		registerGene(damage = GeneVectorIO.getExplorationVector().storeGene("player.attack.damage",
-		        new Gene("Damage Per Bullet", "Amount of damage per bullet.", 0, 10, 5), false));
-		registerGene(dx = GeneVectorIO.getExplorationVector().storeGene("player.attack.dx", new Gene("dx", "dx travel per step", -1, 1, 0),
-		        false));
-		registerGene(dy = GeneVectorIO.getExplorationVector().storeGene("player.attack.dy", new Gene("dy", "dy travel per step", -1, 1, 1),
-		        false));
+		coolDown = GeneVectorIO.getExplorationVector().storeGene("player.attack.cooldown",
+		        new Gene("Cool Down Delay", "The projectile cooldown.", 0, 1000, 64), false);
+		spread = GeneVectorIO.getExplorationVector().storeGene("player.attack.spread",
+		        new Gene("Launch Spread", "Bullet spread.", 0, 1, 0), false);
+		wiggleBigness = GeneVectorIO.getExplorationVector().storeGene("player.attack.wiggle",
+		        new Gene("Wiggle", "Maximum wiggle magnitude.", 0, 1, .5f), false);
+		amount = GeneVectorIO.getExplorationVector().storeGene("player.attack.amount",
+		        new Gene("# of Bullets", "Amount of bullets per salvo.", 0, 10, 1), false);
+		damage = GeneVectorIO.getExplorationVector().storeGene("player.attack.damage",
+		        new Gene("Damage Per Bullet", "Amount of damage per bullet.", 0, 10, 5), false);
+		dx = GeneVectorIO.getExplorationVector().storeGene("player.attack.dx", new Gene("dx", "dx travel per step", -1, 1, 0),
+		        false);
+		dy = GeneVectorIO.getExplorationVector().storeGene("player.attack.dy", new Gene("dy", "dy travel per step", -1, 1, 1),
+		        false);
 	}
 
 	@Override
@@ -66,7 +67,7 @@ public class KeyboardControlTrait_Attack extends Trait {
 			cd += delta;
 		}
 		if (cd >= coolDown.getValue()) {
-			if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
+			if (KeyUtil.isKeyDown(Keyboard.KEY_SPACE)) {
 				cd = 0;
 				for (int i = 0; i < amount.getValue(); i++) {
 					final Entity p = level.getBlankEntity(EntityType.PROJECTILE);
