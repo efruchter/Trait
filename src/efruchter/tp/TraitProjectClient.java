@@ -19,6 +19,7 @@ import efruchter.tp.defaults.EntityFactory;
 import efruchter.tp.defaults.EntityType;
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
+import efruchter.tp.gui.CoreGui;
 import efruchter.tp.networking.Client;
 import efruchter.tp.state.ClientStateManager;
 import efruchter.tp.state.ClientStateManager.FlowState;
@@ -84,8 +85,6 @@ public class TraitProjectClient {
 	 * components.
 	 */
 	public static void resetSim() {
-
-	    ClientStateManager.setFlowState(FlowState.BUILDING);
 	    
 		final Level level = new Level();
 
@@ -122,8 +121,12 @@ public class TraitProjectClient {
 	}
 
 	public static void update(int delta) {
-	    ClientStateManager.setFlowState(FlowState.PLAYING);
+	    if(ClientStateManager.getFlowState() == FlowState.FREE)
+	        ClientStateManager.setFlowState(FlowState.PLAYING);
 	    KeyUtil.update();
+	    if (KeyUtil.isKeyPressed(Keyboard.KEY_ESCAPE)) {
+            System.exit(0);
+        }
 	    if (!ClientStateManager.isPaused())
 	        level.onUpdate(delta);
 	    if (KeyUtil.isKeyPressed(Keyboard.KEY_RETURN))
@@ -170,8 +173,6 @@ public class TraitProjectClient {
 		GL11.glOrtho(0, 800, 0, 600, 1, -1);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 	}
-	
-	public static float angle = 0;
 
 	public static void renderGL(long delta) {
 		// Clear The Screen And The Depth Buffer
@@ -179,7 +180,7 @@ public class TraitProjectClient {
              
 		level.renderGL(delta);
 		
-		if (ClientStateManager.isPaused()) {
+		if (ClientStateManager.isPaused() && ClientStateManager.getFlowState() != FlowState.EDITING) {
 		    RenderUtil.setColor(Color.WHITE);
 		    GL11.glPushMatrix();
 	        {
