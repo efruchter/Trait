@@ -6,9 +6,11 @@ import java.util.List;
 import java.util.prefs.Preferences;
 
 import javax.swing.JOptionPane;
+import javax.swing.UIManager;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
@@ -18,6 +20,8 @@ import efruchter.tp.defaults.EntityType;
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
 import efruchter.tp.networking.Client;
+import efruchter.tp.state.ClientStateManager;
+import efruchter.tp.state.ClientStateManager.FlowState;
 import efruchter.tp.trait.behavior.Behavior;
 import efruchter.tp.trait.generators.LevelGeneratorCore;
 import efruchter.tp.util.KeyUtil;
@@ -60,7 +64,7 @@ public class TraitProjectClient {
 		getDelta(); // call once before loop to initialise lastFrame
 		lastFPS = getTime(); // call before loop to initialise fps timer
 		Display.setTitle("Trait Project");
-
+		
 		while (!Display.isCloseRequested()) {
 			int delta = getDelta();
 
@@ -81,6 +85,8 @@ public class TraitProjectClient {
 	 */
 	public static void resetSim() {
 
+	    ClientStateManager.setFlowState(FlowState.BUILDING);
+	    
 		final Level level = new Level();
 
         final LevelGeneratorCore chainer;
@@ -111,11 +117,17 @@ public class TraitProjectClient {
 
 		level.onDeath();
 		TraitProjectClient.level = level;
+		
+		ClientStateManager.setFlowState(FlowState.FREE);
 	}
 
 	public static void update(int delta) {
+	    ClientStateManager.setFlowState(FlowState.PLAYING);
 	    KeyUtil.update();
-		level.onUpdate(delta);
+	    if (!ClientStateManager.isPaused())
+	        level.onUpdate(delta);
+	    if (KeyUtil.isKeyPressed(Keyboard.KEY_RETURN))
+	        ClientStateManager.togglePauseState();
 		updateFPS();
 	}
 
@@ -158,11 +170,26 @@ public class TraitProjectClient {
 		GL11.glOrtho(0, 800, 0, 600, 1, -1);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 	}
+	
+	public static float angle = 0;
 
 	public static void renderGL(long delta) {
 		// Clear The Screen And The Depth Buffer
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+             
 		level.renderGL(delta);
+		
+		if (ClientStateManager.isPaused()) {
+		    RenderUtil.setColor(Color.WHITE);
+		    GL11.glPushMatrix();
+	        {
+	            GL11.glTranslatef(Display.getWidth() / 2, Display.getHeight() / 2, 0);
+	            RenderUtil.drawString("PAUSED", 5);
+	            GL11.glTranslatef(0, -Display.getHeight() / 8, 0);
+	            RenderUtil.drawString("Press <ENTER>", 3);
+	        }
+	        GL11.glPopMatrix();
+		}
 	}
 
 	public static void versionCheck() {
@@ -218,7 +245,12 @@ public class TraitProjectClient {
 
 		isLocalServer = params.contains("-l");
 
-		//UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+	      //Set Look & Feel
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
 
 		// Start the game
 		TraitProjectClient.start();
