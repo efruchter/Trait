@@ -135,7 +135,7 @@ public class EntityFactory {
 		e.addTrait(new GeneExpressionInterpolator(rad.radius, 1, 0, (long) (Math.random() * delay)));
 	}
 
-    public static void buildNewWaveAnim(final Entity e) {
+    public static void buildNewWaveAnim(final Entity e, final long waveCount) {
 
         final long duration = 7000;
 
@@ -162,7 +162,7 @@ public class EntityFactory {
                 {
                     RenderUtil.setColor(Color.GREEN);
                     GL11.glTranslatef(self.x, self.y, 0);
-                    RenderUtil.drawString("NEW WAVE", 5);
+                    RenderUtil.drawString("WAVE " + waveCount, 5);
                 }
                 GL11.glPopMatrix();
             }

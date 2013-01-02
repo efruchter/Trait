@@ -134,7 +134,7 @@ public class LevelGeneratorCore extends Trait {
         player.addTrait(new SetPlayerTrait());
 
         //Add the new wave animation
-        EntityFactory.buildNewWaveAnim(level.getBlankEntity(EntityType.BG));
+        EntityFactory.buildNewWaveAnim(level.getBlankEntity(EntityType.BG), waveCount);
         
         ClientStateManager.setPaused(true);
         CoreGui.show();
