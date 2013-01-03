@@ -44,6 +44,11 @@ public class KeyUtil {
         return keyDown.contains(key);
     }
 
+    public static void clearKeys() {
+        keyDown.clear();
+        keyJustPressed.clear();
+    }
+
     private KeyUtil() {
     }
 }

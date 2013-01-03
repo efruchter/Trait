@@ -143,7 +143,7 @@ public class EntityFactory {
         e.collisionLabel = CollisionLabel.NO_COLLISION;
         e.entityType = EntityType.BG;
         e.x = Display.getWidth() / 2 - 150;
-        e.y = Display.getHeight();
+        e.y = Display.getHeight() + 3;
 
         final BehaviorChain chain = new BehaviorChain();
         chain.addBehavior(CurveInterpolator.buildPath(duration, false,

@@ -161,14 +161,18 @@ public class TraitProjectClient {
 	public static void update(int delta) {
 	    if(ClientStateManager.getFlowState() == FlowState.FREE)
 	        ClientStateManager.setFlowState(FlowState.PLAYING);
-	    KeyUtil.update();
+
+        KeyUtil.update();
+
 	    if (KeyUtil.isKeyPressed(Keyboard.KEY_ESCAPE)) {
             System.exit(0);
         }
-	    if (!ClientStateManager.isPaused())
-	        level.onUpdate(delta);
+
+        level.onUpdate(ClientStateManager.isPaused() ? 0 : delta);
+
 	    if (KeyUtil.isKeyPressed(Keyboard.KEY_RETURN))
 	        ClientStateManager.togglePauseState();
+
 		updateFPS();
 	}
 

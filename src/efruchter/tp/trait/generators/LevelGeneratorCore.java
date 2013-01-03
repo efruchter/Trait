@@ -119,7 +119,7 @@ public class LevelGeneratorCore extends Trait {
 
         // Build Player
         final Entity player = level.getBlankEntity(EntityType.SHIP);
-        EntityFactory.buildShip(player, playerX, playerY, 10, CollisionLabel.PLAYER_LABEL, Color.CYAN, 50f);
+        EntityFactory.buildShip(player, playerX, playerY, 10, CollisionLabel.PLAYER_LABEL, Color.CYAN, 25f);
         // Add control traits to player with arrow-keys
         player.addTrait(new KeyboardControlTrait_Movement());
 
@@ -142,9 +142,10 @@ public class LevelGeneratorCore extends Trait {
 
 	@Override
 	public void onUpdate(final Entity self, final Level level, final long delta) {
-		time += delta;
 
-		if (time > LEVEL_LENGTH) {
+        time += delta;
+
+		if (time > LEVEL_LENGTH || level.getPlayer() == null) {
 			onStart(self, level);
 		}
 		

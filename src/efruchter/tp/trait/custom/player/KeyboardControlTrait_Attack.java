@@ -33,9 +33,6 @@ public class KeyboardControlTrait_Attack extends Trait {
 
 	/**
 	 * Create standard attack controller.
-	 * 
-	 * @param keyChar
-	 *            character to launch salvo.
 	 */
 	public KeyboardControlTrait_Attack() {
 		super("Attack Control", "Entity attack linked to keyboard inputs.");

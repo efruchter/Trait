@@ -4,9 +4,13 @@ import java.awt.*;
 import java.awt.event.*;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import efruchter.tp.TraitProjectClient;
 import efruchter.tp.trait.gene.Gene;
+import efruchter.tp.util.KeyUtil;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 
 import efruchter.tp.state.ClientStateManager;
@@ -15,6 +19,11 @@ import efruchter.tp.state.ClientStateManager.FlowState;
 public class GeneEditPopup {
 
     private static JFrame frame;
+
+    private static JSlider[] sliders;
+    private static Gene[] genes;
+
+    private final static int RESOLUTION = 1000;
 
     @SuppressWarnings("serial")
     private static void buildGUI() {
@@ -27,22 +36,30 @@ public class GeneEditPopup {
         {
             frame.add(new JPanel(){{add(new JLabel(
                     "A new wave is about to attack! Customize your ship's traits!"
-                    ){{setForeground(Color.WHITE); setBackground(Color.BLACK);}});}},
+                    ){{setForeground(Color.WHITE); setBackground(Color.BLACK);}});
+                    this.requestFocus(); }},
                     BorderLayout.NORTH);
 
-            final Gene[] genes = TraitProjectClient.getPlayerControlledGenes();
+            sliders = new JSlider[genes.length];
 
             final JPanel traitPanel = new JPanel();
             traitPanel.setLayout(new GridLayout(genes.length, 1));
 
-            for (final Gene gene : genes) {
+            for (int i = 0; i < genes.length; i++) {
                 final JPanel subPanel = new JPanel();
                 traitPanel.add(subPanel);
 
-                subPanel.add(new JLabel(gene.getInfo()){{setForeground(Color.WHITE);}});
+                subPanel.add(new JLabel(genes[i].getInfo()){{setForeground(Color.WHITE);}});
 
-                final JSlider slider = new JSlider();
-                subPanel.add(slider);
+                final int sl = i;
+                sliders[sl] = new JSlider(JSlider.HORIZONTAL, 0, RESOLUTION, 0);
+                sliders[sl].addChangeListener(new ChangeListener() {
+                    @Override
+                    public void stateChanged(ChangeEvent changeEvent) {
+                        genes[sl].setExpression((float) sliders[sl].getValue() / RESOLUTION);
+                    }
+                });
+                subPanel.add(sliders[sl]);
             }
 
             frame.add(traitPanel, BorderLayout.CENTER);
@@ -81,17 +98,21 @@ public class GeneEditPopup {
         ClientStateManager.setPaused(true);
         ClientStateManager.setFlowState(FlowState.EDITING);
 
+        genes = TraitProjectClient.getPlayerControlledGenes();
+
         if (frame == null)
             buildGUI();
 
-        if (TraitProjectClient.getPlayerControlledGenes().length == 0) {
+        if (genes.length == 0) {
             hide();
-            return;
+        } else {
+            KeyUtil.clearKeys();
+            for (int i = 0; i < genes.length; i++)
+                sliders[i].setValue((int) (genes[i].getExpression() * 1000));
+            frame.setVisible(true);
+            frame.setLocation(Display.getX() + Display.getWidth() / 2 - frame.getWidth() / 2,
+                    Display.getY() + Display.getHeight() / 2 - frame.getHeight() / 2);
         }
-
-        frame.setVisible(true);
-        frame.setLocation(Display.getX() + Display.getWidth() / 2 - frame.getWidth() / 2,
-                Display.getY() + Display.getHeight() / 2 - frame.getHeight() / 2);
     }
 
     public static void hide() {

@@ -43,9 +43,9 @@ public abstract class Trait implements Behavior {
 		this.active = active;
 	}
 	
-	public class TraitAdapter extends Trait {
-		
-		public TraitAdapter(String name, String info) {
+	public static class TraitAdapter extends Trait {
+
+		public TraitAdapter(final String name, final String info) {
 			super(name, info);
 		}
 		
