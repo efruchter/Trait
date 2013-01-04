@@ -1,20 +1,30 @@
 package efruchter.tp.gui;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import efruchter.tp.TraitProjectClient;
-import efruchter.tp.trait.gene.Gene;
-import efruchter.tp.util.KeyUtil;
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 
+import efruchter.tp.TraitProjectClient;
 import efruchter.tp.state.ClientStateManager;
 import efruchter.tp.state.ClientStateManager.FlowState;
+import efruchter.tp.trait.gene.Gene;
+import efruchter.tp.util.KeyUtil;
 
 public class GeneEditPopup {
 

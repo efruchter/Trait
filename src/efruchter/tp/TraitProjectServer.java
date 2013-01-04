@@ -1,9 +1,9 @@
 package efruchter.tp;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import com.csvreader.CsvReader;
+
 import efruchter.tp.learning.GeneVector;
 import efruchter.tp.learning.GeneVectorIO;
 import efruchter.tp.learning.database.CSVDatabase;
