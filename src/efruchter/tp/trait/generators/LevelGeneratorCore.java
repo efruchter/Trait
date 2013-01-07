@@ -46,7 +46,7 @@ public class LevelGeneratorCore extends Trait {
 
 	// Chance of a new chain forming
 	final private List<Chain> chains;
-	final public long LEVEL_LENGTH = 15000;
+	final public long LEVEL_LENGTH = 60000;
 
 	private GeneCurve chainProb, chainDelay, probChainCont, enemySize, enemyHealth;
 	private Gene intensity;
