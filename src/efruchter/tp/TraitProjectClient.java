@@ -148,6 +148,8 @@ public class TraitProjectClient {
                         .append("\n").append("\n")
                         .append("wave ").append(level.getGeneratorCore().getWaveCount())
                         .toString(), 5, 45);
+                RenderUtil.setColor(Color.GREEN);
+                RenderUtil.drawString("Options\n\nF1 Vector", 5, Display.getHeight() - 15);
             }
             public void onDeath(Entity self, Level level) {}
         });

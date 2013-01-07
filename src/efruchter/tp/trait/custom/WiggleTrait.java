@@ -38,8 +38,9 @@ public class WiggleTrait extends Trait {
 	@Override
 	public void onUpdate(final Entity self, final Level level, final long delta) {
 		if (random.nextFloat() < wiggleChance.getExpression()) {
-			self.x += random.nextFloat() * wiggleIntensity.getValue() * (random.nextBoolean() ? maxWiggle : -maxWiggle);
-			self.y += random.nextFloat() * wiggleIntensity.getValue() * (random.nextBoolean() ? maxWiggle : -maxWiggle);
+		    final float dd = delta / 16f;
+			self.x += dd * random.nextFloat() * wiggleIntensity.getValue() * (random.nextBoolean() ? maxWiggle : -maxWiggle);
+			self.y += dd * random.nextFloat() * wiggleIntensity.getValue() * (random.nextBoolean() ? maxWiggle : -maxWiggle);
 		}
 	}
 	

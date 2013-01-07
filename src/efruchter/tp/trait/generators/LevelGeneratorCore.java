@@ -46,7 +46,7 @@ public class LevelGeneratorCore extends Trait {
 
 	// Chance of a new chain forming
 	final private List<Chain> chains;
-	final public long LEVEL_LENGTH = 60000;
+	final public long LEVEL_LENGTH = 15000;
 
 	private GeneCurve chainProb, chainDelay, probChainCont, enemySize, enemyHealth;
 	private Gene intensity;
@@ -111,12 +111,21 @@ public class LevelGeneratorCore extends Trait {
         if (level.getPlayer() != null) {
             playerX = level.getPlayer().x;
             playerY = level.getPlayer().y;
-            level.removeEntity(level.getPlayer());
+            //level.removeEntity(level.getPlayer());
         } else {
             playerX = Display.getWidth() / 2;
             playerY = Display.getHeight() * .15f;
         }
 
+        for (final Entity ship: level.getEntities(EntityType.SHIP)) {
+            if (ship.isActive())
+                level.removeEntity(ship);
+        }
+        for (final Entity proj: level.getEntities(EntityType.PROJECTILE)) {
+            if (proj.isActive())
+                level.removeEntity(proj);
+        }
+        
         // Build Player
         final Entity player = level.getBlankEntity(EntityType.SHIP);
         EntityFactory.buildShip(player, playerX, playerY, 10, CollisionLabel.PLAYER_LABEL, Color.CYAN, 25f);
