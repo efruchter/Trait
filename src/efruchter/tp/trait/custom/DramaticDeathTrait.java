@@ -43,10 +43,12 @@ public class DramaticDeathTrait extends Trait {
 	
 	@Override
 	public void onDeath(final Entity self, final Level level) {
-        for (int i = 0; i < drama; i++) {
-            final Entity e = level.getBlankEntity(EntityType.BG);
-            EntityFactory.buildExplosion(e, self.x, self.y, self.radius, self.baseColor, delay);
-        }
+	    if (self.health < 0) {
+            for (int i = 0; i < drama; i++) {
+                final Entity e = level.getBlankEntity(EntityType.BG);
+                EntityFactory.buildExplosion(e, self.x, self.y, self.radius, self.baseColor, delay);
+            }
+	    }
 	}
 	
 }

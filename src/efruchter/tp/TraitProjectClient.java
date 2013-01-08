@@ -139,10 +139,11 @@ public class TraitProjectClient {
             public void onStart(Entity self, Level level) {}
             public void onUpdate(final Entity self, final Level level, final long delta) {
                 RenderUtil.setColor(Color.CYAN);
-                final String playerHealth = level.getPlayer() == null ? "XX" : Integer.toString((int) level.getPlayer().getHealth());
+                //final String playerHealth = level.getPlayer() == null ? "XX" : Integer.toString((int) level.getPlayer().getHealth());
                 final String score = level.getPlayer() == null ? "XX" : Long.toString(getScore());
                 RenderUtil.drawString(new StringBuffer()
-                        .append("health ").append(playerHealth)
+                        .append("")
+                        //.append("health ").append(playerHealth)
                         .append("\n").append("\n")
                         .append("score ").append(score)
                         .append("\n").append("\n")
@@ -176,6 +177,10 @@ public class TraitProjectClient {
 	        ClientStateManager.togglePauseState();
 
 		updateFPS();
+		
+		if (score < 0) {
+		    score = 0;
+		}
 	}
 
 	/**
@@ -268,6 +273,10 @@ public class TraitProjectClient {
 
     public static void setScore(final long newScore) {
         score = newScore;
+    }
+    
+    public static void addScore(final long add) {
+        score += add;
     }
 
     public static Gene[] getPlayerControlledGenes() {

@@ -12,56 +12,72 @@ import efruchter.tp.trait.behavior.Behavior;
  * 
  */
 public abstract class Trait implements Behavior {
-	
-	private final String name, info;
-	private boolean active;
-	
-	public Trait(final String name, final String info) {
-		this.name = name;
-		this.info = info;
-		active = true;
-	}
-	
-	public String getName() {
-		return name;
-	}
 
-	public String getInfo() {
-		return info;
-	}
-	
-	@Override
-	public String toString() {
-		return "(T) " + name + " (" + (isActive() ? "ON" : "OFF") + ")";
-	}
-	
-	public boolean isActive() {
-		return active;
-	}
-	
-	public void setActive(final boolean active) {
-		this.active = active;
-	}
-	
-	public static class TraitAdapter extends Trait {
+    private final String name, info;
+    private boolean active;
 
-		public TraitAdapter(final String name, final String info) {
-			super(name, info);
-		}
-		
-		@Override
-		public void onStart(final Entity self, final Level level) {
-			
-		}
-		
-		@Override
-		public void onUpdate(final Entity self, final Level level, final long delta) {
-			
-		}
-		
-		@Override
-		public void onDeath(final Entity self, final Level level) {
-			
-		}
-	}
+    public Trait(final String name, final String info) {
+        this.name = name;
+        this.info = info;
+        active = true;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getInfo() {
+        return info;
+    }
+
+    @Override
+    public String toString() {
+        return "(T) " + name + " (" + (isActive() ? "ON" : "OFF") + ")";
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(final boolean active) {
+        this.active = active;
+    }
+
+    public static class TraitAdapter extends Trait {
+
+        public TraitAdapter(final String name, final String info) {
+            super(name, info);
+        }
+
+        public TraitAdapter() {
+            this("", "");
+        }
+
+        @Override
+        public void onStart(final Entity self, final Level level) {
+            onStart(self);
+        }
+
+        @Override
+        public void onUpdate(final Entity self, final Level level, final long delta) {
+            onUpdate(self);
+        }
+
+        @Override
+        public void onDeath(final Entity self, final Level level) {
+            onDeath(self);
+        }
+
+        public void onStart(final Entity self) {
+
+        }
+
+        public void onUpdate(final Entity self) {
+
+        }
+
+        public void onDeath(final Entity self) {
+
+        }
+    }
 }

@@ -8,29 +8,30 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-import efruchter.tp.TraitProjectClient;
-import efruchter.tp.gui.GeneEditPopup;
-import efruchter.tp.learning.database.Database;
-import efruchter.tp.state.ClientStateManager;
-import efruchter.tp.trait.custom.LoopScreenTrait;
-import efruchter.tp.trait.custom.player.KeyboardControlTrait_Attack;
-import efruchter.tp.trait.custom.player.KeyboardControlTrait_Movement;
-import efruchter.tp.trait.custom.player.PlayerRadiusEditTrait;
-import efruchter.tp.trait.custom.player.SetPlayerTrait;
 import org.lwjgl.opengl.Display;
 
+import efruchter.tp.TraitProjectClient;
+import efruchter.tp.defaults.ClientDefaults;
 import efruchter.tp.defaults.CollisionLabel;
 import efruchter.tp.defaults.EntityFactory;
 import efruchter.tp.defaults.EntityType;
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
+import efruchter.tp.gui.GeneEditPopup;
 import efruchter.tp.learning.GeneVectorIO;
+import efruchter.tp.learning.database.Database;
+import efruchter.tp.state.ClientStateManager;
 import efruchter.tp.trait.Trait;
 import efruchter.tp.trait.behavior.Behavior;
 import efruchter.tp.trait.behavior.BehaviorChain;
 import efruchter.tp.trait.behavior.custom.KillBehavior;
 import efruchter.tp.trait.custom.CurveInterpolator;
+import efruchter.tp.trait.custom.LoopScreenTrait;
 import efruchter.tp.trait.custom.enemy.BasicAttackTrait;
+import efruchter.tp.trait.custom.player.KeyboardControlTrait_Attack;
+import efruchter.tp.trait.custom.player.KeyboardControlTrait_Movement;
+import efruchter.tp.trait.custom.player.PlayerRadiusEditTrait;
+import efruchter.tp.trait.custom.player.SetPlayerTrait;
 import efruchter.tp.trait.gene.Gene;
 import efruchter.tp.trait.gene.GeneCurve;
 
@@ -46,7 +47,6 @@ public class LevelGeneratorCore extends Trait {
 
 	// Chance of a new chain forming
 	final private List<Chain> chains;
-	final public long LEVEL_LENGTH = 60000;
 
 	private GeneCurve chainProb, chainDelay, probChainCont, enemySize, enemyHealth;
 	private Gene intensity;
@@ -155,11 +155,11 @@ public class LevelGeneratorCore extends Trait {
 
         time += delta;
 
-		if (time > LEVEL_LENGTH || level.getPlayer() == null) {
+		if (time > ClientDefaults.LEVEL_LENGTH || level.getPlayer() == null) {
 			onStart(self, level);
 		}
 		
-		final float mu = (float) time / LEVEL_LENGTH;
+		final float mu = (float) time / ClientDefaults.LEVEL_LENGTH;
 		final float randNum = (float) Math.random();
 
 		// Gen
@@ -213,7 +213,7 @@ public class LevelGeneratorCore extends Trait {
 				    @Override
 				    public void onUpdate(final Entity self, final Level level, final long delta) {
 				        if (self.health < 0) {
-			                TraitProjectClient.setScore(TraitProjectClient.getScore() + 2);
+			                TraitProjectClient.setScore(TraitProjectClient.getScore() + ClientDefaults.SCORE_ENEMY_DEFEAT);
 				        }
 				    }
 				};

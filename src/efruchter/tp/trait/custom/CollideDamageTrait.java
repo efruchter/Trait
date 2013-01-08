@@ -30,6 +30,7 @@ public class CollideDamageTrait extends Trait {
 			}
 		}
 		if (hit) {
+		    self.health = -1;
 			level.removeEntity(self);
 		}
 	}

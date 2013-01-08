@@ -20,11 +20,9 @@ public class DieOffScreenTrait extends Trait {
 	
 	@Override
 	public void onUpdate(final Entity self, final Level level, final long delta) {
-		
 		if (self.x < 0 || self.x > Display.getWidth() || self.y > Display.getHeight() || self.y < 0) {
 			level.removeEntity(self);
 		}
-		
 	}
 	
 	@Override

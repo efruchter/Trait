@@ -122,7 +122,6 @@ public class EntityFactory {
 		e.baseColor = color;
 		e.entityType = EntityType.BG;
 		e.setRenderBehavior(RenderUtil.PROJECTILE_RENDER);
-		e.addTrait(new DieOffScreenTrait());
 		e.addTrait(new TimedDeathTrait(delay));
 		
 		final WiggleTrait w = new WiggleTrait(20);
