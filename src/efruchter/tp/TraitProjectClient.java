@@ -2,6 +2,7 @@ package efruchter.tp;
 
 import java.awt.Color;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.prefs.Preferences;
@@ -20,7 +21,9 @@ import efruchter.tp.defaults.EntityFactory;
 import efruchter.tp.defaults.EntityType;
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
+import efruchter.tp.gui.CoreVectorEditorPopup;
 import efruchter.tp.learning.GeneVector;
+import efruchter.tp.learning.GeneVector.GeneWrapper;
 import efruchter.tp.learning.GeneVectorIO;
 import efruchter.tp.networking.Client;
 import efruchter.tp.state.ClientStateManager;
@@ -38,54 +41,54 @@ import efruchter.tp.util.RenderUtil;
  */
 public class TraitProjectClient {
 
-	public static final String VERSION = "00.00.00.01";
-	private static boolean isLocalServer;
-	private static Level level;
-	private static long lastFrame;
-	private static int fps;
-	private static long lastFPS;
+    public static final String VERSION = "00.00.00.01";
+    private static boolean isLocalServer;
+    private static Level level;
+    private static long lastFrame;
+    private static int fps;
+    private static long lastFPS;
     private static long score;
 
     private static String[] playerControlled;
 
-	public static void start() {
+    public static void start() {
 
         score = 0;
 
-		versionCheck();
+        versionCheck();
 
-		level = new Level();
+        level = new Level();
 
         fetchPlayerControlled();
 
-		resetSim();
+        resetSim();
 
-		try {
-			Display.setDisplayMode(new DisplayMode(800, 600));
-			Display.create();
-		} catch (LWJGLException e) {
-			e.printStackTrace();
-			System.exit(0);
-		}
+        try {
+            Display.setDisplayMode(new DisplayMode(800, 600));
+            Display.create();
+        } catch (LWJGLException e) {
+            e.printStackTrace();
+            System.exit(0);
+        }
 
-		initGL(); // init OpenGL
-		getDelta(); // call once before loop to initialise lastFrame
-		lastFPS = getTime(); // call before loop to initialise fps timer
-		Display.setTitle("Trait Project");
-		
-		while (!Display.isCloseRequested()) {
-			int delta = getDelta();
+        initGL(); // init OpenGL
+        getDelta(); // call once before loop to initialise lastFrame
+        lastFPS = getTime(); // call before loop to initialise fps timer
+        Display.setTitle("Trait Project");
 
-			update(delta);
-			renderGL(delta);
+        while (!Display.isCloseRequested()) {
+            int delta = getDelta();
 
-			Display.update();
-			Display.sync(60); // cap fps to 60fps
-		}
+            update(delta);
+            renderGL(delta);
 
-		Display.destroy();
-		System.exit(0);
-	}
+            Display.update();
+            Display.sync(60); // cap fps to 60fps
+        }
+
+        Display.destroy();
+        System.exit(0);
+    }
 
     private static void fetchPlayerControlled() {
         ClientStateManager.setFlowState(FlowState.LOADING_VECT);
@@ -119,153 +122,158 @@ public class TraitProjectClient {
     }
 
     /**
-	 * Build the level and entities from scratch. Update appropriate GUI
-	 * components.
-	 */
-	public static void resetSim() {
-	    
-		final Level level = new Level();
+     * Build the level and entities from scratch. Update appropriate GUI
+     * components.
+     */
+    public static void resetSim() {
+
+        final Level level = new Level();
 
         final LevelGeneratorCore chainer;
-		level.getBlankEntity(EntityType.GENERATOR).addTrait(chainer = new LevelGeneratorCore());
+        level.getBlankEntity(EntityType.GENERATOR).addTrait(chainer = new LevelGeneratorCore());
         level.setGeneratorCore(chainer);
 
-		for (int i = 0; i < 200; i++) {
-			Entity e = level.getBlankEntity(EntityType.BG);
-			EntityFactory.buildBackgroundStar(e);
-		}
+        for (int i = 0; i < 200; i++) {
+            Entity e = level.getBlankEntity(EntityType.BG);
+            EntityFactory.buildBackgroundStar(e);
+        }
 
-        level.addRenderBehavior(new Behavior(){
-            public void onStart(Entity self, Level level) {}
+        level.addRenderBehavior(new Behavior() {
+            public void onStart(Entity self, Level level) {
+            }
+
             public void onUpdate(final Entity self, final Level level, final long delta) {
                 RenderUtil.setColor(Color.CYAN);
-                //final String playerHealth = level.getPlayer() == null ? "XX" : Integer.toString((int) level.getPlayer().getHealth());
+                // final String playerHealth = level.getPlayer() == null ? "XX"
+                // : Integer.toString((int) level.getPlayer().getHealth());
                 final String score = level.getPlayer() == null ? "XX" : Long.toString(getScore());
-                RenderUtil.drawString(new StringBuffer()
-                        .append("")
-                        //.append("health ").append(playerHealth)
-                        .append("\n").append("\n")
-                        .append("score ").append(score)
-                        .append("\n").append("\n")
-                        .append("wave ").append(level.getGeneratorCore().getWaveCount())
-                        .toString(), 5, 45);
+                RenderUtil.drawString(
+                        new StringBuffer().append("")
+                                // .append("health ").append(playerHealth)
+                                .append("\n").append("\n").append("score ").append(score).append("\n").append("\n").append("wave ")
+                                .append(level.getGeneratorCore().getWaveCount()).toString(), 5, 45);
                 RenderUtil.setColor(Color.GREEN);
                 RenderUtil.drawString("Options\n\nF1 Vector", 5, Display.getHeight() - 15);
             }
-            public void onDeath(Entity self, Level level) {}
+
+            public void onDeath(Entity self, Level level) {
+            }
         });
 
-		level.onDeath();
-		TraitProjectClient.level = level;
-		
-		ClientStateManager.setFlowState(FlowState.FREE);
-	}
+        level.onDeath();
+        TraitProjectClient.level = level;
 
-	public static void update(int delta) {
-	    if(ClientStateManager.getFlowState() == FlowState.FREE)
-	        ClientStateManager.setFlowState(FlowState.PLAYING);
+        ClientStateManager.setFlowState(FlowState.FREE);
+    }
+
+    public static void update(int delta) {
+        if (ClientStateManager.getFlowState() == FlowState.FREE)
+            ClientStateManager.setFlowState(FlowState.PLAYING);
 
         KeyUtil.update();
 
-	    if (KeyUtil.isKeyPressed(Keyboard.KEY_ESCAPE)) {
+        if (KeyUtil.isKeyPressed(Keyboard.KEY_ESCAPE)) {
             System.exit(0);
         }
 
         level.onUpdate(ClientStateManager.isPaused() ? 0 : delta);
 
-	    if (KeyUtil.isKeyPressed(Keyboard.KEY_RETURN))
-	        ClientStateManager.togglePauseState();
+        if (KeyUtil.isKeyPressed(Keyboard.KEY_RETURN))
+            ClientStateManager.togglePauseState();
 
-		updateFPS();
-		
-		if (score < 0) {
-		    score = 0;
-		}
-	}
+        if (KeyUtil.isKeyPressed(Keyboard.KEY_F1))
+            CoreVectorEditorPopup.show(GeneVectorIO.getExplorationVector().getGenes());
 
-	/**
-	 * Calculate how many milliseconds have passed since last frame.
-	 * 
-	 * @return milliseconds passed since last frame
-	 */
-	public static int getDelta() {
-		final long time = getTime();
-		final int delta = (int) (time - lastFrame);
-		lastFrame = time;
+        updateFPS();
 
-		return delta;
-	}
+        if (score < 0) {
+            score = 0;
+        }
+    }
 
-	/**
-	 * Get the accurate system time
-	 * 
-	 * @return The system time in milliseconds
-	 */
-	public static long getTime() {
-		return (Sys.getTime() * 1000) / Sys.getTimerResolution();
-	}
+    /**
+     * Calculate how many milliseconds have passed since last frame.
+     * 
+     * @return milliseconds passed since last frame
+     */
+    public static int getDelta() {
+        final long time = getTime();
+        final int delta = (int) (time - lastFrame);
+        lastFrame = time;
 
-	/**
-	 * Calculate the FPS and set it in the title bar
-	 */
-	public static void updateFPS() {
-		if (getTime() - lastFPS > 1000) {
-			fps = 0;
-			lastFPS += 1000;
-		}
-		fps++;
-	}
+        return delta;
+    }
 
-	public static void initGL() {
-		GL11.glMatrixMode(GL11.GL_PROJECTION);
-		GL11.glLoadIdentity();
-		GL11.glOrtho(0, 800, 0, 600, 1, -1);
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-	}
+    /**
+     * Get the accurate system time
+     * 
+     * @return The system time in milliseconds
+     */
+    public static long getTime() {
+        return (Sys.getTime() * 1000) / Sys.getTimerResolution();
+    }
 
-	public static void renderGL(long delta) {
-		// Clear The Screen And The Depth Buffer
-		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-             
-		level.renderGL(delta);
-		
-		if (ClientStateManager.isPaused() && ClientStateManager.getFlowState() != FlowState.EDITING) {
-		    RenderUtil.setColor(Color.WHITE);
-		    GL11.glPushMatrix();
-	        {
-	            GL11.glTranslatef(Display.getWidth() / 2, Display.getHeight() / 2, 0);
-	            RenderUtil.drawString("PAUSED", 5);
-	            GL11.glTranslatef(0, -Display.getHeight() / 8, 0);
-	            RenderUtil.drawString("Press <ENTER>", 3);
-	        }
-	        GL11.glPopMatrix();
-		}
-	}
+    /**
+     * Calculate the FPS and set it in the title bar
+     */
+    public static void updateFPS() {
+        if (getTime() - lastFPS > 1000) {
+            fps = 0;
+            lastFPS += 1000;
+        }
+        fps++;
+    }
 
-	public static void versionCheck() {
-		final Client c = getClient();
+    public static void initGL() {
+        GL11.glMatrixMode(GL11.GL_PROJECTION);
+        GL11.glLoadIdentity();
+        GL11.glOrtho(0, 800, 0, 600, 1, -1);
+        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+    }
 
-		try {
-			c.reconnect();
-			c.send("versioncheck" + VERSION);
-			boolean sameVersion = Boolean.parseBoolean(c.receive());
-			if (!sameVersion) {
-				JOptionPane.showMessageDialog(null, "Your client is out-of-date, please download the latest version.");
-				System.exit(0);
-			} else {
-				System.out.println("Client and Server versions match.");
-				return;
-			}
-		} catch (Exception e) {
+    public static void renderGL(long delta) {
+        // Clear The Screen And The Depth Buffer
+        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 
-		} finally {
-			try {
-				c.close();
-			} catch (Exception e) {
-			}
-		}
-		System.err.println("Cannot check server version.");
-	}
+        level.renderGL(delta);
+
+        if (ClientStateManager.isPaused() && ClientStateManager.getFlowState() != FlowState.EDITING) {
+            RenderUtil.setColor(Color.WHITE);
+            GL11.glPushMatrix();
+            {
+                GL11.glTranslatef(Display.getWidth() / 2, Display.getHeight() / 2, 0);
+                RenderUtil.drawString("PAUSED", 5);
+                GL11.glTranslatef(0, -Display.getHeight() / 8, 0);
+                RenderUtil.drawString("Press <ENTER>", 3);
+            }
+            GL11.glPopMatrix();
+        }
+    }
+
+    public static void versionCheck() {
+        final Client c = getClient();
+
+        try {
+            c.reconnect();
+            c.send("versioncheck" + VERSION);
+            boolean sameVersion = Boolean.parseBoolean(c.receive());
+            if (!sameVersion) {
+                JOptionPane.showMessageDialog(null, "Your client is out-of-date, please download the latest version.");
+                System.exit(0);
+            } else {
+                System.out.println("Client and Server versions match.");
+                return;
+            }
+        } catch (Exception e) {
+
+        } finally {
+            try {
+                c.close();
+            } catch (Exception e) {
+            }
+        }
+        System.err.println("Cannot check server version.");
+    }
 
     public static long getScore() {
         return score;
@@ -274,48 +282,48 @@ public class TraitProjectClient {
     public static void setScore(final long newScore) {
         score = newScore;
     }
-    
+
     public static void addScore(final long add) {
         score += add;
     }
 
-    public static Gene[] getPlayerControlledGenes() {
+    public static List<GeneWrapper> getPlayerControlledGenes() {
         final GeneVector geneVector = GeneVectorIO.getExplorationVector();
-        final Gene[] genes = new Gene[playerControlled.length];
-        for (int i = 0; i < genes.length; i++) {
-            genes[i] = geneVector.getGene(playerControlled[i]);
+        final List<GeneWrapper> genes = new ArrayList<GeneWrapper>();
+        for (final String string : playerControlled) {
+            genes.add(geneVector.getGeneWrapper(string));
         }
         return genes;
     }
 
-	public static Client getClient() {
-		if (isLocalServer) {
-			return new Client();
-		} else {
-			return new Client("trait.ericfruchter.com", 8000);
-		}
-	}
+    public static Client getClient() {
+        if (isLocalServer) {
+            return new Client();
+        } else {
+            return new Client("trait.ericfruchter.com", 8000);
+        }
+    }
 
-	// User data
-	public final static Preferences PREFERENCES;
-	static {
-		PREFERENCES = Preferences.userNodeForPackage(TraitProjectClient.class);
-	}
+    // User data
+    public final static Preferences PREFERENCES;
+    static {
+        PREFERENCES = Preferences.userNodeForPackage(TraitProjectClient.class);
+    }
 
-	public static void main(String[] argv) {
+    public static void main(String[] argv) {
 
-		List<String> params = Arrays.asList(argv);
+        List<String> params = Arrays.asList(argv);
 
-		isLocalServer = params.contains("-l");
+        isLocalServer = params.contains("-l");
 
-	      //Set Look & Feel
+        // Set Look & Feel
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
-		// Start the game
-		TraitProjectClient.start();
-	}
+        // Start the game
+        TraitProjectClient.start();
+    }
 }

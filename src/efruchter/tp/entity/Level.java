@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import efruchter.tp.defaults.CollisionLabel;
 import efruchter.tp.defaults.EntityType;
 import efruchter.tp.trait.behavior.Behavior;
 import efruchter.tp.trait.generators.LevelGeneratorCore;

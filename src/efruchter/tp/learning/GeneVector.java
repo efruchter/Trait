@@ -119,4 +119,8 @@ public class GeneVector {
 	public Gene getGene(final String string) {
 		return geneMap.get(string);
 	}
+	
+	public GeneWrapper getGeneWrapper(final String string) {
+        return new GeneWrapper(geneMap.get(string), string);
+    }
 }

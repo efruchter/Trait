@@ -17,7 +17,7 @@ import efruchter.tp.defaults.EntityFactory;
 import efruchter.tp.defaults.EntityType;
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
-import efruchter.tp.gui.GeneEditPopup;
+import efruchter.tp.gui.CoreVectorEditorPopup;
 import efruchter.tp.learning.GeneVectorIO;
 import efruchter.tp.learning.database.Database;
 import efruchter.tp.state.ClientStateManager;
@@ -25,6 +25,7 @@ import efruchter.tp.trait.Trait;
 import efruchter.tp.trait.behavior.Behavior;
 import efruchter.tp.trait.behavior.BehaviorChain;
 import efruchter.tp.trait.behavior.custom.KillBehavior;
+import efruchter.tp.trait.custom.ConstantHealthBoostTrait;
 import efruchter.tp.trait.custom.CurveInterpolator;
 import efruchter.tp.trait.custom.LoopScreenTrait;
 import efruchter.tp.trait.custom.enemy.BasicAttackTrait;
@@ -43,34 +44,33 @@ import efruchter.tp.trait.gene.GeneCurve;
  */
 public class LevelGeneratorCore extends Trait {
 
-	private long time = 0;
+    private long time = 0;
 
-	// Chance of a new chain forming
-	final private List<Chain> chains;
+    // Chance of a new chain forming
+    final private List<Chain> chains;
 
-	private GeneCurve chainProb, chainDelay, probChainCont, enemySize, enemyHealth;
-	private Gene intensity;
-	
-	final public static Random random = new Random();
+    private GeneCurve chainProb, chainDelay, probChainCont, enemySize, enemyHealth;
+    private Gene intensity;
+
+    final public static Random random = new Random();
 
     public long waveCount;
 
-	public LevelGeneratorCore() {
-		super("Level Generator : Spawner", "The level generating structure.");
+    public LevelGeneratorCore() {
+        super("Level Generator : Spawner", "The level generating structure.");
         waveCount = 0;
         chains = new LinkedList<Chain>();
-	}
+    }
 
-	@Override
-	public void onStart(final Entity self, final Level level) {
+    @Override
+    public void onStart(final Entity self, final Level level) {
 
         if (level.getGeneratorCore().getWaveCount() > 0) {
             final String username = TraitProjectClient.PREFERENCES.get("username", null);
             if (username != null) {
-                GeneVectorIO.storeVector(
-                        new Database.SessionInfo(username, Long.toString(TraitProjectClient.getScore()),
-                        new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime())),
-                        GeneVectorIO.getExplorationVector());
+                GeneVectorIO.storeVector(new Database.SessionInfo(username, Long.toString(TraitProjectClient.getScore()),
+                        new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime())), GeneVectorIO
+                        .getExplorationVector());
             } else {
                 System.err.println("No username set, cannot push vector to server.");
             }
@@ -91,19 +91,25 @@ public class LevelGeneratorCore extends Trait {
          * Build the gene vectors over again.
          */
 
-        intensity = GeneVectorIO.getExplorationVector().storeGene("spawner.intensity", new Gene("Intensity", "Intensity of everything.", 0, 1, 1f / 2f), false);
+        intensity = GeneVectorIO.getExplorationVector().storeGene("spawner.intensity",
+                new Gene("Intensity", "Intensity of everything.", 0, 1, 1f / 2f), false);
 
-        chainProb = GeneVectorIO.getExplorationVector().storeGeneCurve("spawner.newChainProb", new GeneCurve("newChainProb", "P(new chain)", 0, 1, 0), false);
+        chainProb = GeneVectorIO.getExplorationVector().storeGeneCurve("spawner.newChainProb",
+                new GeneCurve("newChainProb", "P(new chain)", 0, 1, 0), false);
         chainProb.genes[0].setValue(.02f);
         chainProb.genes[1].setValue(.02f);
         chainProb.genes[2].setValue(.05f);
         chainProb.genes[3].setValue(.05f);
 
-        chainDelay = GeneVectorIO.getExplorationVector().storeGeneCurve("spawner.chainDelay", new GeneCurve("chainDelay", "Delay until enemy is spawned to continue a chain.", 0, 1000, 500), false);
-        probChainCont = GeneVectorIO.getExplorationVector().storeGeneCurve("spawner.probChainCont", new GeneCurve("probChainCont", "P(continue chain)", 0, 1, .90f), false);
+        chainDelay = GeneVectorIO.getExplorationVector().storeGeneCurve("spawner.chainDelay",
+                new GeneCurve("chainDelay", "Delay until enemy is spawned to continue a chain.", 0, 1000, 500), false);
+        probChainCont = GeneVectorIO.getExplorationVector().storeGeneCurve("spawner.probChainCont",
+                new GeneCurve("probChainCont", "P(continue chain)", 0, 1, .90f), false);
 
-        enemySize = GeneVectorIO.getExplorationVector().storeGeneCurve("spawner.enemy.radius", new GeneCurve("baseRadius", "Base enemy radius.", 2, 50, 15), false);
-        enemyHealth = GeneVectorIO.getExplorationVector().storeGeneCurve("spawner.enemy.health", new GeneCurve("enemyHealth", "Default enemy health on spawn.", 2, 100, 10), false);
+        enemySize = GeneVectorIO.getExplorationVector().storeGeneCurve("spawner.enemy.radius",
+                new GeneCurve("baseRadius", "Base enemy radius.", 2, 50, 15), false);
+        enemyHealth = GeneVectorIO.getExplorationVector().storeGeneCurve("spawner.enemy.health",
+                new GeneCurve("enemyHealth", "Default enemy health on spawn.", 2, 100, 10), false);
 
         /*
          * Canned player position.
@@ -112,21 +118,21 @@ public class LevelGeneratorCore extends Trait {
         if (level.getPlayer() != null) {
             playerX = level.getPlayer().x;
             playerY = level.getPlayer().y;
-            //level.removeEntity(level.getPlayer());
+            // level.removeEntity(level.getPlayer());
         } else {
             playerX = Display.getWidth() / 2;
             playerY = Display.getHeight() * .15f;
         }
 
-        for (final Entity ship: level.getEntities(EntityType.SHIP)) {
+        for (final Entity ship : level.getEntities(EntityType.SHIP)) {
             if (ship.isActive())
                 level.removeEntity(ship);
         }
-        for (final Entity proj: level.getEntities(EntityType.PROJECTILE)) {
+        for (final Entity proj : level.getEntities(EntityType.PROJECTILE)) {
             if (proj.isActive())
                 level.removeEntity(proj);
         }
-        
+
         // Build Player
         final Entity player = level.getBlankEntity(EntityType.SHIP);
         EntityFactory.buildShip(player, playerX, playerY, 10, CollisionLabel.PLAYER_LABEL, Color.CYAN, 25f);
@@ -140,145 +146,151 @@ public class LevelGeneratorCore extends Trait {
         player.name = "Player Ship";
         // Add screen loop trait
         player.addTrait(new LoopScreenTrait());
-        //player.addTrait(new ConstantHealthBoostTrait());
+        player.addTrait(new ConstantHealthBoostTrait());
         player.addTrait(new SetPlayerTrait());
 
-        //Add the new wave animation
+        // Add the new wave animation
         EntityFactory.buildNewWaveAnim(level.getBlankEntity(EntityType.BG));
-        
+
         ClientStateManager.setPaused(true);
-        GeneEditPopup.show();
+        CoreVectorEditorPopup.show(TraitProjectClient.getPlayerControlledGenes());
     }
 
-	@Override
-	public void onUpdate(final Entity self, final Level level, final long delta) {
+    @Override
+    public void onUpdate(final Entity self, final Level level, final long delta) {
 
         time += delta;
 
-		if (time > ClientDefaults.LEVEL_LENGTH || level.getPlayer() == null) {
-			onStart(self, level);
-		}
-		
-		final float mu = (float) time / ClientDefaults.LEVEL_LENGTH;
-		final float randNum = (float) Math.random();
+        if (time > ClientDefaults.LEVEL_LENGTH || level.getPlayer() == null) {
+            onStart(self, level);
+        }
 
-		// Gen
-		final float probNewChain = chainProb.getValue(mu);
+        final float mu = (float) time / ClientDefaults.LEVEL_LENGTH;
+        final float randNum = (float) Math.random();
 
-		// start new chain?
-		if (randNum < probNewChain * intensity.getExpression()) {
-			Chain c = new Chain(getNewChainFunction(level, mu), level, mu);
-			chains.add(c);
-		}
+        // Gen
+        final float probNewChain = chainProb.getValue(mu);
 
-		// update chains
-		for (final Chain chain : new LinkedList<Chain>(chains)) {
-			boolean killChain = false;
-			chain.remaining -= delta;
-			if (chain.remaining <= 0) {
-				if (random.nextFloat() < probChainCont.getValue(mu) * intensity.getExpression()) {
-					chain.genFunc.gen(level, mu);
-				} else {
-					killChain = true;
-				}
-				chain.remaining = (long) chainDelay.getValue(mu);
-			}
-			if (killChain) {
-				chains.remove(chain);
-			}
-		}
-	}
+        // start new chain?
+        if (randNum < probNewChain * intensity.getExpression()) {
+            Chain c = new Chain(getNewChainFunction(level, mu), level, mu);
+            chains.add(c);
+        }
 
-	private LevelGeneratorCore.Chain.GenFunction getNewChainFunction(final Level level, final float mu) {
-		return new LevelGeneratorCore.Chain.GenFunction() {
+        // update chains
+        for (final Chain chain : new LinkedList<Chain>(chains)) {
+            boolean killChain = false;
+            chain.remaining -= delta;
+            if (chain.remaining <= 0) {
+                if (random.nextFloat() < probChainCont.getValue(mu) * intensity.getExpression()) {
+                    chain.genFunc.gen(level, mu);
+                } else {
+                    killChain = true;
+                }
+                chain.remaining = (long) chainDelay.getValue(mu);
+            }
+            if (killChain) {
+                chains.remove(chain);
+            }
+        }
+    }
 
-			public Entity gen(final Level level, final float mu) {
-				Entity e = level.getBlankEntity(EntityType.SHIP);
-				EntityFactory.buildShip(e, -100f, -100f, radius, CollisionLabel.ENEMY_LABEL, Color.RED, health);
+    private LevelGeneratorCore.Chain.GenFunction getNewChainFunction(final Level level, final float mu) {
+        return new LevelGeneratorCore.Chain.GenFunction() {
 
-				// Pathing
-				final BehaviorChain c = new BehaviorChain(false);
-				c.addBehavior(CurveInterpolator.buildPath(12000, false, curve), 12000);
-				c.addBehavior(new KillBehavior(), 1);
-				e.addTrait(c);
+            public Entity gen(final Level level, final float mu) {
+                Entity e = level.getBlankEntity(EntityType.SHIP);
+                EntityFactory.buildShip(e, -100f, -100f, radius, CollisionLabel.ENEMY_LABEL, Color.RED, health);
 
-				// attacking
-				final BehaviorChain a = new BehaviorChain(true);
-				a.addBehavior(Behavior.EMPTY, 1000);
-				a.addBehavior(new BasicAttackTrait(tracking), 500);
-				e.addTrait(a);
-				
-				//Score adder
-				final TraitAdapter kill = new TraitAdapter("", ""){
-				    @Override
-				    public void onUpdate(final Entity self, final Level level, final long delta) {
-				        if (self.health < 0) {
-			                TraitProjectClient.setScore(TraitProjectClient.getScore() + ClientDefaults.SCORE_ENEMY_DEFEAT);
-				        }
-				    }
-				};
-				e.addTrait(kill);
+                // Pathing
+                final BehaviorChain c = new BehaviorChain(false);
+                c.addBehavior(CurveInterpolator.buildPath(12000, false, curve), 12000);
+                c.addBehavior(new KillBehavior(), 1);
+                e.addTrait(c);
 
-				return e;
-			}
+                // attacking
+                final BehaviorChain a = new BehaviorChain(true);
+                a.addBehavior(Behavior.EMPTY, 1000);
+                a.addBehavior(new BasicAttackTrait(tracking), 500);
+                e.addTrait(a);
 
-			private Point.Float[] curve;
-			private boolean tracking;
-			private float radius, health;
+                // Score adder
+                final TraitAdapter kill = new TraitAdapter("", "") {
+                    @Override
+                    public void onUpdate(final Entity self, final Level level, final long delta) {
+                        if (self.health < 0) {
+                            TraitProjectClient.setScore(TraitProjectClient.getScore() + ClientDefaults.SCORE_ENEMY_DEFEAT);
+                        }
+                    }
+                };
+                e.addTrait(kill);
 
-			@Override
-			public void precalc(final Level level, final float mu) {
+                return e;
+            }
+
+            private Point.Float[] curve;
+            private boolean tracking;
+            private float radius, health;
+
+            @Override
+            public void precalc(final Level level, final float mu) {
 
                 curve = new Point.Float[3];
 
                 switch (random.nextInt(5)) {
                     case 0:
-                            curve[0] = new Point.Float(Display.getWidth() + 20 , Display.getHeight() - Display.getHeight() * random.nextFloat() * .25f);
-                            break;
+                        curve[0] = new Point.Float(Display.getWidth() + 20, Display.getHeight() - Display.getHeight() * random.nextFloat()
+                                * .25f);
+                        break;
                     case 1:
-                            curve[0] = new Point.Float(-20 , Display.getHeight() - Display.getHeight() * random.nextFloat() * .25f);
-                            break;
+                        curve[0] = new Point.Float(-20, Display.getHeight() - Display.getHeight() * random.nextFloat() * .25f);
+                        break;
                     default:
-                            curve[0] = new Point.Float(Display.getWidth() * random.nextFloat(), Display.getHeight() + 20);
+                        curve[0] = new Point.Float(Display.getWidth() * random.nextFloat(), Display.getHeight() + 20);
                 }
 
-                curve[1] = new Point.Float(Display.getWidth() * random.nextFloat(), Display.getHeight() - Display.getHeight() * random.nextFloat() * .75f);
+                curve[1] = new Point.Float(Display.getWidth() * random.nextFloat(), Display.getHeight() - Display.getHeight()
+                        * random.nextFloat() * .75f);
 
                 switch (random.nextInt(5)) {
                     case 0:
-                        curve[2] = new Point.Float(Display.getWidth() + 20 , Display.getHeight() - Display.getHeight() * random.nextFloat() * .25f);
+                        curve[2] = new Point.Float(Display.getWidth() + 20, Display.getHeight() - Display.getHeight() * random.nextFloat()
+                                * .25f);
                         break;
                     case 1:
-                        curve[2] = new Point.Float(-20 , Display.getHeight() - Display.getHeight() * random.nextFloat() * .25f);
+                        curve[2] = new Point.Float(-20, Display.getHeight() - Display.getHeight() * random.nextFloat() * .25f);
                         break;
                     default:
-                        curve[2] = new Point.Float(Display.getWidth() * random.nextFloat(), - 20);
+                        curve[2] = new Point.Float(Display.getWidth() * random.nextFloat(), -20);
                 }
 
                 tracking = random.nextFloat() < intensity.getExpression();
-				radius = enemySize.getValue(mu);
-				health = enemyHealth.getValue(mu);
-			}
-		};
-	}
-	@Override
-	public void onDeath(Entity self, Level level) {
-		
-	}
+                radius = enemySize.getValue(mu);
+                health = enemyHealth.getValue(mu);
+            }
+        };
+    }
 
-	private static class Chain {
-		final private GenFunction genFunc;
-		private long remaining = 0;
-		public Chain(final GenFunction genFunc, final Level level, final float mu) {
-			this.genFunc = genFunc;
-			genFunc.precalc(level, mu);
-		}
+    @Override
+    public void onDeath(Entity self, Level level) {
 
-		private static interface GenFunction {
-			void precalc(final Level level, final float mu);
-			Entity gen(final Level level, final float mu);
-		}
-	}
+    }
+
+    private static class Chain {
+        final private GenFunction genFunc;
+        private long remaining = 0;
+
+        public Chain(final GenFunction genFunc, final Level level, final float mu) {
+            this.genFunc = genFunc;
+            genFunc.precalc(level, mu);
+        }
+
+        private static interface GenFunction {
+            void precalc(final Level level, final float mu);
+
+            Entity gen(final Level level, final float mu);
+        }
+    }
 
     public long getWaveCount() {
         return waveCount;
