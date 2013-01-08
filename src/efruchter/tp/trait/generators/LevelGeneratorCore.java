@@ -78,6 +78,7 @@ public class LevelGeneratorCore extends Trait {
 
         waveCount++;
         time = 0;
+        TraitProjectClient.setScore(0);
         chains.clear();
 
         /*
@@ -206,6 +207,17 @@ public class LevelGeneratorCore extends Trait {
 				a.addBehavior(Behavior.EMPTY, 1000);
 				a.addBehavior(new BasicAttackTrait(tracking), 500);
 				e.addTrait(a);
+				
+				//Score adder
+				final TraitAdapter kill = new TraitAdapter("", ""){
+				    @Override
+				    public void onUpdate(final Entity self, final Level level, final long delta) {
+				        if (self.health < 0) {
+			                TraitProjectClient.setScore(TraitProjectClient.getScore() + 2);
+				        }
+				    }
+				};
+				e.addTrait(kill);
 
 				return e;
 			}
