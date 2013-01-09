@@ -8,34 +8,35 @@ import efruchter.tp.trait.gene.Gene;
 
 public class CollideDamageTrait extends Trait {
 	
-	private Gene damage;
+	private final Gene damage;
 	
-	public CollideDamageTrait(float damage) {
+	public CollideDamageTrait(final float damage) {
 		super("Damage Dealing", "Deals damage to another entity.");
-		registerGene(this.damage = new Gene("Damage", "Amount of damage to deal.", 0, damage, damage));
+		this.damage = new Gene("Damage", "Amount of damage to deal.", 0, damage, damage);
 	}
 	
 	@Override
-	public void onStart(Entity self, Level level) {
-		
+	public void onStart(final Entity self, final Level level) {
+
 	}
 	
 	@Override
-	public void onUpdate(Entity self, Level level, long delta) {
+	public void onUpdate(final Entity self, final Level level, final long delta) {
 		boolean hit = false;
-		for (Entity e : level.getEntities(EntityType.SHIP)) {
+		for (final Entity e : level.getEntities(EntityType.SHIP)) {
 			if (self.isColliding(e)) {
 				e.causeDamage(damage.getValue());
 				hit = true;
 			}
 		}
 		if (hit) {
+		    self.health = -1;
 			level.removeEntity(self);
 		}
 	}
 	
 	@Override
-	public void onDeath(Entity self, Level level) {
+	public void onDeath(final Entity self, final Level level) {
 		
 	}
 	

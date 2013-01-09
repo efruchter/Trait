@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-import efruchter.tp.defaults.CollisionLabels;
+import efruchter.tp.defaults.CollisionLabel;
 import efruchter.tp.defaults.EntityType;
 import efruchter.tp.trait.Trait;
 import efruchter.tp.trait.behavior.Behavior;
@@ -21,7 +21,7 @@ public class Entity {
 	public float x, y, radius;
 	public String name;
 	public Color baseColor;
-	public int collisionLabel;
+	public CollisionLabel collisionLabel;
 	public float health;
 	public EntityType entityType;
 	private boolean active, hasStarted;
@@ -30,7 +30,6 @@ public class Entity {
 	private final List<Trait> traits;
 	private long damageTimer = 0;
 	
-	private static long entityNum = 0;
 	private static long activeEntities = 0;
 	
 	public Entity() {
@@ -38,7 +37,7 @@ public class Entity {
 		reset();
 	}
 	
-	private void onStart(Level level) {
+	private void onStart(final Level level) {
 		if (active) {
 			for (Trait b : traits) {
 				if (b.isActive())
@@ -47,7 +46,7 @@ public class Entity {
 		}
 	}
 	
-	public void onUpdate(long delta, Level level) {
+	public void onUpdate(final long delta, final Level level) {
 		if (active) {
 			if (hasStarted) {
 				for (Trait b : traits) {
@@ -65,7 +64,7 @@ public class Entity {
 		}
 	}
 	
-	public void onDeath(Level level) {
+	public void onDeath(final Level level) {
 		if (active) {
 			for (Trait b : traits) {
 				if (b.isActive())
@@ -74,11 +73,11 @@ public class Entity {
 		}
 	}
 	
-	public void addTrait(Trait trait) {
+	public void addTrait(final Trait trait) {
 		traits.add(trait);
 	}
 	
-	public boolean removeTrait(Trait trait) {
+	public boolean removeTrait(final Trait trait) {
 		return traits.remove(trait);
 	}
 	
@@ -90,12 +89,12 @@ public class Entity {
 		return renderBehavior;
 	}
 	
-	public void setRenderBehavior(Behavior renderBehavior) {
+	public void setRenderBehavior(final Behavior renderBehavior) {
 		this.renderBehavior = renderBehavior;
 	}
 	
-	public boolean isColliding(Entity other) {
-		return other.collisionLabel != CollisionLabels.NO_COLLISION && collisionLabel != other.collisionLabel
+	public boolean isColliding(final Entity other) {
+		return other.collisionLabel != CollisionLabel.NO_COLLISION && collisionLabel != other.collisionLabel
 				&& ScriptUtil.isColliding(this, other);
 	}
 	
@@ -103,11 +102,11 @@ public class Entity {
 		return health;
 	}
 	
-	public void setHealth(float newHealth) {
+	public void setHealth(final float newHealth) {
 		health = newHealth;
 	}
 	
-	public void causeDamage(float damage) {
+	public void causeDamage(final float damage) {
 		health -= damage;
 		damageTimer = 8 - damageTimer % 4;
 	}
@@ -121,7 +120,7 @@ public class Entity {
 		return "(E) " + name;
 	}
 	
-	public void setActive(boolean active) {
+	public void setActive(final boolean active) {
 		if (this.active != active)
 			activeEntities += (active) ? 1 : -1;
 		this.active = active;
@@ -137,12 +136,12 @@ public class Entity {
 	}
 	
 	public void reset() {
-		this.name = "" + entityNum++;
+		this.name = "";
 		this.baseColor = Color.BLACK;
 		x = y = radius = 0;
 		health = 10;
 		traits.clear();
-		collisionLabel = CollisionLabels.NO_COLLISION;
+		collisionLabel = CollisionLabel.NO_COLLISION;
 		entityType = EntityType.NONE;
 		setRenderBehavior(Behavior.EMPTY);
 		setActive(hasStarted = false);

@@ -41,7 +41,7 @@ public class Server implements Runnable {
     }
 
     synchronized void handle(String clientName, String message) {
-        String response = listener.messageReceived(message);
+        String response = listener.messageReceived(message, clientName);
         
         if (response != null && !response.isEmpty())
             clients.get(clientName).send(response);
@@ -77,7 +77,7 @@ public class Server implements Runnable {
         try {
             new Server(8000, new NetworkingListener() {                
                 @Override
-                public String messageReceived(String message) {
+                public String messageReceived(String message, String address) {
                     System.out.println("Received: " + message);
                     return message + message;
                 }

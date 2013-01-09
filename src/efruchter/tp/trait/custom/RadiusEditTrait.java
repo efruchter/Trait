@@ -13,15 +13,15 @@ import efruchter.tp.trait.gene.Gene;
  */
 public class RadiusEditTrait extends Trait {
 	
-	public Gene radius;
+	public final Gene radius;
 	
-	public RadiusEditTrait(float minR, float maxR, float var) {
+	public RadiusEditTrait(final float minR, final float maxR, final float var) {
 		super("Variable Radius", "Has a variable radius.");
-		registerGene(radius = new Gene("Radius", "The radius value", minR, maxR, var));
+		radius = new Gene("Radius", "The radius value", minR, maxR, var);
 	}
 	
 	@Override
-	public void onStart(Entity self, Level level) {
+	public void onStart(final Entity self, final Level level) {
 		
 	}
 	

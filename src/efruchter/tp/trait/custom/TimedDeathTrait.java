@@ -1,6 +1,5 @@
 package efruchter.tp.trait.custom;
 
-import efruchter.tp.defaults.EntityType;
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
 import efruchter.tp.trait.Trait;
@@ -13,34 +12,32 @@ import efruchter.tp.trait.Trait;
  */
 public class TimedDeathTrait extends Trait {
 	
-	private float t, max;
+	private float t;
+    private final float max;
 	
-	public TimedDeathTrait(float milliTillDeath) {
+	public TimedDeathTrait(final float milliTillDeath) {
 		super("Timed Death", "Die after a certain amount of time");
 		max = milliTillDeath;
 	}
 	
-	public TimedDeathTrait(int secondsTillDeath) {
+	public TimedDeathTrait(final int secondsTillDeath) {
 		this(secondsTillDeath * 1000f);
 	}
 	
 	@Override
-	public void onStart(Entity self, Level level) {
+	public void onStart(final Entity self, final Level level) {
 		t = 0;
 	}
 	
 	@Override
-	public void onUpdate(Entity self, Level level, long delta) {
+	public void onUpdate(final Entity self, final Level level, final long delta) {
 		if ((t = delta + t) >= max) {
-			if (self.entityType == EntityType.NONE) {
-				System.out.println("SDDD");
-			}
 			level.removeEntity(self);
 		}
 	}
 	
 	@Override
-	public void onDeath(Entity self, Level level) {
+	public void onDeath(final Entity self, final Level level) {
 		
 	}
 	

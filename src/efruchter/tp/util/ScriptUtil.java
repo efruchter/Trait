@@ -14,7 +14,7 @@ public class ScriptUtil {
 	}
 	
 	/**
-	 * Detect if two ships are colliding.
+	 * Detect if two ships are colliding. Both must be active.
 	 * 
 	 * @param a
 	 *            ship 1
@@ -22,12 +22,15 @@ public class ScriptUtil {
 	 *            ship 2
 	 * @return true if overlapping, false otherwise.
 	 */
-	public static boolean isColliding(Entity a, Entity b) {
-		return isWithin(a, b.x, b.y, b.radius);
+	public static boolean isColliding(final Entity a, final Entity b) {
+	    if (!a.isActive() || !b.isActive())
+	        return false;
+	    else
+	        return isWithin(a, b.x, b.y, b.radius);
 	}
 	
-	public static boolean isWithin(Entity a, float x, float y, float radius) {
-		float dx, dy;
+	public static boolean isWithin(final Entity a, final float x, final float y, final float radius) {
+		final float dx, dy;
 		dx = a.x - x;
 		dy = a.y - y;
 		if (((a.radius + radius) * (a.radius + radius)) > (dx * dx) + (dy * dy))
