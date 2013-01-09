@@ -10,5 +10,5 @@ public class ClientDefaults {
     public static final long SCORE1_ENEMY_DEFEAT = 5;
     public static final long SCORE1_PLAYER_HIT = -10;
     
-    public final static boolean LOCAL_SERVER = true;
+    public final static boolean LOCAL_SERVER = false;
 }
