@@ -7,7 +7,6 @@ import java.awt.Color;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.prefs.Preferences;
 
 import javax.swing.JOptionPane;
 
@@ -99,7 +98,7 @@ public class TraitProjectClient extends Applet {
         fetchPlayerControlled();
 
         resetSim();
-        
+
         ClientStateManager.setPaused(true);
     }
 
@@ -163,18 +162,22 @@ public class TraitProjectClient extends Applet {
     }
 
     public static void onUpdate(long delta) {
-        if (ClientStateManager.getFlowState() == FlowState.FREE)
-            ClientStateManager.setFlowState(FlowState.PLAYING);
 
-        KeyUtil.update();
+        try {
+            if (ClientStateManager.getFlowState() == FlowState.FREE)
+                ClientStateManager.setFlowState(FlowState.PLAYING);
 
-        level.onUpdate(ClientStateManager.isPaused() ? 0 : delta);
+            KeyUtil.update();
 
-        if (KeyUtil.isKeyPressed(Keyboard.KEY_RETURN)
-                || KeyUtil.isKeyPressed(Keyboard.KEY_ESCAPE))
-            ClientStateManager.togglePauseState();
+            level.onUpdate(ClientStateManager.isPaused() ? 0 : delta);
 
+            if (KeyUtil.isKeyPressed(Keyboard.KEY_RETURN) || KeyUtil.isKeyPressed(Keyboard.KEY_ESCAPE))
+                ClientStateManager.togglePauseState();
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
         updateFPS();
+
     }
 
     /**

@@ -85,7 +85,7 @@ public class TraitProjectServer implements NetworkingListener {
 				String[] data = message.replaceFirst(
 						"store" + GeneVectorIO.SEPARATOR, "").split(
 						GeneVectorIO.SEPARATOR);
-				result = "" + store(new SessionInfo(clientName.split(":")[0], data[1], data[2]),
+				result = "" + store(new SessionInfo(data[0], data[1], data[2]),
 								new GeneVector(data[3]));
 			}
 		} catch (Exception e) {

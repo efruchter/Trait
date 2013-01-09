@@ -8,8 +8,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-import javax.swing.JOptionPane;
-
 import org.lwjgl.opengl.Display;
 
 import efruchter.tp.TraitProjectClient;
@@ -66,10 +64,11 @@ public class LevelGeneratorCore extends Trait {
     public void onStart(final Entity self, final Level level) {
 
         if (level.getGeneratorCore().getWaveCount() > 0) {
+            String username = System.getProperty("user.name");
             GeneVectorIO.storeVector(
-                    new Database.SessionInfo("FIXTHIS", Long.toString(TraitProjectClient
-                            .getScore()), new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime())),
-                    GeneVectorIO.getExplorationVector());
+                    new Database.SessionInfo(username, Long.toString(TraitProjectClient.getScore()),
+                            new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime())), GeneVectorIO
+                            .getExplorationVector());
 
         }
 
