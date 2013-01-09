@@ -7,6 +7,7 @@ import java.awt.Color;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.prefs.Preferences;
 
 import javax.swing.JOptionPane;
 
@@ -53,6 +54,12 @@ public class TraitProjectClient extends Applet {
     private static long score;
 
     private static String[] playerControlled;
+    
+     // User data
+    public final static Preferences PREFERENCES;
+    static {
+        PREFERENCES = Preferences.userNodeForPackage(TraitProjectClient.class);
+    }
 
     public void startLWJGL() {
         gameThread = new Thread() {
