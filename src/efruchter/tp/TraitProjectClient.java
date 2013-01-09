@@ -229,20 +229,24 @@ public class TraitProjectClient extends Applet {
 
     public static void renderGL(final long delta) {
         // Clear The Screen And The Depth Buffer
-        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+        try {
+            GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 
-        level.renderGL(delta);
+            level.renderGL(delta);
 
-        if (ClientStateManager.isPaused() && ClientStateManager.getFlowState() != FlowState.EDITING) {
-            RenderUtil.setColor(Color.WHITE);
-            GL11.glPushMatrix();
-            {
-                GL11.glTranslatef(Display.getWidth() / 2, Display.getHeight() / 2, 0);
-                RenderUtil.drawString("PAUSED", 5);
-                GL11.glTranslatef(0, -Display.getHeight() / 8, 0);
-                RenderUtil.drawString("Press <ENTER>", 3);
+            if (ClientStateManager.isPaused() && ClientStateManager.getFlowState() != FlowState.EDITING) {
+                RenderUtil.setColor(Color.WHITE);
+                GL11.glPushMatrix();
+                {
+                    GL11.glTranslatef(Display.getWidth() / 2, Display.getHeight() / 2, 0);
+                    RenderUtil.drawString("PAUSED", 5);
+                    GL11.glTranslatef(0, -Display.getHeight() / 8, 0);
+                    RenderUtil.drawString("Press <ENTER>", 3);
+                }
+                GL11.glPopMatrix();
             }
-            GL11.glPopMatrix();
+        } catch (final Exception e) {
+            e.printStackTrace();
         }
     }
 
