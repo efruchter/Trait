@@ -46,7 +46,7 @@ public class TraitProjectClient extends Applet {
     /*
      * GAME VARS
      */
-    public static final String VERSION = "00.00.00.01";
+    public static final String VERSION = "00.00.00.02";
     private static Level level;
     private static long lastFrame;
     private static int fps;
@@ -54,12 +54,6 @@ public class TraitProjectClient extends Applet {
     private static long score;
 
     private static String[] playerControlled;
-    
-     // User data
-    public final static Preferences PREFERENCES;
-    static {
-        PREFERENCES = Preferences.userNodeForPackage(TraitProjectClient.class);
-    }
 
     public void startLWJGL() {
         gameThread = new Thread() {

@@ -66,14 +66,8 @@ public class LevelGeneratorCore extends Trait {
     public void onStart(final Entity self, final Level level) {
 
         if (level.getGeneratorCore().getWaveCount() > 0) {
-            if (TraitProjectClient.PREFERENCES.get("username", null) == null) {
-                final String username = JOptionPane.showInputDialog("Please enter a username:");
-                if (username != null) {
-                    TraitProjectClient.PREFERENCES.put("username", username);
-                }
-            }
             GeneVectorIO.storeVector(
-                    new Database.SessionInfo(TraitProjectClient.PREFERENCES.get("username", "NO_NAME"), Long.toString(TraitProjectClient
+                    new Database.SessionInfo("FIXTHIS", Long.toString(TraitProjectClient
                             .getScore()), new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime())),
                     GeneVectorIO.getExplorationVector());
 

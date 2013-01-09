@@ -8,5 +8,5 @@ public interface NetworkingListener {
      * @param message the message
      * @return a response to the client, or null if no response is necessary
      */
-    String messageReceived(String message);
+    String messageReceived(String message, String address);
 }
