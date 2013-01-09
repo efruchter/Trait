@@ -343,13 +343,11 @@ public class TraitProjectClient extends Applet {
                 System.out.println("Successfully read player-controlled gene list from server.");
                 return;
             } catch (IOException e) {
-                e.printStackTrace();
             } finally {
                 try {
                     c.close();
                     return;
                 } catch (Exception e) {
-                    e.printStackTrace();
                 }
             }
             System.err.println("Could not fetch player-controlled gene list from server.");

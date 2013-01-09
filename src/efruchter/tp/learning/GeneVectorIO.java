@@ -71,14 +71,12 @@ public class GeneVectorIO {
                 System.out.println("Successfully read gene vector from server.");
                 return;
             } catch (IOException e) {
-                e.printStackTrace();
                 exploration = new GeneVector();
             } finally {
                 try {
                     c.close();
                     return;
                 } catch (Exception e) {
-                    e.printStackTrace();
                 }
             }
             System.err.println("Cannot get Gene Vector from server, using defaults.");
