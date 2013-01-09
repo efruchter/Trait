@@ -21,7 +21,6 @@ import efruchter.tp.defaults.EntityFactory;
 import efruchter.tp.defaults.EntityType;
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
-import efruchter.tp.gui.VectorEditorPopup;
 import efruchter.tp.learning.GeneVector;
 import efruchter.tp.learning.GeneVector.GeneWrapper;
 import efruchter.tp.learning.GeneVectorIO;
@@ -172,12 +171,6 @@ public class TraitProjectClient extends Applet {
 
         level.onUpdate(ClientStateManager.isPaused() ? 0 : delta);
 
-        if (KeyUtil.isKeyPressed(Keyboard.KEY_RETURN))
-            ClientStateManager.togglePauseState();
-
-        if (KeyUtil.isKeyPressed(Keyboard.KEY_F1))
-            VectorEditorPopup.show(GeneVectorIO.getExplorationVector().getGenes(), true, "Exploration Vector Genes");
-
         updateFPS();
     }
 
@@ -212,8 +205,8 @@ public class TraitProjectClient extends Applet {
                                 // .append("health ").append(playerHealth)
                                 .append("\n").append("\n").append("score ").append(getScore() < 0 ? "N" : "").append(score).append("\n")
                                 .append("\n").append("wave ").append(level.getGeneratorCore().getWaveCount()).toString(), 5, 45);
-                RenderUtil.setColor(Color.GREEN);
-                RenderUtil.drawString("Options\n\nF1 Vector", 5, Display.getHeight() - 15);
+                //RenderUtil.setColor(Color.GREEN);
+                //RenderUtil.drawString("Options\n\nF1 Vector", 5, Display.getHeight() - 15);
             }
 
             public void onDeath(Entity self, Level level) {
