@@ -1,7 +1,7 @@
 package efruchter.tp.defaults;
 
 public class ClientDefaults {
-    public static final long LEVEL_LENGTH = 2000;
+    public static final long LEVEL_LENGTH = 60000;
     
     /*
      * Metric 1.

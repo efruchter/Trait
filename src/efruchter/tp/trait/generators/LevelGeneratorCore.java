@@ -68,17 +68,12 @@ public class LevelGeneratorCore extends Trait {
             if (username == null) {
                 username = "NO_NAME";
             }
-            GeneVectorIO.storeVector(
-                    new Database.SessionInfo(username, Long.toString(TraitProjectClient.getScore()),
-                            new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime())), GeneVectorIO
-                            .getExplorationVector());
+            GeneVectorIO.storeVector(new Database.SessionInfo(username, Long.toString(TraitProjectClient.getScore()), new SimpleDateFormat(
+                    "yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime())), GeneVectorIO.getExplorationVector());
 
         }
 
         waveCount++;
-        time = 0;
-        TraitProjectClient.setScore(0);
-        chains.clear();
 
         /*
          * Takes care of the case where the GUI has already loaded the vector.
@@ -124,12 +119,16 @@ public class LevelGeneratorCore extends Trait {
         }
 
         for (final Entity ship : level.getEntities(EntityType.SHIP)) {
-            if (ship.isActive())
+            if (ship.isActive()) {
+                ship.setHealth(-1);
                 level.removeEntity(ship);
+            }
         }
         for (final Entity proj : level.getEntities(EntityType.PROJECTILE)) {
-            if (proj.isActive())
+            if (proj.isActive()) {
+                proj.setHealth(-1);
                 level.removeEntity(proj);
+            }
         }
 
         // Build Player
@@ -150,6 +149,10 @@ public class LevelGeneratorCore extends Trait {
 
         // Add the new wave animation
         EntityFactory.buildNewWaveAnim(level.getBlankEntity(EntityType.BG));
+        
+        time = 0;
+        TraitProjectClient.setScore(0);
+        chains.clear();
     }
 
     @Override
