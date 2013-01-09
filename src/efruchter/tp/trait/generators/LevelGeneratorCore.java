@@ -69,7 +69,7 @@ public class LevelGeneratorCore extends Trait {
                 username = "NO_NAME";
             }
             GeneVectorIO.storeVector(new Database.SessionInfo(username, Long.toString(TraitProjectClient.getScore()), new SimpleDateFormat(
-                    "yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime())), GeneVectorIO.getExplorationVector());
+                    "yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime()), GeneVectorIO.getExplorationVector().toDataString()));
 
         }
 

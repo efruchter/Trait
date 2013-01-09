@@ -32,6 +32,7 @@ import efruchter.tp.trait.generators.LevelGeneratorCore;
 import efruchter.tp.util.KeyUtil;
 import efruchter.tp.util.RenderUtil;
 
+@SuppressWarnings("serial")
 public class TraitProjectClient extends Applet {
 
     Canvas display_parent;

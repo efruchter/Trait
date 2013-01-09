@@ -28,14 +28,14 @@ public class GeneVectorIO {
         return exploration;
     }
 
-    public static boolean storeVector(final SessionInfo info, final GeneVector vector) {
+    public static boolean storeVector(final SessionInfo info) {
         ClientStateManager.setFlowState(FlowState.STORING_VECT);
         try {
             final Client c = TraitProjectClient.getClient();
             try {
                 c.reconnect();
                 c.send("store" + SEPARATOR + info.username + SEPARATOR + info.score + SEPARATOR + info.date + SEPARATOR
-                        + vector.toDataString());
+                        + info.vector);
                 boolean suc = Boolean.parseBoolean(c.receive());
                 if (suc)
                     System.out.println("Successfully stored gene vector in database.");

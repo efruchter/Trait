@@ -17,7 +17,7 @@ public class CSVDatabase implements Database {
 	}
 	
 	@Override
-	public boolean storeVector(final SessionInfo userInfo, final GeneVector vector) {
+	public boolean storeVector(final SessionInfo sessionInfo) {
 
         final String[] headers;
 
@@ -44,13 +44,13 @@ public class CSVDatabase implements Database {
             final String[] record = new String[headers.length];
             for (int i = 0; i < headers.length; i++) {
                 if (headers[i].equals("username")) {
-                    record[i] = userInfo.username;
+                    record[i] = sessionInfo.username;
                 } else if (headers[i].equals("date")) {
-                    record[i] = userInfo.date;
+                    record[i] = sessionInfo.date;
                 } else if (headers[i].equals("score")) {
-                    record[i] = userInfo.score;
+                    record[i] = sessionInfo.score;
                 } else {
-                    record[i] = "" + vector.getGene(headers[i]).getValue();
+                    record[i] = "" + new GeneVector(sessionInfo.vector).getGene(headers[i]).getValue();
                 }
             }
             try {

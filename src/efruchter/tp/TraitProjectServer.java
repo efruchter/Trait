@@ -85,8 +85,7 @@ public class TraitProjectServer implements NetworkingListener {
 				String[] data = message.replaceFirst(
 						"store" + GeneVectorIO.SEPARATOR, "").split(
 						GeneVectorIO.SEPARATOR);
-				result = "" + store(new SessionInfo(data[0], data[1], data[2]),
-								new GeneVector(data[3]));
+				result = "" + store(new SessionInfo(data[0], data[1], data[2], data[3]));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -95,7 +94,7 @@ public class TraitProjectServer implements NetworkingListener {
 		return result;
 	}
 
-	public synchronized boolean store(SessionInfo userInfo, GeneVector vector) {
-		return db.storeVector(userInfo, vector);
+	public synchronized boolean store(SessionInfo userInfo) {
+		return db.storeVector(userInfo);
 	}
 }
