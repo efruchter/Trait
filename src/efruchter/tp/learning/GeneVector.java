@@ -69,7 +69,7 @@ public class GeneVector {
         return g;
     }
 
-    public static class GeneWrapper {
+    public static class GeneWrapper implements Comparable<GeneWrapper>{
         public final Gene gene;
         public final String path;
 
@@ -80,6 +80,11 @@ public class GeneVector {
 
         public String toString() {
             return path;
+        }
+
+        @Override
+        public int compareTo(GeneWrapper arg0) {
+            return this.path.compareTo(arg0.path);
         }
     }
 

@@ -17,7 +17,7 @@ import efruchter.tp.defaults.EntityFactory;
 import efruchter.tp.defaults.EntityType;
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
-import efruchter.tp.gui.CoreVectorEditorPopup;
+import efruchter.tp.gui.VectorEditorPopup;
 import efruchter.tp.learning.GeneVectorIO;
 import efruchter.tp.learning.database.Database;
 import efruchter.tp.state.ClientStateManager;
@@ -153,7 +153,7 @@ public class LevelGeneratorCore extends Trait {
         EntityFactory.buildNewWaveAnim(level.getBlankEntity(EntityType.BG));
 
         ClientStateManager.setPaused(true);
-        CoreVectorEditorPopup.show(TraitProjectClient.getPlayerControlledGenes());
+        VectorEditorPopup.show(TraitProjectClient.getPlayerControlledGenes(), false, "An enemy wave is attacking! Customize your ship!");
     }
 
     @Override

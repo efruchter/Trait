@@ -30,7 +30,7 @@ public class GeneCurve {
         this.info = info;
 
         for (int i = 0; i < genes.length; i++) {
-            genes[i] = new Gene("c1", info, minVal, maxVal, initialVal);
+            genes[i] = new Gene("[" + i + "]", info + "[" + i + "]", minVal, maxVal, initialVal);
         }
     }
 

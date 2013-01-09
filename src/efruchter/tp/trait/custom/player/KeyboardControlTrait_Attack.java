@@ -78,7 +78,7 @@ public class KeyboardControlTrait_Attack extends Trait {
 
 					p.addTrait(w);
 
-					final float x = dx.getValue() + (Math.random() < .5 ? -1 : 1) * spread.getValue();
+					final float x = dx.getValue() + (Math.random() < .5 ? -1 : 1) * spread.getValue() * (float) Math.random();
 					final float y = dy.getValue();
 
 					final MoveTrait t = new MoveTrait(x, y, 1f);

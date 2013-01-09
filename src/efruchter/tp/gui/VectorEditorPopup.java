@@ -10,6 +10,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Collections;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -28,14 +29,14 @@ import efruchter.tp.state.ClientStateManager;
 import efruchter.tp.state.ClientStateManager.FlowState;
 import efruchter.tp.util.KeyUtil;
 
-public class CoreVectorEditorPopup {
+public class VectorEditorPopup {
 
     private final static int RESOLUTION = 1000;
 
     private static JFrame frame;
 
     @SuppressWarnings("serial")
-    private static void rebuildGui(final List<GeneWrapper> genes) {
+    private static void rebuildGui(final List<GeneWrapper> genes, final boolean useName, final String headerText) {
 
         frame = new JFrame("Control Panel");
 
@@ -59,7 +60,7 @@ public class CoreVectorEditorPopup {
 
         frame.add(new JPanel() {
             {
-                add(new JLabel("All Genes in Vector") {
+                add(new JLabel(headerText) {
                     {
                         setForeground(Color.WHITE);
                         setBackground(Color.BLACK);
@@ -76,7 +77,7 @@ public class CoreVectorEditorPopup {
             final JPanel subPanel = new JPanel();
             traitPanel.add(subPanel);
 
-            subPanel.add(new JLabel(gene.gene.getInfo()) {
+            subPanel.add(new JLabel(useName ? gene.path : gene.gene.getInfo()) {
                 {
                     setForeground(Color.WHITE);
                 }
@@ -94,7 +95,7 @@ public class CoreVectorEditorPopup {
 
         frame.add(new JScrollPane(traitPanel){{setPreferredSize(new Dimension(700, 300));}}, BorderLayout.CENTER);
 
-        final JButton goButton = new JButton("Start!");
+        final JButton goButton = new JButton("Go!");
         goButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
                 hide();
@@ -105,14 +106,16 @@ public class CoreVectorEditorPopup {
         frame.pack();
     }
 
-    public static void show(final List<GeneWrapper> genes) {
+    public static void show(final List<GeneWrapper> genes, final boolean useName, final String headerText) {
 
         hide();
 
         ClientStateManager.setPaused(true);
         ClientStateManager.setFlowState(FlowState.EDITING);
 
-        rebuildGui(genes);
+        Collections.sort(genes);
+        
+        rebuildGui(genes, useName, headerText);
 
         if (genes.isEmpty()) {
             hide();

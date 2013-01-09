@@ -21,7 +21,7 @@ import efruchter.tp.defaults.EntityFactory;
 import efruchter.tp.defaults.EntityType;
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
-import efruchter.tp.gui.CoreVectorEditorPopup;
+import efruchter.tp.gui.VectorEditorPopup;
 import efruchter.tp.learning.GeneVector;
 import efruchter.tp.learning.GeneVector.GeneWrapper;
 import efruchter.tp.learning.GeneVectorIO;
@@ -182,7 +182,7 @@ public class TraitProjectClient {
             ClientStateManager.togglePauseState();
 
         if (KeyUtil.isKeyPressed(Keyboard.KEY_F1))
-            CoreVectorEditorPopup.show(GeneVectorIO.getExplorationVector().getGenes());
+            VectorEditorPopup.show(GeneVectorIO.getExplorationVector().getGenes(), true, "Exploration Vector Genes");
 
         updateFPS();
 
