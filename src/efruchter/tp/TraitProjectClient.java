@@ -4,7 +4,6 @@ import java.applet.Applet;
 import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +16,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 
+import efruchter.tp.defaults.ClientDefaults;
 import efruchter.tp.defaults.EntityFactory;
 import efruchter.tp.defaults.EntityType;
 import efruchter.tp.entity.Entity;
@@ -47,7 +47,6 @@ public class TraitProjectClient extends Applet {
      * GAME VARS
      */
     public static final String VERSION = "00.00.00.01";
-    private static boolean isLocalServer;
     private static Level level;
     private static long lastFrame;
     private static int fps;
@@ -321,7 +320,7 @@ public class TraitProjectClient extends Applet {
     }
 
     public static Client getClient() {
-        if (isLocalServer) {
+        if (ClientDefaults.LOCAL_SERVER) {
             return new Client();
         } else {
             return new Client("trait.ericfruchter.com", 8000);
