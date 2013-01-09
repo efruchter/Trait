@@ -98,6 +98,8 @@ public class TraitProjectClient extends Applet {
         fetchPlayerControlled();
 
         resetSim();
+        
+        ClientStateManager.setPaused(true);
     }
 
     public void stop() {
@@ -165,11 +167,11 @@ public class TraitProjectClient extends Applet {
 
         KeyUtil.update();
 
-        if (KeyUtil.isKeyPressed(Keyboard.KEY_ESCAPE)) {
-            System.exit(0);
-        }
-
         level.onUpdate(ClientStateManager.isPaused() ? 0 : delta);
+
+        if (KeyUtil.isKeyPressed(Keyboard.KEY_RETURN)
+                || KeyUtil.isKeyPressed(Keyboard.KEY_ESCAPE))
+            ClientStateManager.togglePauseState();
 
         updateFPS();
     }
@@ -205,8 +207,9 @@ public class TraitProjectClient extends Applet {
                                 // .append("health ").append(playerHealth)
                                 .append("\n").append("\n").append("score ").append(getScore() < 0 ? "N" : "").append(score).append("\n")
                                 .append("\n").append("wave ").append(level.getGeneratorCore().getWaveCount()).toString(), 5, 45);
-                //RenderUtil.setColor(Color.GREEN);
-                //RenderUtil.drawString("Options\n\nF1 Vector", 5, Display.getHeight() - 15);
+                // RenderUtil.setColor(Color.GREEN);
+                // RenderUtil.drawString("Options\n\nF1 Vector", 5,
+                // Display.getHeight() - 15);
             }
 
             public void onDeath(Entity self, Level level) {
@@ -265,7 +268,7 @@ public class TraitProjectClient extends Applet {
         }
         fps++;
     }
-    
+
     public static void versionCheck() {
         final Client c = getClient();
 
@@ -319,7 +322,7 @@ public class TraitProjectClient extends Applet {
             return new Client("trait.ericfruchter.com", 8000);
         }
     }
-    
+
     private static void fetchPlayerControlled() {
         ClientStateManager.setFlowState(FlowState.LOADING_VECT);
         try {
