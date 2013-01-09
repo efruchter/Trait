@@ -65,6 +65,9 @@ public class LevelGeneratorCore extends Trait {
 
         if (level.getGeneratorCore().getWaveCount() > 0) {
             String username = System.getProperty("user.name");
+            if (username == null) {
+                username = "NO_NAME";
+            }
             GeneVectorIO.storeVector(
                     new Database.SessionInfo(username, Long.toString(TraitProjectClient.getScore()),
                             new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime())), GeneVectorIO
