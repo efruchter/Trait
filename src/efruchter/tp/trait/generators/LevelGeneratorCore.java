@@ -8,6 +8,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
+import javax.swing.JOptionPane;
+
 import org.lwjgl.opengl.Display;
 
 import efruchter.tp.TraitProjectClient;
@@ -66,14 +68,17 @@ public class LevelGeneratorCore extends Trait {
     public void onStart(final Entity self, final Level level) {
 
         if (level.getGeneratorCore().getWaveCount() > 0) {
-            final String username = TraitProjectClient.PREFERENCES.get("username", null);
-            if (username != null) {
-                GeneVectorIO.storeVector(new Database.SessionInfo(username, Long.toString(TraitProjectClient.getScore()),
-                        new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime())), GeneVectorIO
-                        .getExplorationVector());
-            } else {
-                System.err.println("No username set, cannot push vector to server.");
+            if (TraitProjectClient.PREFERENCES.get("username", null) == null) {
+                final String username = JOptionPane.showInputDialog("Please enter a username:");
+                if (username != null) {
+                    TraitProjectClient.PREFERENCES.put("username", username);
+                }
             }
+            GeneVectorIO.storeVector(
+                    new Database.SessionInfo(TraitProjectClient.PREFERENCES.get("username", "NO_NAME"), Long.toString(TraitProjectClient
+                            .getScore()), new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime())),
+                    GeneVectorIO.getExplorationVector());
+
         }
 
         waveCount++;
@@ -219,7 +224,7 @@ public class LevelGeneratorCore extends Trait {
                     @Override
                     public void onUpdate(final Entity self, final Level level, final long delta) {
                         if (self.health < 0) {
-                            TraitProjectClient.setScore(TraitProjectClient.getScore() + ClientDefaults.SCORE_ENEMY_DEFEAT);
+                            TraitProjectClient.setScore(TraitProjectClient.getScore() + ClientDefaults.SCORE1_ENEMY_DEFEAT);
                         }
                     }
                 };

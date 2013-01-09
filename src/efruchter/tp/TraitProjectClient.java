@@ -29,7 +29,6 @@ import efruchter.tp.networking.Client;
 import efruchter.tp.state.ClientStateManager;
 import efruchter.tp.state.ClientStateManager.FlowState;
 import efruchter.tp.trait.behavior.Behavior;
-import efruchter.tp.trait.gene.Gene;
 import efruchter.tp.trait.generators.LevelGeneratorCore;
 import efruchter.tp.util.KeyUtil;
 import efruchter.tp.util.RenderUtil;
@@ -150,7 +149,9 @@ public class TraitProjectClient {
                 RenderUtil.drawString(
                         new StringBuffer().append("")
                                 // .append("health ").append(playerHealth)
-                                .append("\n").append("\n").append("score ").append(score).append("\n").append("\n").append("wave ")
+                                .append("\n").append("\n")
+                                .append("score ").append(getScore() < 0 ? "N" : "").append(score)
+                                .append("\n").append("\n").append("wave ")
                                 .append(level.getGeneratorCore().getWaveCount()).toString(), 5, 45);
                 RenderUtil.setColor(Color.GREEN);
                 RenderUtil.drawString("Options\n\nF1 Vector", 5, Display.getHeight() - 15);
@@ -185,10 +186,6 @@ public class TraitProjectClient {
             VectorEditorPopup.show(GeneVectorIO.getExplorationVector().getGenes(), true, "Exploration Vector Genes");
 
         updateFPS();
-
-        if (score < 0) {
-            score = 0;
-        }
     }
 
     /**

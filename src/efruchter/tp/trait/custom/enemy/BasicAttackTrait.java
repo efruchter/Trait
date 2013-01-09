@@ -72,7 +72,7 @@ public class BasicAttackTrait extends Trait {
                 @Override
                 public void onDeath(final Entity self, final Level level) {
                     if (self.health < 0)
-                        TraitProjectClient.addScore(ClientDefaults.SCORE_PLAYER_HIT);
+                        TraitProjectClient.addScore(ClientDefaults.SCORE1_PLAYER_HIT);
                 }
             });
 
