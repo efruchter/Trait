@@ -78,10 +78,17 @@ public class Client {
         if (socket != null)
             close();
         
-        socket = new Socket();
-        socket.connect(new InetSocketAddress(ipAddress, portNumber), 4000);
-        out = new PrintWriter(socket.getOutputStream(), true);        
-        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        try {
+            socket = new Socket();
+            socket.connect(new InetSocketAddress(ipAddress, portNumber), 4000);
+            out = new PrintWriter(socket.getOutputStream(), true);        
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        } catch (IOException e) {
+            socket = null;
+            out = null;
+            in = null;
+            throw e;
+        }
     }
     
     /**
