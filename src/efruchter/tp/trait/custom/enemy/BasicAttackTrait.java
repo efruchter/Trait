@@ -70,9 +70,10 @@ public class BasicAttackTrait extends Trait {
 
             p.addTrait(new TraitAdapter() {
                 @Override
-                public void onDeath(final Entity self, final Level level) {
-                    if (self.health < 0)
+                public void onUpdate(final Entity self, final Level level, final long delta) {
+                    if (self.health < 0 && level.getPlayer() != null && level.getPlayer().isColliding(self)) {
                         TraitProjectClient.addScore(ClientDefaults.SCORE1_PLAYER_HIT);
+                    }
                 }
             });
 
