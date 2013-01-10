@@ -76,6 +76,8 @@ public class BasicAttackTrait extends Trait {
                     }
                 }
             });
+            
+            p.polarity = self.polarity;
 
         }
     }

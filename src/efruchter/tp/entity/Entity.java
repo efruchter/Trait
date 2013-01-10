@@ -22,6 +22,7 @@ public class Entity {
 	public String name;
 	public Color baseColor;
 	public CollisionLabel collisionLabel;
+	public int polarity = -1;
 	public float health;
 	public EntityType entityType;
 	private boolean active, hasStarted;
@@ -94,7 +95,8 @@ public class Entity {
 	}
 	
 	public boolean isColliding(final Entity other) {
-		return other.collisionLabel != CollisionLabel.NO_COLLISION && collisionLabel != other.collisionLabel
+	    boolean samePolarity = polarity == -1 ? false : (polarity == other.polarity);
+		return !samePolarity && other.collisionLabel != CollisionLabel.NO_COLLISION && collisionLabel != other.collisionLabel
 				&& ScriptUtil.isColliding(this, other);
 	}
 	

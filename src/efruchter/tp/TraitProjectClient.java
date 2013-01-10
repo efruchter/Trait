@@ -175,7 +175,6 @@ public class TraitProjectClient extends Applet {
             if (KeyUtil.isKeyPressed(Keyboard.KEY_RETURN) || KeyUtil.isKeyPressed(Keyboard.KEY_ESCAPE))
                 ClientStateManager.togglePauseState();
         } catch (final Exception e) {
-            e.printStackTrace();
         }
         updateFPS();
 

@@ -2,6 +2,7 @@ package efruchter.tp.util;
 
 import org.lwjgl.opengl.GL11;
 
+import efruchter.tp.defaults.PolarityController;
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
 import efruchter.tp.trait.behavior.Behavior;
@@ -31,9 +32,11 @@ public class RenderUtil {
     /**
      * Draw a circle with subdivisions pre-set. Pretty much a circle. No trig
      * involved.
-     *
-     * @param radius radius of circle.
-     * @param subs   amount of subs < 100
+     * 
+     * @param radius
+     *            radius of circle.
+     * @param subs
+     *            amount of subs < 100
      */
     public static void drawCircleFast(final float radius, final int subs) {
 
@@ -90,7 +93,11 @@ public class RenderUtil {
                 return;
             GL11.glPushMatrix();
             {
-                setColor(self.baseColor);
+                if (self.polarity != -1) {
+                    setColor(PolarityController.COLORS[self.polarity]);
+                } else {
+                    setColor(self.baseColor);
+                }
                 GL11.glTranslatef(self.x, self.y, 0);
                 RenderUtil.drawCircleFast(self.radius, 10);
             }
@@ -147,7 +154,11 @@ public class RenderUtil {
             rotate += .1f;
             GL11.glPushMatrix();
             {
-                setColor(self.baseColor);
+                if (self.polarity != -1) {
+                    setColor(PolarityController.COLORS[self.polarity]);
+                } else {
+                    setColor(self.baseColor);
+                }
                 GL11.glTranslatef(self.x, self.y, 0);
                 GL11.glRotatef(rotate, 0, 0, 1);
                 RenderUtil.drawCircleFast(self.radius, 4);
@@ -180,7 +191,7 @@ public class RenderUtil {
     /**
      * Renders a string in all caps. Poor sub for billboarded font. Only renders
      * [a-z0-9].
-     *
+     * 
      * @param s
      * @param x
      * @param y

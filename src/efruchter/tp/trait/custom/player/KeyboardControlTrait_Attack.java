@@ -89,6 +89,8 @@ public class KeyboardControlTrait_Attack extends Trait {
 					p.addTrait(rad);
 
 					p.addTrait(new GeneExpressionInterpolator(rad.radius, 0, 1, 200));
+					
+					p.polarity = self.polarity;
 				}
 			}
 		}

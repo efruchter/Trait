@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 
 import efruchter.tp.TraitProjectClient;
@@ -15,6 +16,7 @@ import efruchter.tp.defaults.ClientDefaults;
 import efruchter.tp.defaults.CollisionLabel;
 import efruchter.tp.defaults.EntityFactory;
 import efruchter.tp.defaults.EntityType;
+import efruchter.tp.defaults.PolarityController;
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
 import efruchter.tp.learning.GeneVectorIO;
@@ -33,6 +35,7 @@ import efruchter.tp.trait.custom.player.PlayerRadiusEditTrait;
 import efruchter.tp.trait.custom.player.SetPlayerTrait;
 import efruchter.tp.trait.gene.Gene;
 import efruchter.tp.trait.gene.GeneCurve;
+import efruchter.tp.util.KeyUtil;
 
 /**
  * Not really sure how to approach this. Trying some stuff.
@@ -48,7 +51,7 @@ public class LevelGeneratorCore extends Trait {
     final private List<Chain> chains;
 
     private GeneCurve chainProb, chainDelay, probChainCont, enemySize, enemyHealth;
-    private Gene intensity;
+    private Gene intensity, polarityAmount;
 
     final public static Random random = new Random();
 
@@ -104,7 +107,10 @@ public class LevelGeneratorCore extends Trait {
                 new GeneCurve("baseRadius", "Base enemy radius.", 2, 50, 15), false);
         enemyHealth = GeneVectorIO.getExplorationVector().storeGeneCurve("spawner.enemy.health",
                 new GeneCurve("enemyHealth", "Default enemy health on spawn.", 2, 100, 10), false);
-
+        
+        polarityAmount = GeneVectorIO.getExplorationVector().storeGene("spawner.polarity",
+                new Gene("polarity", "Amount of possible poles.", 0, PolarityController.COLORS.length, 0), false);
+        
         /*
          * Canned player position.
          */
@@ -146,6 +152,17 @@ public class LevelGeneratorCore extends Trait {
         player.addTrait(new LoopScreenTrait());
         player.addTrait(new ConstantHealthBoostTrait());
         player.addTrait(new SetPlayerTrait());
+        if (Math.round(polarityAmount.getValue()) != 0) {
+            player.polarity = 0;
+        }
+        final Gene pSwi = polarityAmount;
+        player.addTrait(new TraitAdapter (){
+            public void onUpdate(Entity self, Level level, long delta) {
+               if (KeyUtil.isKeyPressed(Keyboard.KEY_LSHIFT)) {
+                   self.polarity = (self.polarity + 1) % (int) (Math.round(pSwi.getValue())); 
+               }
+            }
+        });
 
         // Add the new wave animation
         EntityFactory.buildNewWaveAnim(level.getBlankEntity(EntityType.BG));
@@ -223,6 +240,8 @@ public class LevelGeneratorCore extends Trait {
                     }
                 };
                 e.addTrait(kill);
+                
+                e.polarity = polarity;
 
                 return e;
             }
@@ -230,9 +249,16 @@ public class LevelGeneratorCore extends Trait {
             private Point.Float[] curve;
             private boolean tracking;
             private float radius, health;
+            private int polarity;
 
             @Override
             public void precalc(final Level level, final float mu) {
+
+                if (polarityAmount.getRoundedValue() != 0) {
+                    polarity = random.nextInt(polarityAmount.getRoundedValue());
+                } else {
+                    polarity = -1;
+                }
 
                 curve = new Point.Float[3];
 
