@@ -35,13 +35,13 @@ import efruchter.tp.util.RenderUtil;
 @SuppressWarnings("serial")
 public class TraitProjectClient extends Applet {
 
-    Canvas display_parent;
+    private Canvas display_parent;
 
     /** Thread which runs the main game loop */
-    Thread gameThread;
+    private Thread gameThread;
 
     /** is the game loop running */
-    boolean running = false;
+    private boolean running = false;
 
     /*
      * GAME VARS
