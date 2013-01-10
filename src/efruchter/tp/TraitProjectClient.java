@@ -245,7 +245,6 @@ public class TraitProjectClient extends Applet {
                 GL11.glPopMatrix();
             }
         } catch (final Exception e) {
-            e.printStackTrace();
         }
     }
 
