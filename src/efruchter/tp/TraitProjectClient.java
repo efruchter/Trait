@@ -211,9 +211,8 @@ public class TraitProjectClient extends Applet {
                                 // .append("health ").append(playerHealth)
                                 .append("\n").append("\n").append("score ").append(getScore() < 0 ? "N" : "").append(score).append("\n")
                                 .append("\n").append("wave ").append(level.getGeneratorCore().getWaveCount()).toString(), 5, 45);
-                // RenderUtil.setColor(Color.GREEN);
-                // RenderUtil.drawString("Options\n\nF1 Vector", 5,
-                // Display.getHeight() - 15);
+                RenderUtil.setColor(Color.GREEN);
+                RenderUtil.drawString("Progress " + level.getGeneratorCore().getPercentComplete(), 5, Display.getHeight() - 15);
             }
 
             public void onDeath(Entity self, Level level) {

@@ -26,7 +26,7 @@ public class GeneCurve {
     public GeneCurve(final String name, final String info, float minVal, float maxVal, float initialVal) {
         this(name, info, 2, minVal, maxVal, initialVal);
     }
-  
+
     public GeneCurve(final String name, final String info, final int curvePoints, float minVal, float maxVal, float initialVal) {
         genes = new Gene[curvePoints];
 
@@ -69,5 +69,15 @@ public class GeneCurve {
         final float trueMu = (mu - lower) / (upper - lower);
 
         return MathUtil.cubicInterpolate(x0, x1, x2, x3, trueMu);
+    }
+
+    public void setValues(final float... vals) {
+        if (vals.length != genes.length) {
+            throw new RuntimeException("Improper length array.");
+        } else {
+            for (int i = 0; i < vals.length; i++) {
+                genes[i].setExpression(vals[i]);
+            }
+        }
     }
 }

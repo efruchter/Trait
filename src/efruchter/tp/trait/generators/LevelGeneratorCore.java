@@ -56,6 +56,7 @@ public class LevelGeneratorCore extends Trait {
     final public static Random random = new Random();
 
     public long waveCount;
+    private int percentComplete;
 
     public LevelGeneratorCore() {
         super("Level Generator : Spawner", "The level generating structure.");
@@ -106,7 +107,8 @@ public class LevelGeneratorCore extends Trait {
         enemyHealth = GeneVectorIO.getExplorationVector().storeGeneCurve("spawner.enemy.health",
                 new GeneCurve("enemyHealth", "Default enemy health on spawn.", 2, 100, 10), false);
         enemyBigness = GeneVectorIO.getExplorationVector().storeGeneCurve("spawner.enemy.bigness",
-                new GeneCurve("enemyBigness", "Bigness of enemy. Effects everything.", 0, 100, 10), false);
+                new GeneCurve("enemyBigness", "Additional bigness/toughness of enemy. Effects everything.", 4, 0, 100, 0), false);
+        enemyBigness.setValues(0, 0f, .05f, .10f);
         
         polarityAmount = GeneVectorIO.getExplorationVector().storeGene("spawner.polarity",
                 new Gene("polarity", "Amount of possible poles.", 0, PolarityController.COLORS.length, 0), false);
@@ -172,10 +174,13 @@ public class LevelGeneratorCore extends Trait {
         chains.clear();
     }
 
+
     @Override
     public void onUpdate(final Entity self, final Level level, final long delta) {
         
         time += delta;
+        
+        percentComplete = (int) (((float) time / ClientDefaults.LEVEL_LENGTH) * 100);
 
         if (time > ClientDefaults.LEVEL_LENGTH || level.getPlayer() == null) {
             onStart(self, level);
@@ -218,9 +223,11 @@ public class LevelGeneratorCore extends Trait {
                 Entity e = level.getBlankEntity(EntityType.SHIP);
                 EntityFactory.buildShip(e, -100f, -100f, radius, CollisionLabel.ENEMY_LABEL, Color.RED, health);
 
+                long duration = 12000 * (long) Math.max(1l, bigness);
+                
                 // Pathing
                 final BehaviorChain c = new BehaviorChain(false);
-                c.addBehavior(CurveInterpolator.buildPath(12000, false, curve), 12000);
+                c.addBehavior(CurveInterpolator.buildPath(duration, false, curve), duration);
                 c.addBehavior(new KillBehavior(), 1);
                 e.addTrait(c);
 
@@ -329,5 +336,9 @@ public class LevelGeneratorCore extends Trait {
 
     public long getTime() {
         return time;
+    }
+
+    public int getPercentComplete() {
+        return percentComplete;
     }
 }
