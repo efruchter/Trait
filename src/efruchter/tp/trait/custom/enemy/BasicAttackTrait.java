@@ -26,14 +26,16 @@ import efruchter.tp.trait.gene.GeneExpressionInterpolator;
 public class BasicAttackTrait extends Trait {
 
     private float cd;
+    private final float bigness;
     public final Gene coolDown, damage;
     public boolean tracking;
 
-    public BasicAttackTrait(final boolean tracking) {
+    public BasicAttackTrait(final boolean tracking, final float bigness) {
         super("Basic Attack", "An auto-attack.");
         coolDown = new Gene("Cool Down Delay", "The projectile cooldown.", 0, 1000, 500);
         damage = new Gene("Damage Per Bullet", "Amount of damage per bullet.", 0, 10, 1);
         this.tracking = tracking;
+        this.bigness = bigness;
     }
 
     @Override
@@ -63,7 +65,7 @@ public class BasicAttackTrait extends Trait {
 
             p.addTrait(t);
 
-            final RadiusEditTrait rad = new RadiusEditTrait(1, 8, 0);
+            final RadiusEditTrait rad = new RadiusEditTrait(1, Math.max(8, bigness), 0);
             p.addTrait(rad);
 
             p.addTrait(new GeneExpressionInterpolator(rad.radius, 0, 1, 200));

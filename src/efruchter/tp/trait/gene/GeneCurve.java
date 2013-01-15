@@ -24,7 +24,11 @@ public class GeneCurve {
      * @param initialVal
      */
     public GeneCurve(final String name, final String info, float minVal, float maxVal, float initialVal) {
-        genes = new Gene[4];
+        this(name, info, 2, minVal, maxVal, initialVal);
+    }
+  
+    public GeneCurve(final String name, final String info, final int curvePoints, float minVal, float maxVal, float initialVal) {
+        genes = new Gene[curvePoints];
 
         this.name = name;
         this.info = info;
@@ -42,7 +46,28 @@ public class GeneCurve {
      * @return value of curve at mu.
      */
     public float getValue(final float mu) {
-        return MathUtil.cubicInterpolate(genes[0].getValue(), genes[1].getValue(), genes[2].getValue(), genes[3].getValue(), mu);
-    }
+        int lowerIndex = (int) ((genes.length - 1) * mu);
+        int upperIndex = (lowerIndex < genes.length - 1) ? lowerIndex + 1 : lowerIndex;
 
+        final float x0, x1, x2, x3;
+        x1 = genes[lowerIndex].getValue();
+        x2 = genes[upperIndex].getValue();
+
+        if (lowerIndex == 0) {
+            x0 = x1;
+        } else {
+            x0 = genes[lowerIndex - 1].getValue();
+        }
+
+        if (upperIndex == genes.length - 1) {
+            x3 = x2;
+        } else {
+            x3 = genes[lowerIndex + 1].getValue();
+        }
+
+        final float upper = (float) upperIndex / (genes.length - 1), lower = (float) lowerIndex / (genes.length - 1);
+        final float trueMu = (mu - lower) / (upper - lower);
+
+        return MathUtil.cubicInterpolate(x0, x1, x2, x3, trueMu);
+    }
 }

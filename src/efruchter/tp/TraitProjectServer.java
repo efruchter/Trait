@@ -59,12 +59,15 @@ public class TraitProjectServer implements NetworkingListener {
 			if (message.startsWith("versioncheck")) {
 				result = "" + TraitProjectClient.VERSION.equals(message
 								.replaceFirst("versioncheck", ""));
+				System.out.println("version check");
 			} else if ("request".equals(message)) {
 				result = "EXPLORE" + GeneVectorIO.SEPARATOR + current.toDataString();
+				System.out.println("explore-vector sent");
 			}
             else if ("playerControlled".equals(message)) {
+                CsvReader r = null;
                 try {
-                    final CsvReader r = new CsvReader("playerControlled.csv");
+                    r = new CsvReader("playerControlled.csv");
                     if (r.readHeaders()) {
                         final String[] headers = r.getHeaders();
                         final StringBuffer b = new StringBuffer();
@@ -72,12 +75,16 @@ public class TraitProjectServer implements NetworkingListener {
                             b.append(GeneVectorIO.SEPARATOR).append(str);
                         }
                         result = b.toString().replaceFirst(GeneVectorIO.SEPARATOR, "");
+                        System.out.println("player-controlled sent");
                     } else {
                         result = " ";
                     }
                     r.close();
                 } catch (final Exception e) {
                     e.printStackTrace();
+                } finally {
+                    if (r != null)
+                        r.close();
                 }
             }
 			// username | score | date | vector
@@ -86,6 +93,7 @@ public class TraitProjectServer implements NetworkingListener {
 						"store" + GeneVectorIO.SEPARATOR, "").split(
 						GeneVectorIO.SEPARATOR);
 				result = "" + store(new SessionInfo(data[0], data[1], data[2], data[3]));
+				System.out.println("store");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

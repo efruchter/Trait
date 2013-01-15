@@ -50,7 +50,7 @@ public class LevelGeneratorCore extends Trait {
     // Chance of a new chain forming
     final private List<Chain> chains;
 
-    private GeneCurve chainProb, chainDelay, probChainCont, enemySize, enemyHealth;
+    private GeneCurve chainProb, chainDelay, probChainCont, enemySize, enemyHealth, enemyBigness;
     private Gene intensity, polarityAmount;
 
     final public static Random random = new Random();
@@ -94,9 +94,7 @@ public class LevelGeneratorCore extends Trait {
         chainProb = GeneVectorIO.getExplorationVector().storeGeneCurve("spawner.newChainProb",
                 new GeneCurve("newChainProb", "P(new chain)", 0, 1, 0), false);
         chainProb.genes[0].setValue(.02f);
-        chainProb.genes[1].setValue(.02f);
-        chainProb.genes[2].setValue(.05f);
-        chainProb.genes[3].setValue(.05f);
+        chainProb.genes[1].setValue(.05f);
 
         chainDelay = GeneVectorIO.getExplorationVector().storeGeneCurve("spawner.chainDelay",
                 new GeneCurve("chainDelay", "Delay until enemy is spawned to continue a chain.", 0, 1000, 500), false);
@@ -107,6 +105,8 @@ public class LevelGeneratorCore extends Trait {
                 new GeneCurve("baseRadius", "Base enemy radius.", 2, 50, 15), false);
         enemyHealth = GeneVectorIO.getExplorationVector().storeGeneCurve("spawner.enemy.health",
                 new GeneCurve("enemyHealth", "Default enemy health on spawn.", 2, 100, 10), false);
+        enemyBigness = GeneVectorIO.getExplorationVector().storeGeneCurve("spawner.enemy.bigness",
+                new GeneCurve("enemyBigness", "Bigness of enemy. Effects everything.", 0, 100, 10), false);
         
         polarityAmount = GeneVectorIO.getExplorationVector().storeGene("spawner.polarity",
                 new Gene("polarity", "Amount of possible poles.", 0, PolarityController.COLORS.length, 0), false);
@@ -174,7 +174,7 @@ public class LevelGeneratorCore extends Trait {
 
     @Override
     public void onUpdate(final Entity self, final Level level, final long delta) {
-
+        
         time += delta;
 
         if (time > ClientDefaults.LEVEL_LENGTH || level.getPlayer() == null) {
@@ -227,7 +227,7 @@ public class LevelGeneratorCore extends Trait {
                 // attacking
                 final BehaviorChain a = new BehaviorChain(true);
                 a.addBehavior(Behavior.EMPTY, 1000);
-                a.addBehavior(new BasicAttackTrait(tracking), 500);
+                a.addBehavior(new BasicAttackTrait(tracking, bigness), 500);
                 e.addTrait(a);
 
                 // Score adder
@@ -250,6 +250,7 @@ public class LevelGeneratorCore extends Trait {
             private boolean tracking;
             private float radius, health;
             private int polarity;
+            float bigness;
 
             @Override
             public void precalc(final Level level, final float mu) {
@@ -290,8 +291,9 @@ public class LevelGeneratorCore extends Trait {
                 }
 
                 tracking = random.nextFloat() < intensity.getExpression();
-                radius = enemySize.getValue(mu);
-                health = enemyHealth.getValue(mu);
+                bigness = enemyBigness.getValue(mu) * random.nextFloat();
+                radius = enemySize.getValue(mu) + bigness;
+                health = enemyHealth.getValue(mu) + bigness;
             }
         };
     }
