@@ -223,7 +223,7 @@ public class LevelGeneratorCore extends Trait {
                 Entity e = level.getBlankEntity(EntityType.SHIP);
                 EntityFactory.buildShip(e, -100f, -100f, radius, CollisionLabel.ENEMY_LABEL, Color.RED, health);
 
-                long duration = 12000 * (long) Math.max(1l, bigness);
+                long duration = 12000 + (long) (12000 *  (random.nextFloat() - .5f));
                 
                 // Pathing
                 final BehaviorChain c = new BehaviorChain(false);
