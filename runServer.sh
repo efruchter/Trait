@@ -1,1 +1,1 @@
-java -classpath dep/*:src efruchter.tp.TraitProjectServer
+java -server -classpath dep/*:src efruchter.tp.TraitProjectServer
