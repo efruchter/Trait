@@ -46,7 +46,7 @@ public class TraitProjectServer implements NetworkingListener {
 
 		final int port = 8000;
 
-		System.out.println("Trait Server Started on port " + port + ".");
+		//System.out.println("Trait Server Started on port " + port + ".");
 		new Server(port, this);
 	}
 
@@ -59,10 +59,10 @@ public class TraitProjectServer implements NetworkingListener {
 			if (message.startsWith("versioncheck")) {
 				result = "" + TraitProjectClient.VERSION.equals(message
 								.replaceFirst("versioncheck", ""));
-				System.out.println("version check");
+				//System.out.println("version check");
 			} else if ("request".equals(message)) {
 				result = "EXPLORE" + GeneVectorIO.SEPARATOR + current.toDataString();
-				System.out.println("explore-vector sent");
+				//System.out.println("explore-vector sent");
 			}
             else if ("playerControlled".equals(message)) {
                 CsvReader r = null;
@@ -75,7 +75,7 @@ public class TraitProjectServer implements NetworkingListener {
                             b.append(GeneVectorIO.SEPARATOR).append(str);
                         }
                         result = b.toString().replaceFirst(GeneVectorIO.SEPARATOR, "");
-                        System.out.println("player-controlled sent");
+                        //System.out.println("player-controlled sent");
                     } else {
                         result = " ";
                     }
@@ -93,7 +93,7 @@ public class TraitProjectServer implements NetworkingListener {
 						"store" + GeneVectorIO.SEPARATOR, "").split(
 						GeneVectorIO.SEPARATOR);
 				result = "" + store(new SessionInfo(data[0], data[1], data[2], data[3]));
-				System.out.println("store");
+				//System.out.println("store");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
