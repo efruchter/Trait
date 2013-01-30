@@ -2,8 +2,6 @@ package efruchter.tp.trait.generators;
 
 import java.awt.Color;
 import java.awt.Point;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -67,14 +65,22 @@ public class LevelGeneratorCore extends Trait {
     @Override
     public void onStart(final Entity self, final Level level) {
 
-        if (level.getGeneratorCore().getWaveCount() > 0) {
+        if (waveCount > 0) {
             String username = System.getProperty("user.name");
             if (username == null) {
                 username = "NO_NAME";
             }
-            GeneVectorIO.storeVector(new Database.SessionInfo(username, Long.toString(TraitProjectClient.getScore()), new SimpleDateFormat(
-                    "yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime()), GeneVectorIO.getExplorationVector().toDataString()));
-
+            Database.SessionInfo info = new Database.SessionInfo();
+            info.put("username", username);
+            info.put("date", Long.toString(System.currentTimeMillis()));
+            info.put("vector", GeneVectorIO.getExplorationVector().toDataString());
+            info.put("s_wave", Long.toString(waveCount));
+            info.put("s_damage_player", Float.toString(TraitProjectClient.s_damage_player));
+            info.put("s_damage_enemies", Float.toString(TraitProjectClient.s_damage_enemies));
+            info.put("s_num_enemies", Float.toString(TraitProjectClient.s_num_enemies));
+            info.put("s_fired_player", Float.toString(TraitProjectClient.s_fired_player));
+            info.put("s_fired_enemies", Float.toString(TraitProjectClient.s_fired_enemies));
+            GeneVectorIO.storeVector(info);
         }
 
         waveCount++;
@@ -170,8 +176,8 @@ public class LevelGeneratorCore extends Trait {
         EntityFactory.buildNewWaveAnim(level.getBlankEntity(EntityType.BG));
         
         time = 0;
-        TraitProjectClient.setScore(0);
         chains.clear();
+        TraitProjectClient.resetStatistics();
     }
 
 
@@ -236,17 +242,6 @@ public class LevelGeneratorCore extends Trait {
                 a.addBehavior(Behavior.EMPTY, 1000);
                 a.addBehavior(new BasicAttackTrait(tracking, bigness), 500);
                 e.addTrait(a);
-
-                // Score adder
-                final TraitAdapter kill = new TraitAdapter("", "") {
-                    @Override
-                    public void onUpdate(final Entity self, final Level level, final long delta) {
-                        if (self.health < 0) {
-                            TraitProjectClient.setScore(TraitProjectClient.getScore() + ClientDefaults.SCORE1_ENEMY_DEFEAT);
-                        }
-                    }
-                };
-                e.addTrait(kill);
                 
                 e.polarity = polarity;
 

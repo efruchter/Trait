@@ -69,15 +69,6 @@ public class BasicAttackTrait extends Trait {
             p.addTrait(rad);
 
             p.addTrait(new GeneExpressionInterpolator(rad.radius, 0, 1, 200));
-
-            p.addTrait(new TraitAdapter() {
-                @Override
-                public void onUpdate(final Entity self, final Level level, final long delta) {
-                    if (self.health < 0 && level.getPlayer() != null && level.getPlayer().isColliding(self)) {
-                        TraitProjectClient.addScore(ClientDefaults.SCORE1_PLAYER_HIT);
-                    }
-                }
-            });
             
             p.polarity = self.polarity;
 

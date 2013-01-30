@@ -17,7 +17,6 @@ import efruchter.tp.state.ClientStateManager.FlowState;
 public class GeneVectorIO {
 
     private static GeneVector exploration;
-    public static final String SEPARATOR = "@";
 
     /**
      * @return the current exploration vector.
@@ -34,11 +33,12 @@ public class GeneVectorIO {
             final Client c = TraitProjectClient.getClient();
             try {
                 c.reconnect();
-                c.send("store" + SEPARATOR + info.username + SEPARATOR + info.score + SEPARATOR + info.date + SEPARATOR
-                        + info.vector);
+                c.send("store" + SessionInfo.SEPERATOR + info.toDataString());
                 boolean suc = Boolean.parseBoolean(c.receive());
                 if (suc)
                     System.out.println("Successfully stored gene vector in database.");
+                else
+                	System.err.println("Cannot store vector on server.");
                 return suc;
             } catch (IOException e) {
 
@@ -66,7 +66,7 @@ public class GeneVectorIO {
                 c.reconnect();
                 c.send("request");
                 final GeneVector geneVector = new GeneVector();
-                geneVector.fromDataString(c.receive().replace("EXPLORE" + GeneVectorIO.SEPARATOR, ""));
+                geneVector.fromDataString(c.receive().replace("EXPLORE" + SessionInfo.SEPERATOR, ""));
                 exploration = geneVector;
                 System.out.println("Successfully read gene vector from server.");
                 return;

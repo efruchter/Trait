@@ -24,6 +24,7 @@ import efruchter.tp.entity.Level;
 import efruchter.tp.learning.GeneVector;
 import efruchter.tp.learning.GeneVector.GeneWrapper;
 import efruchter.tp.learning.GeneVectorIO;
+import efruchter.tp.learning.database.Database.SessionInfo;
 import efruchter.tp.networking.Client;
 import efruchter.tp.state.ClientStateManager;
 import efruchter.tp.state.ClientStateManager.FlowState;
@@ -35,326 +36,336 @@ import efruchter.tp.util.RenderUtil;
 @SuppressWarnings("serial")
 public class TraitProjectClient extends Applet {
 
-    private Canvas display_parent;
+	private Canvas display_parent;
 
-    /** Thread which runs the main game loop */
-    private Thread gameThread;
+	/** Thread which runs the main game loop */
+	private Thread gameThread;
 
-    /** is the game loop running */
-    private boolean running = false;
+	/** is the game loop running */
+	private boolean running = false;
 
-    /*
-     * GAME VARS
-     */
-    public static final String VERSION = "00.00.00.03";
-    private static Level level;
-    private static long lastFrame;
-    private static int fps;
-    private static long lastFPS;
-    private static long score;
+	/*
+	 * GAME VARS
+	 */
+	public static final String VERSION = "00.00.00.04";
+	private static Level level;
+	private static long lastFrame;
+	private static int fps;
+	private static long lastFPS;
 
-    private static String[] playerControlled;
+	/*
+	 * Client Statistics
+	 */
 
-    public void startLWJGL() {
-        gameThread = new Thread() {
-            public void run() {
-                running = true;
-                try {
-                    Display.setParent(display_parent);
-                    Display.create();
-                    initGL();
-                } catch (LWJGLException e) {
-                    e.printStackTrace();
-                    return;
-                }
-                gameLoop();
-            }
-        };
-        gameThread.start();
-    }
+	public static float s_damage_player, s_damage_enemies, s_num_enemies,
+			s_fired_player, s_fired_enemies;
 
-    /**
-     * Tell game loop to stop running, after which the LWJGL Display will be
-     * destoryed. The main thread will wait for the Display.destroy().
-     */
-    private void stopLWJGL() {
-        running = false;
-        try {
-            gameThread.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
+	public static void resetStatistics() {
+		s_damage_player = s_damage_enemies = s_num_enemies = s_fired_player = s_fired_enemies = 0;
+	}
 
-    public void start() {
+	private static String[] playerControlled;
 
-        lastFPS = getTime();
+	public void startLWJGL() {
+		gameThread = new Thread() {
+			public void run() {
+				running = true;
+				try {
+					Display.setParent(display_parent);
+					Display.create();
+					initGL();
+				} catch (LWJGLException e) {
+					e.printStackTrace();
+					return;
+				}
+				gameLoop();
+			}
+		};
+		gameThread.start();
+	}
 
-        score = 0;
+	/**
+	 * Tell game loop to stop running, after which the LWJGL Display will be
+	 * destoryed. The main thread will wait for the Display.destroy().
+	 */
+	private void stopLWJGL() {
+		running = false;
+		try {
+			gameThread.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
 
-        versionCheck();
+	public void start() {
 
-        level = new Level();
+		lastFPS = getTime();
 
-        fetchPlayerControlled();
+		versionCheck();
 
-        resetSim();
+		level = new Level();
 
-        ClientStateManager.setPaused(true);
-    }
+		fetchPlayerControlled();
 
-    public void stop() {
+		resetSim();
 
-    }
+		ClientStateManager.setPaused(true);
+	}
 
-    /**
-     * Applet Destroy method will remove the canvas, before canvas is destroyed
-     * it will notify stopLWJGL() to stop the main game loop and to destroy the
-     * Display
-     */
-    public void destroy() {
-        remove(display_parent);
-        super.destroy();
-    }
+	public void stop() {
 
-    public void init() {
-        setLayout(new BorderLayout());
-        try {
-            display_parent = new Canvas() {
-                public final void addNotify() {
-                    super.addNotify();
-                    startLWJGL();
-                }
+	}
 
-                public final void removeNotify() {
-                    stopLWJGL();
-                    super.removeNotify();
-                }
-            };
-            display_parent.setSize(getWidth(), getHeight());
-            add(display_parent);
-            display_parent.setFocusable(true);
-            display_parent.requestFocus();
-            display_parent.setIgnoreRepaint(true);
-            setVisible(true);
-        } catch (Exception e) {
-            System.err.println(e);
-            throw new RuntimeException("Unable to create display");
-        }
-    }
+	/**
+	 * Applet Destroy method will remove the canvas, before canvas is destroyed
+	 * it will notify stopLWJGL() to stop the main game loop and to destroy the
+	 * Display
+	 */
+	public void destroy() {
+		remove(display_parent);
+		super.destroy();
+	}
 
-    protected void initGL() {
-        GL11.glMatrixMode(GL11.GL_PROJECTION);
-        GL11.glLoadIdentity();
-        GL11.glOrtho(0, 800, 0, 600, 1, -1);
-        GL11.glMatrixMode(GL11.GL_MODELVIEW);
-    }
+	public void init() {
+		setLayout(new BorderLayout());
+		try {
+			display_parent = new Canvas() {
+				public final void addNotify() {
+					super.addNotify();
+					startLWJGL();
+				}
 
-    public void gameLoop() {
-        while (running) {
-            final long delta = getDelta();
-            onUpdate(delta);
-            renderGL(delta);
-            Display.sync(60);
-            Display.update();
-        }
+				public final void removeNotify() {
+					stopLWJGL();
+					super.removeNotify();
+				}
+			};
+			display_parent.setSize(getWidth(), getHeight());
+			add(display_parent);
+			display_parent.setFocusable(true);
+			display_parent.requestFocus();
+			display_parent.setIgnoreRepaint(true);
+			setVisible(true);
+		} catch (Exception e) {
+			System.err.println(e);
+			throw new RuntimeException("Unable to create display");
+		}
+	}
 
-        Display.destroy();
-    }
+	protected void initGL() {
+		GL11.glMatrixMode(GL11.GL_PROJECTION);
+		GL11.glLoadIdentity();
+		GL11.glOrtho(0, 800, 0, 600, 1, -1);
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+	}
 
-    public static void onUpdate(long delta) {
+	public void gameLoop() {
+		while (running) {
+			final long delta = getDelta();
+			onUpdate(delta);
+			renderGL(delta);
+			Display.sync(60);
+			Display.update();
+		}
 
-        try {
-            if (ClientStateManager.getFlowState() == FlowState.FREE)
-                ClientStateManager.setFlowState(FlowState.PLAYING);
+		Display.destroy();
+	}
 
-            KeyUtil.update();
+	public static void onUpdate(long delta) {
 
-            level.onUpdate(ClientStateManager.isPaused() ? 0 : delta);
+		try {
+			if (ClientStateManager.getFlowState() == FlowState.FREE)
+				ClientStateManager.setFlowState(FlowState.PLAYING);
 
-            if (KeyUtil.isKeyPressed(Keyboard.KEY_RETURN) || KeyUtil.isKeyPressed(Keyboard.KEY_ESCAPE))
-                ClientStateManager.togglePauseState();
-        } catch (final Exception e) {
-        }
-        updateFPS();
+			KeyUtil.update();
 
-    }
+			level.onUpdate(ClientStateManager.isPaused() ? 0 : delta);
 
-    /**
-     * Build the level and entities from scratch. Update appropriate GUI
-     * components.
-     */
-    public static void resetSim() {
+			if (KeyUtil.isKeyPressed(Keyboard.KEY_RETURN)
+					|| KeyUtil.isKeyPressed(Keyboard.KEY_ESCAPE))
+				ClientStateManager.togglePauseState();
+		} catch (final Exception e) {
+		}
+		updateFPS();
 
-        final Level level = new Level();
+	}
 
-        final LevelGeneratorCore chainer;
-        level.getBlankEntity(EntityType.GENERATOR).addTrait(chainer = new LevelGeneratorCore());
-        level.setGeneratorCore(chainer);
+	/**
+	 * Build the level and entities from scratch. Update appropriate GUI
+	 * components.
+	 */
+	public static void resetSim() {
 
-        for (int i = 0; i < 200; i++) {
-            Entity e = level.getBlankEntity(EntityType.BG);
-            EntityFactory.buildBackgroundStar(e);
-        }
+		final Level level = new Level();
 
-        level.addRenderBehavior(new Behavior() {
-            public void onStart(Entity self, Level level) {
-            }
+		final LevelGeneratorCore chainer;
+		level.getBlankEntity(EntityType.GENERATOR).addTrait(
+				chainer = new LevelGeneratorCore());
+		level.setGeneratorCore(chainer);
 
-            public void onUpdate(final Entity self, final Level level, final long delta) {
-                RenderUtil.setColor(Color.CYAN);
-                // final String playerHealth = level.getPlayer() == null ? "XX"
-                // : Integer.toString((int) level.getPlayer().getHealth());
-                final String score = level.getPlayer() == null ? "XX" : Long.toString(getScore());
-                RenderUtil.drawString(
-                        new StringBuffer().append("")
-                                // .append("health ").append(playerHealth)
-                                .append("\n").append("\n").append("score ").append(getScore() < 0 ? "N" : "").append(score).append("\n")
-                                .append("\n").append("wave ").append(level.getGeneratorCore().getWaveCount()).toString(), 5, 45);
-                RenderUtil.setColor(Color.GREEN);
-                RenderUtil.drawString("Progress " + level.getGeneratorCore().getPercentComplete(), 5, Display.getHeight() - 15);
-            }
+		for (int i = 0; i < 200; i++) {
+			Entity e = level.getBlankEntity(EntityType.BG);
+			EntityFactory.buildBackgroundStar(e);
+		}
 
-            public void onDeath(Entity self, Level level) {
-            }
-        });
+		level.addRenderBehavior(new Behavior() {
+			public void onStart(Entity self, Level level) {
+			}
 
-        level.onDeath();
-        TraitProjectClient.level = level;
+			public void onUpdate(final Entity self, final Level level,
+					final long delta) {
+				RenderUtil.setColor(Color.CYAN);
+				// final String playerHealth = level.getPlayer() == null ? "XX"
+				// : Integer.toString((int) level.getPlayer().getHealth());
+				RenderUtil
+						.drawString(
+								new StringBuffer().append("")
+										// .append("health ").append(playerHealth)
+										.append("\n")
+										.append("wave ")
+										.append(level.getGeneratorCore()
+												.getWaveCount()).toString(), 5,
+								45);
+				RenderUtil.setColor(Color.GREEN);
+				RenderUtil.drawString("Progress "
+						+ level.getGeneratorCore().getPercentComplete(), 5,
+						Display.getHeight() - 15);
+			}
 
-        ClientStateManager.setFlowState(FlowState.FREE);
-    }
+			public void onDeath(Entity self, Level level) {
+			}
+		});
 
-    public static void renderGL(final long delta) {
-        // Clear The Screen And The Depth Buffer
-        try {
-            GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+		level.onDeath();
+		TraitProjectClient.level = level;
 
-            level.renderGL(delta);
+		ClientStateManager.setFlowState(FlowState.FREE);
+	}
 
-            if (ClientStateManager.isPaused() && ClientStateManager.getFlowState() != FlowState.EDITING) {
-                RenderUtil.setColor(Color.WHITE);
-                GL11.glPushMatrix();
-                {
-                    GL11.glTranslatef(Display.getWidth() / 2, Display.getHeight() / 2, 0);
-                    RenderUtil.drawString("PAUSED", 5);
-                    GL11.glTranslatef(0, -Display.getHeight() / 8, 0);
-                    RenderUtil.drawString("Press <ENTER>", 3);
-                }
-                GL11.glPopMatrix();
-            }
-        } catch (final Exception e) {
-        }
-    }
+	public static void renderGL(final long delta) {
+		// Clear The Screen And The Depth Buffer
+		try {
+			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 
-    /**
-     * Calculate how many milliseconds have passed since last frame.
-     * 
-     * @return milliseconds passed since last frame
-     */
-    public static int getDelta() {
-        final long time = getTime();
-        final int delta = (int) (time - lastFrame);
-        lastFrame = time;
+			level.renderGL(delta);
 
-        return delta;
-    }
+			if (ClientStateManager.isPaused()
+					&& ClientStateManager.getFlowState() != FlowState.EDITING) {
+				RenderUtil.setColor(Color.WHITE);
+				GL11.glPushMatrix();
+				{
+					GL11.glTranslatef(Display.getWidth() / 2,
+							Display.getHeight() / 2, 0);
+					RenderUtil.drawString("PAUSED", 5);
+					GL11.glTranslatef(0, -Display.getHeight() / 8, 0);
+					RenderUtil.drawString("Press <ENTER>", 3);
+				}
+				GL11.glPopMatrix();
+			}
+		} catch (final Exception e) {
+		}
+	}
 
-    public static long getTime() {
-        return (Sys.getTime() * 1000) / Sys.getTimerResolution();
-    }
+	/**
+	 * Calculate how many milliseconds have passed since last frame.
+	 * 
+	 * @return milliseconds passed since last frame
+	 */
+	public static int getDelta() {
+		final long time = getTime();
+		final int delta = (int) (time - lastFrame);
+		lastFrame = time;
 
-    /**
-     * Calculate the FPS and set it in the title bar
-     */
-    public static void updateFPS() {
-        if (getTime() - lastFPS > 1000) {
-            fps = 0;
-            lastFPS += 1000;
-        }
-        fps++;
-    }
+		return delta;
+	}
 
-    public static void versionCheck() {
-        final Client c = getClient();
+	public static long getTime() {
+		return (Sys.getTime() * 1000) / Sys.getTimerResolution();
+	}
 
-        try {
-            c.reconnect();
-            c.send("versioncheck" + VERSION);
-            boolean sameVersion = Boolean.parseBoolean(c.receive());
-            if (!sameVersion) {
-                JOptionPane.showMessageDialog(null, "Your client is out-of-date, please download the latest version.");
-                System.exit(0);
-            } else {
-                System.out.println("Client and Server versions match.");
-                return;
-            }
-        } catch (Exception e) {
+	/**
+	 * Calculate the FPS and set it in the title bar
+	 */
+	public static void updateFPS() {
+		if (getTime() - lastFPS > 1000) {
+			fps = 0;
+			lastFPS += 1000;
+		}
+		fps++;
+	}
 
-        } finally {
-            try {
-                c.close();
-            } catch (Exception e) {
-            }
-        }
-        System.err.println("Cannot check server version.");
-    }
+	public static void versionCheck() {
+		final Client c = getClient();
 
-    public static long getScore() {
-        return score;
-    }
+		try {
+			c.reconnect();
+			c.send("versioncheck" + VERSION);
+			boolean sameVersion = Boolean.parseBoolean(c.receive());
+			if (!sameVersion) {
+				JOptionPane
+						.showMessageDialog(null,
+								"Your client is out-of-date, please download the latest version.");
+				System.exit(0);
+			} else {
+				System.out.println("Client and Server versions match.");
+				return;
+			}
+		} catch (Exception e) {
 
-    public static void setScore(final long newScore) {
-        score = newScore;
-    }
+		} finally {
+			try {
+				c.close();
+			} catch (Exception e) {
+			}
+		}
+		System.err.println("Cannot check server version.");
+	}
 
-    public static void addScore(final long add) {
-        score += add;
-    }
+	public static List<GeneWrapper> getPlayerControlledGenes() {
+		final GeneVector geneVector = GeneVectorIO.getExplorationVector();
+		final List<GeneWrapper> genes = new ArrayList<GeneWrapper>();
+		for (final String string : playerControlled) {
+			genes.add(geneVector.getGeneWrapper(string));
+		}
+		return genes;
+	}
 
-    public static List<GeneWrapper> getPlayerControlledGenes() {
-        final GeneVector geneVector = GeneVectorIO.getExplorationVector();
-        final List<GeneWrapper> genes = new ArrayList<GeneWrapper>();
-        for (final String string : playerControlled) {
-            genes.add(geneVector.getGeneWrapper(string));
-        }
-        return genes;
-    }
+	public static Client getClient() {
+		if (ClientDefaults.LOCAL_SERVER) {
+			return new Client();
+		} else {
+			return new Client("trait.ericfruchter.com", 8000);
+		}
+	}
 
-    public static Client getClient() {
-        if (ClientDefaults.LOCAL_SERVER) {
-            return new Client();
-        } else {
-            return new Client("trait.ericfruchter.com", 8000);
-        }
-    }
-
-    private static void fetchPlayerControlled() {
-        ClientStateManager.setFlowState(FlowState.LOADING_VECT);
-        try {
-            final Client c = TraitProjectClient.getClient();
-            try {
-                c.reconnect();
-                c.send("playerControlled");
-                final String s = c.receive();
-                if (s.trim().isEmpty())
-                    playerControlled = new String[0];
-                else
-                    playerControlled = s.split(GeneVectorIO.SEPARATOR);
-                System.out.println("Successfully read player-controlled gene list from server.");
-                return;
-            } catch (IOException e) {
-            } finally {
-                try {
-                    c.close();
-                    return;
-                } catch (Exception e) {
-                }
-            }
-            System.err.println("Could not fetch player-controlled gene list from server.");
-            playerControlled = new String[0];
-        } finally {
-            ClientStateManager.setFlowState(FlowState.FREE);
-        }
-    }
+	private static void fetchPlayerControlled() {
+		ClientStateManager.setFlowState(FlowState.LOADING_VECT);
+		try {
+			final Client c = TraitProjectClient.getClient();
+			try {
+				c.reconnect();
+				c.send("playerControlled");
+				final String s = c.receive();
+				if (s.trim().isEmpty())
+					playerControlled = new String[0];
+				else
+					playerControlled = s.split(SessionInfo.SEPERATOR);
+				System.out
+						.println("Successfully read player-controlled gene list from server.");
+				return;
+			} catch (IOException e) {
+			} finally {
+				try {
+					c.close();
+					return;
+				} catch (Exception e) {
+				}
+			}
+			System.err
+					.println("Could not fetch player-controlled gene list from server.");
+			playerControlled = new String[0];
+		} finally {
+			ClientStateManager.setFlowState(FlowState.FREE);
+		}
+	}
 }

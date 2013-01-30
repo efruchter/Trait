@@ -5,7 +5,6 @@ import java.io.IOException;
 import com.csvreader.CsvReader;
 
 import efruchter.tp.learning.GeneVector;
-import efruchter.tp.learning.GeneVectorIO;
 import efruchter.tp.learning.database.CSVDatabase;
 import efruchter.tp.learning.database.Database;
 import efruchter.tp.learning.database.Database.SessionInfo;
@@ -61,7 +60,7 @@ public class TraitProjectServer implements NetworkingListener {
 								.replaceFirst("versioncheck", ""));
 				//System.out.println("version check");
 			} else if ("request".equals(message)) {
-				result = "EXPLORE" + GeneVectorIO.SEPARATOR + current.toDataString();
+				result = "EXPLORE" + SessionInfo.SEPERATOR + current.toDataString();
 				//System.out.println("explore-vector sent");
 			}
             else if ("playerControlled".equals(message)) {
@@ -72,9 +71,9 @@ public class TraitProjectServer implements NetworkingListener {
                         final String[] headers = r.getHeaders();
                         final StringBuffer b = new StringBuffer();
                         for(final String str : headers) {
-                            b.append(GeneVectorIO.SEPARATOR).append(str);
+                            b.append(SessionInfo.SEPERATOR).append(str);
                         }
-                        result = b.toString().replaceFirst(GeneVectorIO.SEPARATOR, "");
+                        result = b.toString().replaceFirst(SessionInfo.SEPERATOR, "");
                         //System.out.println("player-controlled sent");
                     } else {
                         result = " ";
@@ -87,12 +86,9 @@ public class TraitProjectServer implements NetworkingListener {
                         r.close();
                 }
             }
-			// username | score | date | vector
-			else if (message.startsWith("store" + GeneVectorIO.SEPARATOR)) {
-				String[] data = message.replaceFirst(
-						"store" + GeneVectorIO.SEPARATOR, "").split(
-						GeneVectorIO.SEPARATOR);
-				result = "" + store(new SessionInfo(data[0], data[1], data[2], data[3]));
+			else if (message.startsWith("store" + SessionInfo.SEPERATOR)) {
+				final String data = message.replaceFirst("store" + SessionInfo.SEPERATOR, "");
+				result = "" + store(new SessionInfo(data));
 				//System.out.println("store");
 			}
 		} catch (Exception e) {

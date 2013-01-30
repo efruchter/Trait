@@ -27,8 +27,10 @@ public class CSVDatabase implements Database {
             headers = r.getHeaders();
             r.close();
 		} catch (FileNotFoundException e1) {
+			e1.printStackTrace();
 			return false;
 		} catch (IOException e) {
+			e.printStackTrace();
 			return false;
 		}
 
@@ -37,20 +39,18 @@ public class CSVDatabase implements Database {
         try {
             write = new CsvWriter(new FileWriter("database.csv", true), ',');
         } catch (Exception e) {
+        	e.printStackTrace();
             return false;
         }
 
         try {
             final String[] record = new String[headers.length];
+            GeneVector v = new GeneVector(sessionInfo.get("vector"));
             for (int i = 0; i < headers.length; i++) {
-                if (headers[i].equals("username")) {
-                    record[i] = sessionInfo.username;
-                } else if (headers[i].equals("date")) {
-                    record[i] = sessionInfo.date;
-                } else if (headers[i].equals("score")) {
-                    record[i] = sessionInfo.score;
-                } else {
-                    record[i] = "" + new GeneVector(sessionInfo.vector).getGene(headers[i]).getValue();
+            	if (sessionInfo.containsKey(headers[i])) {
+            		record[i] = sessionInfo.get(headers[i]);
+            	} else {
+                    record[i] = "" + v.getGene(headers[i]).getValue();
                 }
             }
             try {
@@ -60,6 +60,7 @@ public class CSVDatabase implements Database {
                 return false;
             }
         } catch (final NullPointerException e) {
+        	e.printStackTrace();
             return false;
         }
 
