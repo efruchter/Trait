@@ -4,6 +4,7 @@ import java.awt.Color;
 
 import org.lwjgl.input.Keyboard;
 
+import efruchter.tp.TraitProjectClient;
 import efruchter.tp.defaults.CollisionLabel;
 import efruchter.tp.defaults.EntityFactory;
 import efruchter.tp.defaults.EntityType;
@@ -91,6 +92,19 @@ public class KeyboardControlTrait_Attack extends Trait {
 					p.addTrait(new GeneExpressionInterpolator(rad.radius, 0, 1, 200));
 					
 					p.polarity = self.polarity;
+					
+					p.addTrait(new TraitAdapter(){
+						@Override
+						public void onStart(final Entity self, final Level level) {
+							TraitProjectClient.s_fired_player++;
+						}
+						@Override
+						public void onDeath(final Entity self, final Level level) {
+							if (self.health <= 0) {
+								TraitProjectClient.s_damage_enemies += damage.getValue();
+							}
+						}
+					});
 				}
 			}
 		}

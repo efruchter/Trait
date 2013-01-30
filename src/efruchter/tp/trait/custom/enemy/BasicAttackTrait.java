@@ -3,7 +3,6 @@ package efruchter.tp.trait.custom.enemy;
 import java.awt.Color;
 
 import efruchter.tp.TraitProjectClient;
-import efruchter.tp.defaults.ClientDefaults;
 import efruchter.tp.defaults.CollisionLabel;
 import efruchter.tp.defaults.EntityFactory;
 import efruchter.tp.defaults.EntityType;
@@ -33,7 +32,7 @@ public class BasicAttackTrait extends Trait {
     public BasicAttackTrait(final boolean tracking, final float bigness) {
         super("Basic Attack", "An auto-attack.");
         coolDown = new Gene("Cool Down Delay", "The projectile cooldown.", 0, 1000, 500);
-        damage = new Gene("Damage Per Bullet", "Amount of damage per bullet.", 0, 10, 1);
+        damage = new Gene("Damage Per Bullet", "Amount of damage per bullet.", 0, 100, 5);
         this.tracking = tracking;
         this.bigness = bigness;
     }
@@ -71,6 +70,19 @@ public class BasicAttackTrait extends Trait {
             p.addTrait(new GeneExpressionInterpolator(rad.radius, 0, 1, 200));
             
             p.polarity = self.polarity;
+            
+            p.addTrait(new TraitAdapter(){
+            	@Override
+				public void onStart(final Entity self, final Level level) {
+					TraitProjectClient.s_fired_enemies++;
+				}
+				@Override
+				public void onDeath(final Entity self, final Level level) {
+					if (self.health <= 0) {
+						TraitProjectClient.s_damage_player += damage.getValue();
+					}
+				}
+			});
 
         }
     }

@@ -60,7 +60,7 @@ public class TraitProjectClient extends Applet {
 	public static float s_damage_player, s_damage_enemies, s_num_enemies,
 			s_fired_player, s_fired_enemies;
 
-	public static void resetStatistics() {
+	public static void resetMetrics() {
 		s_damage_player = s_damage_enemies = s_num_enemies = s_fired_player = s_fired_enemies = 0;
 	}
 
@@ -172,7 +172,7 @@ public class TraitProjectClient extends Applet {
 	}
 
 	public static void onUpdate(long delta) {
-
+		
 		try {
 			if (ClientStateManager.getFlowState() == FlowState.FREE)
 				ClientStateManager.setFlowState(FlowState.PLAYING);

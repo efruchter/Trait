@@ -51,7 +51,7 @@ public class LevelGeneratorCore extends Trait {
     private GeneCurve chainProb, chainDelay, probChainCont, enemySize, enemyHealth, enemyBigness;
     private Gene intensity, polarityAmount;
 
-    final public static Random random = new Random();
+    final public static Random random = new Random(0);
 
     public long waveCount;
     private int percentComplete;
@@ -165,7 +165,8 @@ public class LevelGeneratorCore extends Trait {
         }
         final Gene pSwi = polarityAmount;
         player.addTrait(new TraitAdapter (){
-            public void onUpdate(Entity self, Level level, long delta) {
+            @Override
+        	public void onUpdate(Entity self, Level level, long delta) {
                if (KeyUtil.isKeyPressed(Keyboard.KEY_LSHIFT)) {
                    self.polarity = (self.polarity + 1) % (int) (Math.round(pSwi.getValue())); 
                }
@@ -177,7 +178,7 @@ public class LevelGeneratorCore extends Trait {
         
         time = 0;
         chains.clear();
-        TraitProjectClient.resetStatistics();
+        TraitProjectClient.resetMetrics();
     }
 
 
@@ -244,6 +245,13 @@ public class LevelGeneratorCore extends Trait {
                 e.addTrait(a);
                 
                 e.polarity = polarity;
+                
+                e.addTrait(new TraitAdapter (){
+                	@Override
+                	public void onStart(Entity self, Level level) {
+                		TraitProjectClient.s_num_enemies++;
+                    }
+                });
 
                 return e;
             }
