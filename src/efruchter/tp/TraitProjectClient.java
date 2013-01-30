@@ -221,11 +221,9 @@ public class TraitProjectClient extends Applet {
 						.drawString(
 								new StringBuffer().append("")
 										// .append("health ").append(playerHealth)
-										.append("\n")
+										.append("\n\n\n\n")
 										.append("wave ")
-										.append(level.getGeneratorCore()
-												.getWaveCount()).toString(), 5,
-								45);
+										.append(level.getGeneratorCore().getWaveCount()).toString(), 5, 45);
 				RenderUtil.setColor(Color.GREEN);
 				RenderUtil.drawString("Progress "
 						+ level.getGeneratorCore().getPercentComplete(), 5,
