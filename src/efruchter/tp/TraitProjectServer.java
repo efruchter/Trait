@@ -5,11 +5,11 @@ import java.io.IOException;
 import com.csvreader.CsvReader;
 
 import efruchter.tp.learning.GeneVector;
+import efruchter.tp.learning.SessionInfo;
 import efruchter.tp.learning.database.CSVDatabase;
 import efruchter.tp.learning.database.Database;
-import efruchter.tp.learning.database.Database.SessionInfo;
-import efruchter.tp.networking.NetworkingListener;
-import efruchter.tp.networking.Server;
+import efruchter.tp.learning.server.comm.NetworkingListener;
+import efruchter.tp.learning.server.comm.Server;
 
 /**
  *
@@ -20,7 +20,7 @@ public class TraitProjectServer implements NetworkingListener {
 	private static final Database db;
 
 	static {
-		db = new CSVDatabase();
+		db = new CSVDatabase("database.csv");
 		current = new GeneVector();
 	}
 

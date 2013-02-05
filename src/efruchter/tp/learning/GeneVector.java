@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import efruchter.tp.trait.gene.Gene;
 import efruchter.tp.trait.gene.GeneCurve;
 
+
 /**
  * Structure for holding a gene vector, as well as server communication code.
  *

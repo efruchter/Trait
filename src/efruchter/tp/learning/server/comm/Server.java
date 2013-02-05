@@ -1,4 +1,4 @@
-package efruchter.tp.networking;
+package efruchter.tp.learning.server.comm;
 
 import java.io.IOException;
 import java.net.ServerSocket;

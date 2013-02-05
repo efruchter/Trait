@@ -1,8 +1,8 @@
 package efruchter.tp.trait.custom.player;
 
+import efruchter.tp.ClientDefaults;
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
-import efruchter.tp.learning.GeneVectorIO;
 import efruchter.tp.trait.Trait;
 import efruchter.tp.trait.gene.Gene;
 
@@ -18,7 +18,8 @@ public class PlayerRadiusEditTrait extends Trait {
 	
 	public PlayerRadiusEditTrait(final float minR, final float maxR, final float var) {
 		super("Variable Radius", "Has a variable radius.");
-		radius = GeneVectorIO.getExplorationVector().storeGene("player.radius.radius",
+		
+		radius = ClientDefaults.VECTOR.getExplorationVector().storeGene("player.radius.radius",
 				new Gene("Radius", "Player ship radius", minR, maxR, var), false);
 	}
 	

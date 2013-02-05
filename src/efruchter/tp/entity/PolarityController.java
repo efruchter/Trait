@@ -1,4 +1,4 @@
-package efruchter.tp.defaults;
+package efruchter.tp.entity;
 
 import java.awt.Color;
 

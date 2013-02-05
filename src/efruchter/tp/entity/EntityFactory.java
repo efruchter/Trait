@@ -1,4 +1,4 @@
-package efruchter.tp.defaults;
+package efruchter.tp.entity;
 
 import java.awt.*;
 
@@ -8,8 +8,6 @@ import efruchter.tp.trait.behavior.custom.KillBehavior;
 import efruchter.tp.trait.custom.*;
 import org.lwjgl.opengl.Display;
 
-import efruchter.tp.entity.Entity;
-import efruchter.tp.entity.Level;
 import efruchter.tp.trait.Trait;
 import efruchter.tp.trait.gene.GeneExpressionInterpolator;
 import efruchter.tp.util.RenderUtil;

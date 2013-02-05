@@ -8,8 +8,15 @@ import com.csvreader.CsvReader;
 import com.csvreader.CsvWriter;
 
 import efruchter.tp.learning.GeneVector;
+import efruchter.tp.learning.SessionInfo;
 
 public class CSVDatabase implements Database {
+	
+	private final String file;
+	
+	public CSVDatabase(final String dataFile) {
+		file = dataFile;
+	}
 	
 	@Override
 	public void init() {
@@ -22,7 +29,7 @@ public class CSVDatabase implements Database {
         final String[] headers;
 
 		try {
-			CsvReader r = new CsvReader("database.csv");
+			CsvReader r = new CsvReader(file);
             r.readHeaders();
             headers = r.getHeaders();
             r.close();
@@ -37,7 +44,7 @@ public class CSVDatabase implements Database {
         final CsvWriter write;
 
         try {
-            write = new CsvWriter(new FileWriter("database.csv", true), ',');
+            write = new CsvWriter(new FileWriter(file, true), ',');
         } catch (Exception e) {
         	e.printStackTrace();
             return false;
@@ -67,10 +74,4 @@ public class CSVDatabase implements Database {
 		write.close();
 		return true;
 	}
-	
-	public static void main(final String[] args) {
-        final Database d = new CSVDatabase();
-		d.init();
-	}
-	
 }

@@ -1,10 +1,10 @@
 package efruchter.tp.trait.custom;
 
-import efruchter.tp.defaults.EntityFactory;
-import efruchter.tp.defaults.EntityType;
-import efruchter.tp.defaults.PolarityController;
 import efruchter.tp.entity.Entity;
+import efruchter.tp.entity.EntityFactory;
+import efruchter.tp.entity.EntityType;
 import efruchter.tp.entity.Level;
+import efruchter.tp.entity.PolarityController;
 import efruchter.tp.trait.Trait;
 
 /**

@@ -4,13 +4,15 @@ import java.awt.Color;
 
 import org.lwjgl.input.Keyboard;
 
+
+import efruchter.tp.ClientDefaults;
 import efruchter.tp.TraitProjectClient;
-import efruchter.tp.defaults.CollisionLabel;
-import efruchter.tp.defaults.EntityFactory;
-import efruchter.tp.defaults.EntityType;
+import efruchter.tp.entity.CollisionLabel;
 import efruchter.tp.entity.Entity;
+import efruchter.tp.entity.EntityFactory;
+import efruchter.tp.entity.EntityType;
 import efruchter.tp.entity.Level;
-import efruchter.tp.learning.GeneVectorIO;
+import efruchter.tp.learning.server.ServerIO;
 import efruchter.tp.trait.MoveTrait;
 import efruchter.tp.trait.Trait;
 import efruchter.tp.trait.custom.DieOffScreenTrait;
@@ -36,20 +38,24 @@ public class KeyboardControlTrait_Attack extends Trait {
 	 * Create standard attack controller.
 	 */
 	public KeyboardControlTrait_Attack() {
+
 		super("Attack Control", "Entity attack linked to keyboard inputs.");
-		coolDown = GeneVectorIO.getExplorationVector().storeGene("player.attack.cooldown",
+		
+		ServerIO v = ClientDefaults.VECTOR;
+		
+		coolDown = v.getExplorationVector().storeGene("player.attack.cooldown",
 		        new Gene("Cool Down Delay", "The projectile cooldown.", 0, 1000, 64), false);
-		spread = GeneVectorIO.getExplorationVector().storeGene("player.attack.spread",
+		spread = v.getExplorationVector().storeGene("player.attack.spread",
 		        new Gene("Launch Spread", "Bullet spread.", 0, 1, 0), false);
-		wiggleBigness = GeneVectorIO.getExplorationVector().storeGene("player.attack.wiggle",
+		wiggleBigness = v.getExplorationVector().storeGene("player.attack.wiggle",
 		        new Gene("Wiggle", "Maximum wiggle magnitude.", 0, 1, .5f), false);
-		amount = GeneVectorIO.getExplorationVector().storeGene("player.attack.amount",
+		amount = v.getExplorationVector().storeGene("player.attack.amount",
 		        new Gene("# of Bullets", "Amount of bullets per salvo.", 0, 10, 1), false);
-		damage = GeneVectorIO.getExplorationVector().storeGene("player.attack.damage",
+		damage = v.getExplorationVector().storeGene("player.attack.damage",
 		        new Gene("Damage Per Bullet", "Amount of damage per bullet.", 0, 10, 5), false);
-		dx = GeneVectorIO.getExplorationVector().storeGene("player.attack.dx", new Gene("dx", "dx travel per step", -1, 1, 0),
+		dx = v.getExplorationVector().storeGene("player.attack.dx", new Gene("dx", "dx travel per step", -1, 1, 0),
 		        false);
-		dy = GeneVectorIO.getExplorationVector().storeGene("player.attack.dy", new Gene("dy", "dy travel per step", -1, 1, 1),
+		dy = v.getExplorationVector().storeGene("player.attack.dy", new Gene("dy", "dy travel per step", -1, 1, 1),
 		        false);
 	}
 

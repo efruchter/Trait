@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import efruchter.tp.defaults.EntityType;
+
+import efruchter.tp.LevelGeneratorCore;
 import efruchter.tp.trait.behavior.Behavior;
-import efruchter.tp.trait.generators.LevelGeneratorCore;
 
 /**
  * Stores and coordinates entities.

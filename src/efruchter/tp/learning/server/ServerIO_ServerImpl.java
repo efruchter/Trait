@@ -1,33 +1,34 @@
-package efruchter.tp.learning;
+package efruchter.tp.learning.server;
 
 import java.io.IOException;
 
 import efruchter.tp.TraitProjectClient;
-import efruchter.tp.learning.database.Database.SessionInfo;
-import efruchter.tp.networking.Client;
+import efruchter.tp.learning.GeneVector;
+import efruchter.tp.learning.SessionInfo;
+import efruchter.tp.learning.server.comm.Client;
 import efruchter.tp.state.ClientStateManager;
 import efruchter.tp.state.ClientStateManager.FlowState;
 
 /**
- * Interface with the server.
+ * Interface with the server via sockets.
  * 
  * @author toriscope
  * 
  */
-public class GeneVectorIO {
+public class ServerIO_ServerImpl implements ServerIO {
 
     private static GeneVector exploration;
 
     /**
      * @return the current exploration vector.
      */
-    public static GeneVector getExplorationVector() {
+    public GeneVector getExplorationVector() {
         if (exploration == null)
             reloadExplorationVector();
         return exploration;
     }
 
-    public static boolean storeVector(final SessionInfo info) {
+    public boolean storeInfo(final SessionInfo info) {
         ClientStateManager.setFlowState(FlowState.STORING_VECT);
         try {
             final Client c = TraitProjectClient.getClient();
@@ -58,7 +59,7 @@ public class GeneVectorIO {
     /**
      * Request a new vector from the frontier.
      */
-    public static void reloadExplorationVector() {
+    public void reloadExplorationVector() {
         ClientStateManager.setFlowState(FlowState.LOADING_VECT);
         try {
             final Client c = TraitProjectClient.getClient();

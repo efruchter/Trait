@@ -2,11 +2,12 @@ package efruchter.tp.trait.custom.enemy;
 
 import java.awt.Color;
 
+
 import efruchter.tp.TraitProjectClient;
-import efruchter.tp.defaults.CollisionLabel;
-import efruchter.tp.defaults.EntityFactory;
-import efruchter.tp.defaults.EntityType;
+import efruchter.tp.entity.CollisionLabel;
 import efruchter.tp.entity.Entity;
+import efruchter.tp.entity.EntityFactory;
+import efruchter.tp.entity.EntityType;
 import efruchter.tp.entity.Level;
 import efruchter.tp.trait.MoveTrait;
 import efruchter.tp.trait.Trait;

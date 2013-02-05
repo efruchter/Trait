@@ -2,9 +2,10 @@ package efruchter.tp.util;
 
 import org.lwjgl.opengl.GL11;
 
-import efruchter.tp.defaults.PolarityController;
+
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
+import efruchter.tp.entity.PolarityController;
 import efruchter.tp.trait.behavior.Behavior;
 
 import java.awt.*;

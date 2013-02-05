@@ -1,4 +1,4 @@
-package efruchter.tp.trait.generators;
+package efruchter.tp;
 
 import java.awt.Color;
 import java.awt.Point;
@@ -9,16 +9,17 @@ import java.util.Random;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 
-import efruchter.tp.TraitProjectClient;
-import efruchter.tp.defaults.ClientDefaults;
-import efruchter.tp.defaults.CollisionLabel;
-import efruchter.tp.defaults.EntityFactory;
-import efruchter.tp.defaults.EntityType;
-import efruchter.tp.defaults.PolarityController;
+
+import efruchter.tp.entity.CollisionLabel;
 import efruchter.tp.entity.Entity;
+import efruchter.tp.entity.EntityFactory;
+import efruchter.tp.entity.EntityType;
 import efruchter.tp.entity.Level;
-import efruchter.tp.learning.GeneVectorIO;
-import efruchter.tp.learning.database.Database;
+import efruchter.tp.entity.PolarityController;
+import efruchter.tp.gui_broken.VectorEditorPopup_Crummy;
+import efruchter.tp.learning.SessionInfo;
+import efruchter.tp.learning.GeneVector.GeneWrapper;
+import efruchter.tp.learning.server.ServerIO;
 import efruchter.tp.trait.Trait;
 import efruchter.tp.trait.behavior.Behavior;
 import efruchter.tp.trait.behavior.BehaviorChain;
@@ -65,22 +66,24 @@ public class LevelGeneratorCore extends Trait {
     @Override
     public void onStart(final Entity self, final Level level) {
 
+    	ServerIO v = ClientDefaults.VECTOR;
+    	
         if (waveCount > 0) {
             String username = System.getProperty("user.name");
             if (username == null) {
                 username = "NO_NAME";
             }
-            Database.SessionInfo info = new Database.SessionInfo();
+            SessionInfo info = new SessionInfo();
             info.put("username", username);
             info.put("date", Long.toString(System.currentTimeMillis()));
-            info.put("vector", GeneVectorIO.getExplorationVector().toDataString());
+            info.put("vector", v.getExplorationVector().toDataString());
             info.put("s_wave", Long.toString(waveCount));
             info.put("s_damage_player", Float.toString(TraitProjectClient.s_damage_player));
             info.put("s_damage_enemies", Float.toString(TraitProjectClient.s_damage_enemies));
             info.put("s_num_enemies", Float.toString(TraitProjectClient.s_num_enemies));
             info.put("s_fired_player", Float.toString(TraitProjectClient.s_fired_player));
             info.put("s_fired_enemies", Float.toString(TraitProjectClient.s_fired_enemies));
-            GeneVectorIO.storeVector(info);
+            v.storeInfo(info);
         }
 
         waveCount++;
@@ -89,34 +92,34 @@ public class LevelGeneratorCore extends Trait {
          * Takes care of the case where the GUI has already loaded the vector.
          */
         if (waveCount > 1)
-            GeneVectorIO.reloadExplorationVector();
-
+            v.reloadExplorationVector();
+        
         /*
          * Build the gene vectors over again.
          */
 
-        intensity = GeneVectorIO.getExplorationVector().storeGene("spawner.intensity",
+        intensity = v.getExplorationVector().storeGene("spawner.intensity",
                 new Gene("Intensity", "Intensity of everything.", 0, 1, 1f / 2f), false);
 
-        chainProb = GeneVectorIO.getExplorationVector().storeGeneCurve("spawner.newChainProb",
+        chainProb = v.getExplorationVector().storeGeneCurve("spawner.newChainProb",
                 new GeneCurve("newChainProb", "P(new chain)", 0, 1, 0), false);
         chainProb.genes[0].setValue(.02f);
         chainProb.genes[1].setValue(.05f);
 
-        chainDelay = GeneVectorIO.getExplorationVector().storeGeneCurve("spawner.chainDelay",
+        chainDelay = v.getExplorationVector().storeGeneCurve("spawner.chainDelay",
                 new GeneCurve("chainDelay", "Delay until enemy is spawned to continue a chain.", 0, 1000, 500), false);
-        probChainCont = GeneVectorIO.getExplorationVector().storeGeneCurve("spawner.probChainCont",
+        probChainCont = v.getExplorationVector().storeGeneCurve("spawner.probChainCont",
                 new GeneCurve("probChainCont", "P(continue chain)", 0, 1, .90f), false);
 
-        enemySize = GeneVectorIO.getExplorationVector().storeGeneCurve("spawner.enemy.radius",
+        enemySize = v.getExplorationVector().storeGeneCurve("spawner.enemy.radius",
                 new GeneCurve("baseRadius", "Base enemy radius.", 2, 50, 15), false);
-        enemyHealth = GeneVectorIO.getExplorationVector().storeGeneCurve("spawner.enemy.health",
+        enemyHealth = v.getExplorationVector().storeGeneCurve("spawner.enemy.health",
                 new GeneCurve("enemyHealth", "Default enemy health on spawn.", 2, 100, 10), false);
-        enemyBigness = GeneVectorIO.getExplorationVector().storeGeneCurve("spawner.enemy.bigness",
+        enemyBigness = v.getExplorationVector().storeGeneCurve("spawner.enemy.bigness",
                 new GeneCurve("enemyBigness", "Additional bigness/toughness of enemy. Effects everything.", 4, 0, 100, 0), false);
         enemyBigness.setValues(0, 0f, .05f, .10f);
         
-        polarityAmount = GeneVectorIO.getExplorationVector().storeGene("spawner.polarity",
+        polarityAmount = v.getExplorationVector().storeGene("spawner.polarity",
                 new Gene("polarity", "Amount of possible poles.", 0, PolarityController.COLORS.length, 0), false);
         
         /*
@@ -179,8 +182,12 @@ public class LevelGeneratorCore extends Trait {
         time = 0;
         chains.clear();
         TraitProjectClient.resetMetrics();
-    }
 
+        List<GeneWrapper> ge = TraitProjectClient.getPlayerControlledGenes();
+        if (!ge.isEmpty()) {
+        	VectorEditorPopup_Crummy.show(ge, true, "Get ready for the next wave!");
+        }
+    }
 
     @Override
     public void onUpdate(final Entity self, final Level level, final long delta) {

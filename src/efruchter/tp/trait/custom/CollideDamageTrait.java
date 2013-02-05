@@ -1,7 +1,7 @@
 package efruchter.tp.trait.custom;
 
-import efruchter.tp.defaults.EntityType;
 import efruchter.tp.entity.Entity;
+import efruchter.tp.entity.EntityType;
 import efruchter.tp.entity.Level;
 import efruchter.tp.trait.Trait;
 import efruchter.tp.trait.gene.Gene;

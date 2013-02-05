@@ -4,8 +4,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-import efruchter.tp.defaults.CollisionLabel;
-import efruchter.tp.defaults.EntityType;
+
 import efruchter.tp.trait.Trait;
 import efruchter.tp.trait.behavior.Behavior;
 import efruchter.tp.util.ScriptUtil;
