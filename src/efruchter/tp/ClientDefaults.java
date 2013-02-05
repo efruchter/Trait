@@ -12,7 +12,7 @@ public class ClientDefaults {
 	/**
 	 * True to look for a server at "localhost"
 	 */
-	public final static boolean LOCAL_SERVER = false;
+	public final static boolean LOCAL_SERVER = true;
 
 	/**
 	 * The mechanism for getting a new GeneVector.
