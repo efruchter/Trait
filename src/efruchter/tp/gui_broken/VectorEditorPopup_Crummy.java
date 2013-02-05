@@ -1,15 +1,12 @@
 package efruchter.tp.gui_broken;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.Collections;
 import java.util.List;
 
@@ -39,13 +36,8 @@ public class VectorEditorPopup_Crummy {
     private static void rebuildGui(final List<GeneWrapper> genes, final boolean useName, final String headerText) {
 
         frame = new JFrame("Control Panel");
-
-        frame.addWindowFocusListener(new WindowAdapter() {
-            public void windowLostFocus(WindowEvent e) {
-                hide();
-            }
-        });
-        frame.setUndecorated(true);
+        
+        //frame.setUndecorated(true);
         frame.setResizable(false);
         frame.setFocusable(true);
         frame.addKeyListener(new KeyAdapter() {
@@ -56,16 +48,9 @@ public class VectorEditorPopup_Crummy {
             }
         });
 
-        frame.setBackground(Color.BLACK);
-
         frame.add(new JPanel() {
             {
-                add(new JLabel(headerText) {
-                    {
-                        setForeground(Color.WHITE);
-                        setBackground(Color.BLACK);
-                    }
-                });
+                add(new JLabel(headerText));
                 this.requestFocus();
             }
         }, BorderLayout.NORTH);
@@ -77,11 +62,7 @@ public class VectorEditorPopup_Crummy {
             final JPanel subPanel = new JPanel();
             traitPanel.add(subPanel);
 
-            subPanel.add(new JLabel(useName ? gene.path : gene.gene.getInfo()) {
-                {
-                    setForeground(Color.WHITE);
-                }
-            });
+            subPanel.add(new JLabel(useName ? gene.path : gene.gene.getInfo()));
 
             final JSlider slider = new JSlider(JSlider.HORIZONTAL, 0, RESOLUTION, (int) (gene.gene.getExpression() * RESOLUTION));
             slider.addChangeListener(new ChangeListener() {
