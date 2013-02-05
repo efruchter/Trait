@@ -337,6 +337,7 @@ public class TraitProjectClient extends Applet {
 
 	public static Client getClient() {
 		if (ClientDefaults.LOCAL_SERVER) {
+//			System.out.println("running in local version");
 			return new Client();
 		} else {
 			return new Client("trait.ericfruchter.com", 8000);

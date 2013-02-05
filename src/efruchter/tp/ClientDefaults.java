@@ -2,6 +2,7 @@ package efruchter.tp;
 
 import efruchter.tp.learning.server.ServerIO;
 import efruchter.tp.learning.server.ServerIO_ServerImpl;
+import efruchter.tp.learning.server.ZookServer;
 
 public class ClientDefaults {
 	/**
@@ -17,7 +18,8 @@ public class ClientDefaults {
 	/**
 	 * The mechanism for getting a new GeneVector.
 	 */
-	public final static ServerIO VECTOR = new ServerIO_ServerImpl();
+	public final static ServerIO VECTOR = new ZookServer();
+//	public final static ServerIO VECTOR = new ServerIO_ServerImpl();
 
 	/**
 	 * True to allow the devmode stuff. Only changed to false prior to version
