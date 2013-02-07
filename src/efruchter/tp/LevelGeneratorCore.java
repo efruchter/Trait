@@ -91,8 +91,9 @@ public class LevelGeneratorCore extends Trait {
         /*
          * Takes care of the case where the GUI has already loaded the vector.
          */
-        if (waveCount > 1)
+        if (waveCount > 1) {
             v.reloadExplorationVector();
+        }
         
         /*
          * Build the gene vectors over again.
@@ -183,9 +184,13 @@ public class LevelGeneratorCore extends Trait {
         chains.clear();
         TraitProjectClient.resetMetrics();
 
-        List<GeneWrapper> ge = TraitProjectClient.getPlayerControlledGenes();
-        if (!ge.isEmpty()) {
-        	VectorEditorPopup_Crummy.show(ge, true, "Get ready for the next wave!");
+        if (ClientDefaults.DEV_MODE && VectorEditorPopup_Crummy.isVisible()) {
+            	VectorEditorPopup_Crummy.show(v.getExplorationVector().getGenes(), true, "Gene Vectors updated.");
+        } else {
+	        List<GeneWrapper> ge = TraitProjectClient.getPlayerControlledGenes();
+	        if (!ge.isEmpty()) {
+	        	VectorEditorPopup_Crummy.show(ge, true, "Get ready for the next wave!");
+	        }
         }
     }
 

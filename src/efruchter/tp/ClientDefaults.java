@@ -7,7 +7,7 @@ public class ClientDefaults {
 	/**
 	 * Wave Length in milliseconds
 	 */
-	public static final long LEVEL_LENGTH = 60000;
+	public static final long LEVEL_LENGTH = 10000;
 
 	/**
 	 * True to look for a server at "localhost"
