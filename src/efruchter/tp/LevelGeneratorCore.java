@@ -66,6 +66,8 @@ public class LevelGeneratorCore extends Trait {
     @Override
     public void onStart(final Entity self, final Level level) {
 
+    	random.setSeed(0);
+    	
     	ServerIO v = ClientDefaults.VECTOR;
     	
         if (waveCount > 0) {
@@ -206,7 +208,7 @@ public class LevelGeneratorCore extends Trait {
         }
 
         final float mu = (float) time / ClientDefaults.LEVEL_LENGTH;
-        final float randNum = (float) Math.random();
+        final float randNum = random.nextFloat();
 
         // Gen
         final float probNewChain = chainProb.getValue(mu);
