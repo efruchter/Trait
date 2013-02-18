@@ -26,17 +26,18 @@ import efruchter.tp.trait.gene.GeneExpressionInterpolator;
 public class BasicAttackTrait extends Trait {
 
     private float cd;
-    private final float bigness;
-    public final Gene coolDown, damage, bulletSpeed;
+//    private final float bigness;
+    public final Gene coolDown, damage, bulletSpeed, bulletSize;
     public boolean tracking;
 
-    public BasicAttackTrait(final boolean tracking, final float bigness, final float bulletMoveSpeed) {
+    public BasicAttackTrait(final boolean tracking, final float bigness, final float bulletMoveSpeed, final Gene bulletBigness) {
         super("Basic Attack", "An auto-attack.");
         coolDown = new Gene("Cool Down Delay", "The projectile cooldown.", 0, 1000, 500);
         damage = new Gene("Damage Per Bullet", "Amount of damage per bullet.", 0, 100, 5);
         bulletSpeed = new Gene("Speed of Bullet", "Speed bullet moves at.", 0, 1, bulletMoveSpeed);
         this.tracking = tracking;
-        this.bigness = bigness;
+//        this.bigness = bigness;
+        this.bulletSize = new Gene("Size of Bullet", "Enemy bullet size.", bulletBigness.getMinValue(), bulletBigness.getMaxValue(), bulletBigness.getValue());
     }
 
     @Override
@@ -53,7 +54,7 @@ public class BasicAttackTrait extends Trait {
         if (cd >= coolDown.getValue()) {
             cd = 0;
             final Entity p = level.getBlankEntity(EntityType.PROJECTILE);
-            EntityFactory.buildProjectile(p, self.x, self.y, 2, CollisionLabel.ENEMY_LABEL, Color.ORANGE, damage.getValue());
+            EntityFactory.buildProjectile(p, self.x, self.y, bulletSize.getValue(), CollisionLabel.ENEMY_LABEL, Color.ORANGE, damage.getValue());
             p.addTrait(new DieOffScreenTrait());
             p.addTrait(new TimedDeathTrait(10));
 
@@ -61,13 +62,18 @@ public class BasicAttackTrait extends Trait {
             if (tracking && level.getPlayer() != null) {
                 t = new MoveTrait(level.getPlayer().x - self.x, level.getPlayer().y - self.y, bulletSpeed.getValue(), true);
             } else {
-                t = new MoveTrait(0, -1, .25f);
+            	// TODO: there seems to be a bug somewhere as this code does get called when spawning enemies
+                t = new MoveTrait(0, -1, bulletSpeed.getValue());
             }
 
             p.addTrait(t);
 
-            final RadiusEditTrait rad = new RadiusEditTrait(1, Math.max(8, bigness), 0);
+            // used to vary bullet size over trajectory
+            final RadiusEditTrait rad = new RadiusEditTrait(1, Math.max(8, bulletSize.getValue()), 0);
+//            final RadiusEditTrait rad = new RadiusEditTrait(1, bulletSize.getValue(), 0);
             p.addTrait(rad);
+            System.out.println("bullet size setting: " + bulletSize.getValue());
+            System.out.println("bullet max size: " + rad.radius.getMaxValue());
 
             p.addTrait(new GeneExpressionInterpolator(rad.radius, 0, 1, 200));
             

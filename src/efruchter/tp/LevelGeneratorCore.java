@@ -50,7 +50,7 @@ public class LevelGeneratorCore extends Trait {
     final private List<Chain> chains;
 
     private GeneCurve chainProb, chainDelay, probChainCont, enemySize, enemyHealth, enemyBigness;
-    private Gene intensity, polarityAmount, enemyBulletSpeed;
+    private Gene intensity, polarityAmount, enemyBulletSpeed, enemyBulletSize;
 
     final public static Random random = new Random(0);
 
@@ -108,8 +108,10 @@ public class LevelGeneratorCore extends Trait {
          * Build the gene vectors over again.
          */
 
-        //System.out.println("enemy bullet speed: " + v.getExplorationVector().getGene("enemy.bullet.speed").getValue());
+        
         enemyBulletSpeed = v.getExplorationVector().getGene("enemy.bullet.speed");
+        enemyBulletSize = v.getExplorationVector().getGene("enemy.bullet.size");
+        System.out.println("enemy bullet size: " + v.getExplorationVector().getGene("enemy.bullet.size").getValue());
         
         intensity = v.getExplorationVector().storeGene("spawner.intensity",
                 new Gene("Intensity", "Intensity of everything.", 0, 1, 1f / 2f), false);
@@ -202,9 +204,13 @@ public class LevelGeneratorCore extends Trait {
         for (Entity ship : ships) {
         	if (ship.collisionLabel == CollisionLabel.ENEMY_LABEL) {
         		numEnemiesRemaining++;
+//        		System.out.println("level enemy: ");
+//        		for (Trait et : ship.getTraits()) {
+//        			System.out.print(et.getName() + " : " + et.getInfo());
+//        		}
         	}
         }
-        System.out.println("resetting b/t waves; enemies left: " + numEnemiesRemaining);
+        System.out.println("\nresetting b/t waves; enemies left: " + numEnemiesRemaining);
         TraitProjectClient.s_remain_enemies = numEnemiesRemaining;
         chains.clear();
 
@@ -278,7 +284,7 @@ public class LevelGeneratorCore extends Trait {
                 // attacking
                 final BehaviorChain a = new BehaviorChain(true);
                 a.addBehavior(Behavior.EMPTY, 1000);
-                a.addBehavior(new BasicAttackTrait(tracking, bigness, enemyBulletSpeed.getValue()), 500);
+                a.addBehavior(new BasicAttackTrait(tracking, bigness, enemyBulletSpeed.getValue(), enemyBulletSize), 500);
                 e.addTrait(a);
                 
                 e.polarity = polarity;
