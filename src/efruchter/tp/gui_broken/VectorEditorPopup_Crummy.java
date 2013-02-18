@@ -3,6 +3,7 @@ package efruchter.tp.gui_broken;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -35,6 +36,7 @@ public class VectorEditorPopup_Crummy {
     private final static int RESOLUTION = 1000;
 
     private static JFrame frame;
+    private static Point frameLoc = null;
 
     @SuppressWarnings("serial")
     private static void rebuildGui(final List<GeneWrapper> genes, final boolean useName, final String headerText) {
@@ -133,19 +135,27 @@ public class VectorEditorPopup_Crummy {
             hide();
         } else {
             KeyUtil.clearKeys();
+            if (frameLoc == null) {
+            	frameLoc = new Point(Display.getX() + Display.getWidth() / 2 - frame.getWidth() / 2, Display.getY() + Display.getHeight() / 2
+                        - frame.getHeight() / 2);
+            }
+            frame.setLocation(frameLoc);
             frame.setVisible(true);
-            frame.setLocation(Display.getX() + Display.getWidth() / 2 - frame.getWidth() / 2, Display.getY() + Display.getHeight() / 2
-                    - frame.getHeight() / 2);
         }
     }
 
     public static void hide() {
         if (frame != null) {
+        	frameLoc = frame.getLocation();
             frame.setVisible(false);
             ClientStateManager.setFlowState(FlowState.FREE);
             ClientStateManager.setPaused(false);
             frame.dispose();
         }
         frame = null;
+    }
+    
+    public static boolean isVisible() {
+    	return frame != null;
     }
 }

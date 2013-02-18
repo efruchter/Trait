@@ -187,7 +187,6 @@ public class TraitProjectClient extends Applet {
 				ClientStateManager.togglePauseState();
 			
 			if (KeyUtil.isKeyPressed(Keyboard.KEY_F1) && ClientDefaults.DEV_MODE) {
-				ClientStateManager.setPaused(true);
 				VectorEditorPopup_Crummy.show(ClientDefaults.VECTOR.getExplorationVector().getGenes(), true, "Adjust allowable values");
 			}
 			
@@ -256,8 +255,7 @@ public class TraitProjectClient extends Applet {
 
 			level.renderGL(delta);
 
-			if (ClientStateManager.isPaused()
-					&& ClientStateManager.getFlowState() != FlowState.EDITING) {
+			if (ClientStateManager.isPaused()) {
 				RenderUtil.setColor(Color.WHITE);
 				GL11.glPushMatrix();
 				{
@@ -309,8 +307,7 @@ public class TraitProjectClient extends Applet {
 			c.send("versioncheck" + VERSION);
 			boolean sameVersion = Boolean.parseBoolean(c.receive());
 			if (!sameVersion) {
-				JOptionPane
-						.showMessageDialog(null,
+				JOptionPane.showMessageDialog(null,
 								"Your client is out-of-date, please download the latest version.");
 				System.exit(0);
 			} else {

@@ -66,6 +66,8 @@ public class LevelGeneratorCore extends Trait {
     @Override
     public void onStart(final Entity self, final Level level) {
 
+    	random.setSeed(0);
+    	
     	ServerIO v = ClientDefaults.VECTOR;
     	
         if (waveCount > 0) {
@@ -98,8 +100,9 @@ public class LevelGeneratorCore extends Trait {
         /*
          * Takes care of the case where the GUI has already loaded the vector.
          */
-        if (waveCount > 1)
+        if (waveCount > 1) {
             v.reloadExplorationVector();
+        }
         
         /*
          * Build the gene vectors over again.
@@ -205,9 +208,13 @@ public class LevelGeneratorCore extends Trait {
         TraitProjectClient.s_remain_enemies = numEnemiesRemaining;
         chains.clear();
 
-        List<GeneWrapper> ge = TraitProjectClient.getPlayerControlledGenes();
-        if (!ge.isEmpty()) {
-        	VectorEditorPopup_Crummy.show(ge, true, "Get ready for the next wave!");
+        if (ClientDefaults.DEV_MODE && VectorEditorPopup_Crummy.isVisible()) {
+            	VectorEditorPopup_Crummy.show(v.getExplorationVector().getGenes(), true, "Gene Vectors updated.");
+        } else {
+	        List<GeneWrapper> ge = TraitProjectClient.getPlayerControlledGenes();
+	        if (!ge.isEmpty()) {
+	        	VectorEditorPopup_Crummy.show(ge, true, "Get ready for the next wave!");
+	        }
         }
     }
 
@@ -223,7 +230,7 @@ public class LevelGeneratorCore extends Trait {
         }
 
         final float mu = (float) time / ClientDefaults.LEVEL_LENGTH;
-        final float randNum = (float) Math.random();
+        final float randNum = random.nextFloat();
 
         // Gen
         final float probNewChain = chainProb.getValue(mu);
