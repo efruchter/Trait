@@ -50,7 +50,7 @@ public class LevelGeneratorCore extends Trait {
     final private List<Chain> chains;
 
     private GeneCurve chainProb, chainDelay, probChainCont, enemySize, enemyHealth, enemyBigness;
-    private Gene intensity, polarityAmount;
+    private Gene intensity, polarityAmount, enemyBulletSpeed;
 
     final public static Random random = new Random(0);
 
@@ -77,12 +77,19 @@ public class LevelGeneratorCore extends Trait {
             info.put("username", username);
             info.put("date", Long.toString(System.currentTimeMillis()));
             info.put("vector", v.getExplorationVector().toDataString());
+            System.out.println("saving exploration vector: " + v.getExplorationVector().toDataString());
             info.put("s_wave", Long.toString(waveCount));
             info.put("s_damage_player", Float.toString(TraitProjectClient.s_damage_player));
             info.put("s_damage_enemies", Float.toString(TraitProjectClient.s_damage_enemies));
             info.put("s_num_enemies", Float.toString(TraitProjectClient.s_num_enemies));
             info.put("s_fired_player", Float.toString(TraitProjectClient.s_fired_player));
             info.put("s_fired_enemies", Float.toString(TraitProjectClient.s_fired_enemies));
+            info.put("s_killed_enemies", Float.toString(TraitProjectClient.s_killed_enemies));
+            info.put("s_remain_enemies", Float.toString(TraitProjectClient.s_remain_enemies));
+            info.put("c_choice", (TraitProjectClient.c_choice).toString());
+            System.out.println("info: " + info.toDataString());
+//            String info2 = info.toDataString().replace("#", "THAWKISBEST");
+//            System.out.println("info2: " + info2);
             v.storeInfo(info);
         }
 
@@ -98,6 +105,9 @@ public class LevelGeneratorCore extends Trait {
          * Build the gene vectors over again.
          */
 
+        //System.out.println("enemy bullet speed: " + v.getExplorationVector().getGene("enemy.bullet.speed").getValue());
+        enemyBulletSpeed = v.getExplorationVector().getGene("enemy.bullet.speed");
+        
         intensity = v.getExplorationVector().storeGene("spawner.intensity",
                 new Gene("Intensity", "Intensity of everything.", 0, 1, 1f / 2f), false);
 
@@ -156,7 +166,7 @@ public class LevelGeneratorCore extends Trait {
 
         player.addTrait(new KeyboardControlTrait_Attack());
         // Radius editing trait
-        PlayerRadiusEditTrait rad = new PlayerRadiusEditTrait(3, 20, 10);
+        PlayerRadiusEditTrait rad = new PlayerRadiusEditTrait(3, 20, 5);
         player.addTrait(rad);
         player.name = "Player Ship";
         // Add screen loop trait
@@ -180,8 +190,20 @@ public class LevelGeneratorCore extends Trait {
         EntityFactory.buildNewWaveAnim(level.getBlankEntity(EntityType.BG));
         
         time = 0;
-        chains.clear();
         TraitProjectClient.resetMetrics();
+        
+        //TODO - fix so this appropriately tracks enemies killed over waves
+        // Count remaining enemies before reset
+        List<Entity> ships = level.getEntities(EntityType.SHIP);
+        int numEnemiesRemaining = 0;
+        for (Entity ship : ships) {
+        	if (ship.collisionLabel == CollisionLabel.ENEMY_LABEL) {
+        		numEnemiesRemaining++;
+        	}
+        }
+        System.out.println("resetting b/t waves; enemies left: " + numEnemiesRemaining);
+        TraitProjectClient.s_remain_enemies = numEnemiesRemaining;
+        chains.clear();
 
         List<GeneWrapper> ge = TraitProjectClient.getPlayerControlledGenes();
         if (!ge.isEmpty()) {
@@ -245,10 +267,11 @@ public class LevelGeneratorCore extends Trait {
                 c.addBehavior(new KillBehavior(), 1);
                 e.addTrait(c);
 
+               
                 // attacking
                 final BehaviorChain a = new BehaviorChain(true);
                 a.addBehavior(Behavior.EMPTY, 1000);
-                a.addBehavior(new BasicAttackTrait(tracking, bigness), 500);
+                a.addBehavior(new BasicAttackTrait(tracking, bigness, enemyBulletSpeed.getValue()), 500);
                 e.addTrait(a);
                 
                 e.polarity = polarity;
@@ -257,6 +280,10 @@ public class LevelGeneratorCore extends Trait {
                 	@Override
                 	public void onStart(Entity self, Level level) {
                 		TraitProjectClient.s_num_enemies++;
+                    }
+                	@Override
+                	public void onDeath(Entity self, Level level) {
+                		TraitProjectClient.s_killed_enemies++;
                     }
                 });
 

@@ -27,13 +27,14 @@ public class BasicAttackTrait extends Trait {
 
     private float cd;
     private final float bigness;
-    public final Gene coolDown, damage;
+    public final Gene coolDown, damage, bulletSpeed;
     public boolean tracking;
 
-    public BasicAttackTrait(final boolean tracking, final float bigness) {
+    public BasicAttackTrait(final boolean tracking, final float bigness, final float bulletMoveSpeed) {
         super("Basic Attack", "An auto-attack.");
         coolDown = new Gene("Cool Down Delay", "The projectile cooldown.", 0, 1000, 500);
         damage = new Gene("Damage Per Bullet", "Amount of damage per bullet.", 0, 100, 5);
+        bulletSpeed = new Gene("Speed of Bullet", "Speed bullet moves at.", 0, 1, bulletMoveSpeed);
         this.tracking = tracking;
         this.bigness = bigness;
     }
@@ -58,7 +59,7 @@ public class BasicAttackTrait extends Trait {
 
             final MoveTrait t;
             if (tracking && level.getPlayer() != null) {
-                t = new MoveTrait(level.getPlayer().x - self.x, level.getPlayer().y - self.y, .25f, true);
+                t = new MoveTrait(level.getPlayer().x - self.x, level.getPlayer().y - self.y, bulletSpeed.getValue(), true);
             } else {
                 t = new MoveTrait(0, -1, .25f);
             }

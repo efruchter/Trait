@@ -89,6 +89,7 @@ public class TraitProjectServer implements NetworkingListener {
 			else if (message.startsWith("store" + SessionInfo.SEPERATOR)) {
 				final String data = message.replaceFirst("store" + SessionInfo.SEPERATOR, "");
 				result = "" + store(new SessionInfo(data));
+				System.out.println("server stored: " + new SessionInfo(data));
 				//System.out.println("store");
 			}
 		} catch (Exception e) {

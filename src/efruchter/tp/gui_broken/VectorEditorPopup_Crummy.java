@@ -10,10 +10,12 @@ import java.awt.event.KeyEvent;
 import java.util.Collections;
 import java.util.List;
 
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
@@ -21,6 +23,8 @@ import javax.swing.event.ChangeListener;
 
 import org.lwjgl.opengl.Display;
 
+import efruchter.tp.CHOICE;
+import efruchter.tp.TraitProjectClient;
 import efruchter.tp.learning.GeneVector.GeneWrapper;
 import efruchter.tp.state.ClientStateManager;
 import efruchter.tp.state.ClientStateManager.FlowState;
@@ -56,7 +60,7 @@ public class VectorEditorPopup_Crummy {
         }, BorderLayout.NORTH);
 
         final JPanel traitPanel = new JPanel();
-        traitPanel.setLayout(new GridLayout(genes.size(), 1));
+        traitPanel.setLayout(new GridLayout(genes.size()+2, 1));
 
         for (final GeneWrapper gene : genes) {
             final JPanel subPanel = new JPanel();
@@ -76,6 +80,33 @@ public class VectorEditorPopup_Crummy {
 
         frame.add(new JScrollPane(traitPanel){{setPreferredSize(new Dimension(700, 300));}}, BorderLayout.CENTER);
 
+        String betterString = "this was better than last time";
+        String worseString = "this was worse than last time";
+        JRadioButton choiceBetter = new JRadioButton(betterString);
+        choiceBetter.setActionCommand(betterString);
+        JRadioButton choiceWorse = new JRadioButton(worseString);
+        choiceWorse.setActionCommand(worseString);
+        ButtonGroup classificationChoice = new ButtonGroup();
+        classificationChoice.add(choiceBetter);
+        classificationChoice.add(choiceWorse);
+        
+        choiceBetter.addActionListener(new ActionListener() {
+        	@Override
+        	public void actionPerformed(ActionEvent ae) {
+        		System.out.println("picked better");
+        		TraitProjectClient.c_choice = CHOICE.BETTER;
+        	}
+        });
+        choiceWorse.addActionListener(new ActionListener() {
+        	@Override
+        	public void actionPerformed(ActionEvent ae) {
+        		System.out.println("picked worse");
+        		TraitProjectClient.c_choice = CHOICE.WORSE;
+        	}
+        });
+        traitPanel.add(choiceBetter);
+        traitPanel.add(choiceWorse);
+                
         final JButton goButton = new JButton("Go!");
         goButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
