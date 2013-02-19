@@ -49,7 +49,7 @@ public class LevelGeneratorCore extends Trait {
     // Chance of a new chain forming
     final private List<Chain> chains;
 
-    private GeneCurve chainProb, chainDelay, probChainCont, enemySize, enemyHealth, enemyBigness;
+    private GeneCurve chainProb, chainDelay, probChainCont, enemySize, enemyHealth, enemyBigness, enemyRouteDuration;
     private Gene intensity, polarityAmount, enemyBulletSpeed, enemyBulletSize;
 
     final public static Random random = new Random(0);
@@ -137,6 +137,8 @@ public class LevelGeneratorCore extends Trait {
         polarityAmount = v.getExplorationVector().storeGene("spawner.polarity",
                 new Gene("polarity", "Amount of possible poles.", 0, PolarityController.COLORS.length, 0), false);
         
+        enemyRouteDuration = v.getExplorationVector().storeGeneCurve("spawner.enemy.routeDuration",
+                new GeneCurve("routeDuration", "time taken for enemies traverse their routes", 16, 1112000, 12000), false);
         /*
          * Canned player position.
          */
@@ -272,7 +274,7 @@ public class LevelGeneratorCore extends Trait {
                 Entity e = level.getBlankEntity(EntityType.SHIP);
                 EntityFactory.buildShip(e, -100f, -100f, radius, CollisionLabel.ENEMY_LABEL, Color.RED, health);
 
-                long duration = 12000 + (long) (12000 *  (random.nextFloat() - .5f));
+                long duration = (long) (enemyRouteDuration.getValue(mu) + (enemyRouteDuration.getValue(mu) *  (random.nextFloat() - .5f)));
                 
                 // Pathing
                 final BehaviorChain c = new BehaviorChain(false);
