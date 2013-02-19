@@ -85,6 +85,7 @@ public class LevelGeneratorCore extends Trait {
             info.put("s_num_enemies", Float.toString(TraitProjectClient.s_num_enemies));
             info.put("s_fired_player", Float.toString(TraitProjectClient.s_fired_player));
             info.put("s_fired_enemies", Float.toString(TraitProjectClient.s_fired_enemies));
+            info.put("s_killed_enemies", Float.toString(TraitProjectClient.s_killed_enemies));
             v.storeInfo(info);
         }
 
@@ -142,7 +143,7 @@ public class LevelGeneratorCore extends Trait {
 
         for (final Entity ship : level.getEntities(EntityType.SHIP)) {
             if (ship.isActive()) {
-                ship.setHealth(-1);
+                //ship.setHealth(-1);
                 level.removeEntity(ship);
             }
         }
@@ -267,6 +268,13 @@ public class LevelGeneratorCore extends Trait {
                 	public void onStart(Entity self, Level level) {
                 		TraitProjectClient.s_num_enemies++;
                     }
+                	
+                	@Override
+                	public void onDeath(Entity self, Level level) {
+                		if (self.health <= 0) {
+                			TraitProjectClient.s_killed_enemies++;
+                		}
+                	}
                 });
 
                 return e;
