@@ -37,7 +37,7 @@ public class BasicAttackTrait extends Trait {
         bulletSpeed = new Gene("Speed of Bullet", "Speed bullet moves at.", 0, 1, bulletMoveSpeed);
         this.tracking = tracking;
 //        this.bigness = bigness;
-        this.bulletSize = new Gene("Size of Bullet", "Enemy bullet size.", bulletBigness.getMinValue(), bulletBigness.getMaxValue(), bulletBigness.getValue());
+        this.bulletSize = new Gene("enemy.bullet.size", "Enemy bullet size.", bulletBigness.getMinValue(), bulletBigness.getMaxValue(), bulletBigness.getValue());
     }
 
     @Override
@@ -69,11 +69,8 @@ public class BasicAttackTrait extends Trait {
             p.addTrait(t);
 
             // used to vary bullet size over trajectory
-            final RadiusEditTrait rad = new RadiusEditTrait(1, Math.max(8, bulletSize.getValue()), 0);
-//            final RadiusEditTrait rad = new RadiusEditTrait(1, bulletSize.getValue(), 0);
+            final RadiusEditTrait rad = new RadiusEditTrait(bulletSize.getMinValue(), bulletSize.getMaxValue(), 0);
             p.addTrait(rad);
-            System.out.println("bullet size setting: " + bulletSize.getValue());
-            System.out.println("bullet max size: " + rad.radius.getMaxValue());
 
             p.addTrait(new GeneExpressionInterpolator(rad.radius, 0, 1, 200));
             
