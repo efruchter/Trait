@@ -56,12 +56,13 @@ public class TraitProjectClient extends Applet {
 	 * Client Statistics
 	 */
 
-	public static float s_damage_player, s_damage_enemies, s_num_enemies, s_killed_enemies,
+	public static float s_damage_player, s_damage_enemies, s_hit_player, s_hit_enemies, s_num_enemies, s_killed_enemies,
 		s_remain_enemies, s_fired_player, s_fired_enemies;
 	public static CHOICE c_choice;
 
 	public static void resetMetrics() {
 		s_damage_player = s_damage_enemies = s_num_enemies = s_fired_player = s_fired_enemies = s_killed_enemies = s_remain_enemies = 0;
+		s_hit_player = s_hit_enemies = 0;
 		c_choice = CHOICE.NONE;
 	}
 

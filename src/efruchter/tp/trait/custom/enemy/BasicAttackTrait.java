@@ -30,13 +30,14 @@ public class BasicAttackTrait extends Trait {
     public final Gene coolDown, damage, bulletSpeed, bulletSize;
     public boolean tracking;
 
-    public BasicAttackTrait(final boolean tracking, final float bigness, final float bulletMoveSpeed, final Gene bulletBigness) {
+    public BasicAttackTrait(final boolean tracking, final float bigness, final Gene bulletMoveSpeed, final Gene bulletBigness, final Gene bulletDamage, final Gene bulletCooldown) {
         super("Basic Attack", "An auto-attack.");
-        coolDown = new Gene("Cool Down Delay", "The projectile cooldown.", 0, 1000, 500);
-        damage = new Gene("Damage Per Bullet", "Amount of damage per bullet.", 0, 100, 5);
-        bulletSpeed = new Gene("Speed of Bullet", "Speed bullet moves at.", 0, 1, bulletMoveSpeed);
+//        this.coolDown = new Gene("enemy.bullet.cooldown", "The projectile cooldown.", 0, 1000, 500);
+//        this.damage = new Gene("enemy.bullet.damage", "Amount of damage per bullet.", 0, 100, 5);
+        this.coolDown = new Gene("enemy.bullet.cooldown", "The projectile cooldown.", bulletCooldown.getMinValue(), bulletCooldown.getMaxValue(), bulletCooldown.getValue());
+        this.damage = new Gene("enemy.bullet.damage", "Amount of damage per bullet.", bulletDamage.getMinValue(), bulletDamage.getMaxValue(), bulletDamage.getValue());
+        this.bulletSpeed = new Gene("enemy.bullet.speed", "Enemey bullet speed.", bulletMoveSpeed.getMinValue(), bulletMoveSpeed.getMaxValue(), bulletMoveSpeed.getValue());
         this.tracking = tracking;
-//        this.bigness = bigness;
         this.bulletSize = new Gene("enemy.bullet.size", "Enemy bullet size.", bulletBigness.getMinValue(), bulletBigness.getMaxValue(), bulletBigness.getValue());
     }
 
@@ -69,7 +70,7 @@ public class BasicAttackTrait extends Trait {
             p.addTrait(t);
 
             // used to vary bullet size over trajectory
-            final RadiusEditTrait rad = new RadiusEditTrait(bulletSize.getMinValue(), bulletSize.getMaxValue(), 0);
+            final RadiusEditTrait rad = new RadiusEditTrait(bulletSize.getMinValue(), bulletSize.getValue(), 0); // scale bullet from smallest to current gene setting
             p.addTrait(rad);
 
             p.addTrait(new GeneExpressionInterpolator(rad.radius, 0, 1, 200));
@@ -85,6 +86,7 @@ public class BasicAttackTrait extends Trait {
 				public void onDeath(final Entity self, final Level level) {
 					if (self.health <= 0) {
 						TraitProjectClient.s_damage_player += damage.getValue();
+						TraitProjectClient.s_hit_player += 1;
 					}
 				}
 			});

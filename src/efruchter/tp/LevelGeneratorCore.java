@@ -50,7 +50,7 @@ public class LevelGeneratorCore extends Trait {
     final private List<Chain> chains;
 
     private GeneCurve chainProb, chainDelay, probChainCont, enemySize, enemyHealth, enemyBigness, enemyRouteDuration;
-    private Gene intensity, polarityAmount, enemyBulletSpeed, enemyBulletSize;
+    private Gene intensity, polarityAmount, enemyBulletSpeed, enemyBulletSize, enemyBulletDamage, enemyBulletCooldown;
 
     final public static Random random = new Random(0);
 
@@ -83,6 +83,8 @@ public class LevelGeneratorCore extends Trait {
             info.put("s_wave", Long.toString(waveCount));
             info.put("s_damage_player", Float.toString(TraitProjectClient.s_damage_player));
             info.put("s_damage_enemies", Float.toString(TraitProjectClient.s_damage_enemies));
+            info.put("s_hit_player", Float.toString(TraitProjectClient.s_hit_player));
+            info.put("s_hit_enemies", Float.toString(TraitProjectClient.s_hit_enemies));
             info.put("s_num_enemies", Float.toString(TraitProjectClient.s_num_enemies));
             info.put("s_fired_player", Float.toString(TraitProjectClient.s_fired_player));
             info.put("s_fired_enemies", Float.toString(TraitProjectClient.s_fired_enemies));
@@ -111,6 +113,8 @@ public class LevelGeneratorCore extends Trait {
         
         enemyBulletSpeed = v.getExplorationVector().getGene("enemy.bullet.speed");
         enemyBulletSize = v.getExplorationVector().getGene("enemy.bullet.size");
+        enemyBulletDamage = v.getExplorationVector().getGene("enemy.bullet.damage");
+        enemyBulletCooldown = v.getExplorationVector().getGene("enemy.bullet.cooldown");
         System.out.println("enemy bullet size: " + v.getExplorationVector().getGene("enemy.bullet.size").getValue());
         
         intensity = v.getExplorationVector().storeGene("spawner.intensity",
@@ -286,7 +290,7 @@ public class LevelGeneratorCore extends Trait {
                 // attacking
                 final BehaviorChain a = new BehaviorChain(true);
                 a.addBehavior(Behavior.EMPTY, 1000);
-                a.addBehavior(new BasicAttackTrait(tracking, bigness, enemyBulletSpeed.getValue(), enemyBulletSize), 500);
+                a.addBehavior(new BasicAttackTrait(tracking, bigness, enemyBulletSpeed, enemyBulletSize, enemyBulletDamage, enemyBulletCooldown), 500);
                 e.addTrait(a);
                 
                 e.polarity = polarity;

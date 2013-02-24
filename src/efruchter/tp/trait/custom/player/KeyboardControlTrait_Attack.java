@@ -108,6 +108,7 @@ public class KeyboardControlTrait_Attack extends Trait {
 						public void onDeath(final Entity self, final Level level) {
 							if (self.health <= 0) {
 								TraitProjectClient.s_damage_enemies += damage.getValue();
+								TraitProjectClient.s_hit_enemies += 1;
 							}
 						}
 					});
