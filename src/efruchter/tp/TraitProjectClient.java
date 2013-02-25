@@ -192,6 +192,10 @@ public class TraitProjectClient extends Applet {
 				VectorEditorPopup_Crummy.show(ClientDefaults.VECTOR.getExplorationVector().getGenes(), true, "Adjust allowable values");
 			}
 			
+			if (!ClientStateManager.isPaused() && VectorEditorPopup_Crummy.isVisible()) {
+				VectorEditorPopup_Crummy.hide();
+			}
+			
 		} catch (final Exception e) {
 		}
 		updateFPS();

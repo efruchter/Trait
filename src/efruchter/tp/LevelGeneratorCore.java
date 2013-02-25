@@ -189,14 +189,14 @@ public class LevelGeneratorCore extends Trait {
         chains.clear();
         TraitProjectClient.resetMetrics();
 
-        if (ClientDefaults.DEV_MODE && VectorEditorPopup_Crummy.isVisible()) {
-            	VectorEditorPopup_Crummy.show(v.getExplorationVector().getGenes(), true, "Gene Vectors updated.");
-        } else {
-	        List<GeneWrapper> ge = TraitProjectClient.getPlayerControlledGenes();
-	        if (!ge.isEmpty()) {
-	        	VectorEditorPopup_Crummy.show(ge, true, "Get ready for the next wave!");
-	        }
-        }
+       if (VectorEditorPopup_Crummy.isVisible()) {
+    	   VectorEditorPopup_Crummy.hide();
+       }
+  
+       List<GeneWrapper> ge = TraitProjectClient.getPlayerControlledGenes();
+	    if (!ge.isEmpty()) {
+	    	VectorEditorPopup_Crummy.show(ge, true, "Get ready for the next wave!");
+	    }
     }
 
     @Override
