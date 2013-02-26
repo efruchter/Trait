@@ -68,7 +68,7 @@ public class LevelGeneratorCore extends Trait {
 
     	random.setSeed(0);
     	
-    	ServerIO v = ClientDefaults.VECTOR;
+    	ServerIO v = ClientDefaults.server();
     	
         if (waveCount > 0) {
             String username = System.getProperty("user.name");
@@ -204,13 +204,13 @@ public class LevelGeneratorCore extends Trait {
         
         time += delta;
         
-        percentComplete = (int) (((float) time / ClientDefaults.LEVEL_LENGTH) * 100);
+        percentComplete = (int) (((float) time / ClientDefaults.levelLength()) * 100);
 
-        if (time > ClientDefaults.LEVEL_LENGTH || level.getPlayer() == null) {
+        if (time > ClientDefaults.levelLength() || level.getPlayer() == null) {
             onStart(self, level);
         }
 
-        final float mu = (float) time / ClientDefaults.LEVEL_LENGTH;
+        final float mu = (float) time / ClientDefaults.levelLength();
         final float randNum = random.nextFloat();
 
         // Gen

@@ -188,8 +188,8 @@ public class TraitProjectClient extends Applet {
 					|| KeyUtil.isKeyPressed(Keyboard.KEY_ESCAPE))
 				ClientStateManager.togglePauseState();
 			
-			if (KeyUtil.isKeyPressed(Keyboard.KEY_F1) && ClientDefaults.DEV_MODE) {
-				VectorEditorPopup_Crummy.show(ClientDefaults.VECTOR.getExplorationVector().getGenes(), true, "Adjust allowable values");
+			if (KeyUtil.isKeyPressed(Keyboard.KEY_F1) && ClientDefaults.devMode()) {
+				VectorEditorPopup_Crummy.show(ClientDefaults.server().getExplorationVector().getGenes(), true, "Adjust allowable values");
 			}
 			
 			if (!ClientStateManager.isPaused() && VectorEditorPopup_Crummy.isVisible()) {
@@ -239,7 +239,7 @@ public class TraitProjectClient extends Applet {
 				RenderUtil.setColor(Color.GREEN);
 				RenderUtil.drawString("Progress "
 						+ level.getGeneratorCore().getPercentComplete()
-						+ (ClientDefaults.DEV_MODE ? "\n\nF1 : Edit Vector": "")
+						+ (ClientDefaults.devMode() ? "\n\nF1 : Edit Vector": "")
 						, 5,
 						Display.getHeight() - 15);
 			}
@@ -332,7 +332,7 @@ public class TraitProjectClient extends Applet {
 	}
 
 	public static List<GeneWrapper> getPlayerControlledGenes() {
-		final GeneVector geneVector = ClientDefaults.VECTOR.getExplorationVector();
+		final GeneVector geneVector = ClientDefaults.server().getExplorationVector();
 		final List<GeneWrapper> genes = new ArrayList<GeneWrapper>();
 		for (final String string : playerControlled) {
 			genes.add(geneVector.getGeneWrapper(string));
@@ -341,7 +341,7 @@ public class TraitProjectClient extends Applet {
 	}
 
 	public static Client getClient() {
-		if (ClientDefaults.LOCAL_SERVER) {
+		if (ClientDefaults.localServer()) {
 			return new Client();
 		} else {
 			return new Client("trait.ericfruchter.com", 8000);

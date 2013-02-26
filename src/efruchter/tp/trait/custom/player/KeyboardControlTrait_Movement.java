@@ -23,8 +23,8 @@ public class KeyboardControlTrait_Movement extends Trait {
 
 	public KeyboardControlTrait_Movement() {
 		super("Move Control", "Entity movement linked to keyboard inputs.");
-		drag = ClientDefaults.VECTOR.getExplorationVector().storeGene("player.move.drag", new Gene("Air Drag", "Amount of air drag."), false);
-		thrust = ClientDefaults.VECTOR.getExplorationVector().storeGene("player.move.thrust",
+		drag = ClientDefaults.server().getExplorationVector().storeGene("player.move.drag", new Gene("Air Drag", "Amount of air drag."), false);
+		thrust = ClientDefaults.server().getExplorationVector().storeGene("player.move.thrust",
 		        new Gene("Thrust", "Control the acceleration of movement.", 0, .09f, .014f), false);
 		vx = vy = 0;
 	}
