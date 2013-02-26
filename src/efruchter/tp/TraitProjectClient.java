@@ -64,7 +64,12 @@ public class TraitProjectClient extends Applet {
 	public static float s_killed_enemies;
 
 	public static void resetMetrics() {
-		s_damage_player = s_damage_enemies = s_num_enemies = s_fired_player = s_fired_enemies = s_killed_enemies = 0;
+		s_damage_player = 0;
+		s_damage_enemies = 0;
+		s_num_enemies = 0;
+		s_fired_player = 0;
+		s_fired_enemies = 0;
+		s_killed_enemies = 0;
 	}
 
 	private static String[] playerControlled;

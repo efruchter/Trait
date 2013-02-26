@@ -49,8 +49,15 @@ public class LevelGeneratorCore extends Trait {
     // Chance of a new chain forming
     final private List<Chain> chains;
 
-    private GeneCurve chainProb, chainDelay, probChainCont, enemySize, enemyHealth, enemyBigness, enemyRouteDuration;
-    private Gene intensity, polarityAmount;
+    private GeneCurve chainProb;
+    private GeneCurve chainDelay;
+    private GeneCurve probChainCont;
+    private GeneCurve enemySize;
+    private GeneCurve enemyHealth;
+    private GeneCurve enemyBigness;
+    private GeneCurve enemyRouteDuration;
+    private Gene intensity;
+    private Gene polarityAmount;
 
     final public static Random random = new Random(0);
 
