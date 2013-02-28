@@ -1,5 +1,6 @@
 package efruchter.tp;
 
+import java.io.File;
 import java.io.IOException;
 
 import com.csvreader.CsvReader;
@@ -18,10 +19,30 @@ public class TraitProjectServer implements NetworkingListener {
 
 	private static GeneVector current;
 	private static final Database db;
+	private static final String databaseLocation = "database.csv";
+	private static final String playerControlledPath = "playerControlled.csv";
 
 	static {
-		db = new CSVDatabase("database.csv");
+		// Check for existing files
+		fileCheck(databaseLocation);
+		fileCheck(playerControlledPath);
+		
+		db = new CSVDatabase(databaseLocation);
 		current = new GeneVector();
+	}
+	
+	/**
+	 * If file does not exist, create.
+	 * @param filePath
+	 */
+	private static void fileCheck(String filePath) {
+		if (!new File(filePath).exists()) {
+			try {
+				new File(filePath).createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public static void main(String[] args) {
@@ -66,7 +87,7 @@ public class TraitProjectServer implements NetworkingListener {
             else if ("playerControlled".equals(message)) {
                 CsvReader r = null;
                 try {
-                    r = new CsvReader("playerControlled.csv");
+                    r = new CsvReader(playerControlledPath);
                     if (r.readHeaders()) {
                         final String[] headers = r.getHeaders();
                         final StringBuffer b = new StringBuffer();

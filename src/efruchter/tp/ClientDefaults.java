@@ -28,11 +28,11 @@ public class ClientDefaults {
 	    
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.out.println("Config file not parsed/found. Assuming web client defaults!");
+			System.out.println("Config file clientSettings.config not parsed/found. Assuming web client defaults!");
 			
 			//Defaults
 			LEVEL_LENGTH = 60000;
-			LOCAL_SERVER = false;
+			LOCAL_SERVER = true;
 			VECTOR = new ServerIO_ServerImpl();
 			DEV_MODE = false;
 		}
