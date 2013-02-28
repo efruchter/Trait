@@ -1,3 +1,0 @@
-Visit
-https://gist.github.com/efruchter/5060578
-to get the required files for running everything.
