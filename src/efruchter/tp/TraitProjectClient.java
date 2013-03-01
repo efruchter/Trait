@@ -135,6 +135,9 @@ public class TraitProjectClient extends Applet {
 	}
 
 	public void init() {
+		
+		ClientDefaults.init(this);
+		
 		setLayout(new BorderLayout());
 		try {
 			display_parent = new Canvas() {
