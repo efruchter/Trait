@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import com.csvreader.CsvReader;
 
+import efruchter.tp.gui.Console;
 import efruchter.tp.learning.GeneVector;
 import efruchter.tp.learning.SessionInfo;
 import efruchter.tp.learning.database.CSVDatabase;
@@ -46,6 +47,24 @@ public class TraitProjectServer implements NetworkingListener {
 	}
 
 	public static void main(String[] args) {
+		boolean headless = false;
+		if (args.length > 0) {
+			for (String arg : args) {
+				if(arg.equalsIgnoreCase("-nogui")) {
+					headless = true;
+				} else if(arg.equalsIgnoreCase("-h") || arg.equalsIgnoreCase("-help")) {
+					System.out.println("-nogui: Run in headless mode." );
+				}
+			}
+			
+		}
+		
+		if (!headless) {
+			Console.init();
+			Console.setTitle("Trait Server Console");
+		}
+		
+		System.out.println("Server Activated!");
 
 		try {
 			db.init();
@@ -66,7 +85,7 @@ public class TraitProjectServer implements NetworkingListener {
 
 		final int port = 8000;
 
-		//System.out.println("Trait Server Started on port " + port + ".");
+		System.out.println("Trait Server Started on port " + port + ".");
 		new Server(port, this);
 	}
 
@@ -79,10 +98,10 @@ public class TraitProjectServer implements NetworkingListener {
 			if (message.startsWith("versioncheck")) {
 				result = "" + TraitProjectClient.VERSION.equals(message
 								.replaceFirst("versioncheck", ""));
-				//System.out.println("version check");
+				System.out.println(System.currentTimeMillis() + ": VERSION CHECK");
 			} else if ("request".equals(message)) {
 				result = "EXPLORE" + SessionInfo.SEPERATOR + current.toDataString();
-				//System.out.println("explore-vector sent");
+				System.out.println(System.currentTimeMillis() + ": EXPLORE");
 			}
             else if ("playerControlled".equals(message)) {
                 CsvReader r = null;
@@ -95,7 +114,7 @@ public class TraitProjectServer implements NetworkingListener {
                             b.append(SessionInfo.SEPERATOR).append(str);
                         }
                         result = b.toString().replaceFirst(SessionInfo.SEPERATOR, "");
-                        //System.out.println("player-controlled sent");
+                        System.out.println(System.currentTimeMillis() + ": PLAYER CONTROLLED");
                     } else {
                         result = " ";
                     }
@@ -110,7 +129,7 @@ public class TraitProjectServer implements NetworkingListener {
 			else if (message.startsWith("store" + SessionInfo.SEPERATOR)) {
 				final String data = message.replaceFirst("store" + SessionInfo.SEPERATOR, "");
 				result = "" + store(new SessionInfo(data));
-				//System.out.println("store");
+				System.out.println(System.currentTimeMillis() + ": STORE");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
