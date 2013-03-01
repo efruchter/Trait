@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Properties;
 
+import efruchter.tp.gui.Console;
 import efruchter.tp.learning.server.ServerIO;
 import efruchter.tp.learning.server.ServerIO_ServerImpl;
 
@@ -13,14 +14,15 @@ public class ClientDefaults {
 
 	public static void init(Applet applet) {
 		try {
+			// GATHER THE DATA FROM APPLET PARAMS OR CONFIG FILE
+			String levelLength, localServer, vector, devMode, serverIp, console;
 			if (applet.getParameter("canary") != null) {
-				LEVEL_LENGTH = Long.parseLong(applet.getParameter("level_length"));
-				LOCAL_SERVER = Boolean.parseBoolean(applet.getParameter("local_server"));
-				String vectorClass = applet.getParameter("server_class");
-				Class server = ServerIO.class.getClassLoader().loadClass(vectorClass);
-				VECTOR = (ServerIO) server.newInstance();
-				DEV_MODE = Boolean.parseBoolean(applet.getParameter("dev_mode"));
-				SERVER_IP = applet.getParameter("server_ip");
+				levelLength = applet.getParameter("level_length");
+				localServer = applet.getParameter("local_server");
+				vector = applet.getParameter("server_class");
+				devMode = applet.getParameter("dev_mode");
+				serverIp = applet.getParameter("server_ip");
+				console = applet.getParameter("console");
 			} else {
 				Properties prop = new Properties();
 				String fileName = "clientSettings.config";
@@ -30,13 +32,23 @@ public class ClientDefaults {
 				}
 				InputStream is = new FileInputStream(fileName);
 				prop.load(is);
-				LEVEL_LENGTH = Long.parseLong(prop.getProperty("level_length"));
-				LOCAL_SERVER = Boolean.parseBoolean(prop.getProperty("local_server"));
-				String vectorClass = prop.getProperty("server_class");
-				Class server = ServerIO.class.getClassLoader().loadClass(vectorClass);
-				VECTOR = (ServerIO) server.newInstance();
-				DEV_MODE = Boolean.parseBoolean(prop.getProperty("dev_mode"));
-				SERVER_IP = prop.getProperty("server_ip");
+				levelLength = prop.getProperty("level_length");
+				localServer = prop.getProperty("local_server");
+				vector = prop.getProperty("server_class");
+				devMode = prop.getProperty("dev_mode");
+				serverIp = prop.getProperty("server_ip");
+				console = prop.getProperty("console");
+			}
+
+			//Build the actual config options
+			LEVEL_LENGTH = Long.parseLong(levelLength);
+			LOCAL_SERVER = Boolean.parseBoolean(localServer);
+			Class server = ServerIO.class.getClassLoader().loadClass(vector);
+			VECTOR = (ServerIO) server.newInstance();
+			DEV_MODE = Boolean.parseBoolean(devMode);
+			SERVER_IP = serverIp;
+			if (Boolean.parseBoolean(console)) {
+				Console.init();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
