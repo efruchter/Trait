@@ -1,5 +1,6 @@
 package efruchter.tp;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Properties;
@@ -12,8 +13,12 @@ public class ClientDefaults {
 	static {
 		try {
 		Properties prop = new Properties();
-		//Assuming the client runs out of the /bin folder
-	    String fileName = "../clientSettings.config";
+	    String fileName = "clientSettings.config";
+	    if (!new File(fileName).exists()) {
+			//Assuming the client runs out of the /bin folder
+	    	fileName = "../clientSettings.config";
+	    }
+	    
 	    InputStream is = new FileInputStream(fileName);
 	    prop.load(is);
 	    
@@ -37,39 +42,37 @@ public class ClientDefaults {
 			DEV_MODE = false;
 		}
 	}
+
+	private static long LEVEL_LENGTH;
+	private static boolean LOCAL_SERVER;
+	private static ServerIO VECTOR;
+	private static boolean DEV_MODE;
+	
 	/**
 	 * Wave Length in milliseconds
 	 */
-	private static long LEVEL_LENGTH;
-
-	/**
-	 * True to look for a server at "localhost"
-	 */
-	private static boolean LOCAL_SERVER;
-
-	/**
-	 * The mechanism for getting a new GeneVector.
-	 */
-	private static ServerIO VECTOR;
-
-	/**
-	 * True to allow the devmode stuff. Only changed to false prior to version
-	 * ship.
-	 */
-	private static boolean DEV_MODE;
-	
 	public static long levelLength() {
 		return LEVEL_LENGTH;
 	}
 
+	/**
+	 * True to look for a server at "localhost"
+	 */
 	public static boolean localServer() {
 		return LOCAL_SERVER;
 	}
-
+	
+	/**
+	 * The mechanism for IO with genevectors.
+	 */
 	public static ServerIO server() {
 		return VECTOR;
 	}
-
+	
+	/**
+	 * True to allow the devmode stuff. Only changed to false prior to version
+	 * ship.
+	 */
 	public static boolean devMode() {
 		return DEV_MODE;
 	}
