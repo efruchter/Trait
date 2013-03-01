@@ -31,6 +31,8 @@ public class ClientDefaults {
 	    
 	    DEV_MODE = Boolean.parseBoolean(prop.getProperty("dev_mode"));
 	    
+	    SERVER_IP = prop.getProperty("server_ip");;
+	    
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("Config file clientSettings.config not parsed/found. Assuming web client defaults!");
@@ -40,6 +42,8 @@ public class ClientDefaults {
 			LOCAL_SERVER = true;
 			VECTOR = new ServerIO_ServerImpl();
 			DEV_MODE = false;
+			SERVER_IP = "trait.ericfruchter.com";
+			
 		}
 	}
 
@@ -47,6 +51,7 @@ public class ClientDefaults {
 	private static boolean LOCAL_SERVER;
 	private static ServerIO VECTOR;
 	private static boolean DEV_MODE;
+	private static String SERVER_IP;
 	
 	/**
 	 * Wave Length in milliseconds
@@ -75,5 +80,9 @@ public class ClientDefaults {
 	 */
 	public static boolean devMode() {
 		return DEV_MODE;
+	}
+	
+	public static String serverIp() {
+		return SERVER_IP;
 	}
 }

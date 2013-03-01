@@ -349,7 +349,7 @@ public class TraitProjectClient extends Applet {
 		if (ClientDefaults.localServer()) {
 			return new Client();
 		} else {
-			return new Client("trait.ericfruchter.com", 8000);
+			return new Client(ClientDefaults.serverIp(), 8000);
 		}
 	}
 
