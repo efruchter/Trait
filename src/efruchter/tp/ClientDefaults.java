@@ -10,40 +10,42 @@ import efruchter.tp.learning.server.ServerIO_ServerImpl;
 
 public class ClientDefaults {
 
+	public final static boolean ONLINE_DEPLOYED = false;
+
 	static {
 		try {
-		Properties prop = new Properties();
-	    String fileName = "clientSettings.config";
-	    if (!new File(fileName).exists()) {
-			//Assuming the client runs out of the /bin folder
-	    	fileName = "../clientSettings.config";
-	    }
-	    
-	    InputStream is = new FileInputStream(fileName);
-	    prop.load(is);
-	    
-	    LEVEL_LENGTH = Long.parseLong(prop.getProperty("level_length"));
-	    LOCAL_SERVER = Boolean.parseBoolean(prop.getProperty("local_server"));
-	    
-	    String vectorClass = prop.getProperty("server_class");
-	    Class server = ServerIO.class.getClassLoader().loadClass(vectorClass);
-	    VECTOR = (ServerIO) server.newInstance();
-	    
-	    DEV_MODE = Boolean.parseBoolean(prop.getProperty("dev_mode"));
-	    
-	    SERVER_IP = prop.getProperty("server_ip");;
-	    
+			if (ONLINE_DEPLOYED) {
+				throw new Exception("Online Mode active, not parsing any config file.");
+			}
+			Properties prop = new Properties();
+			String fileName = "clientSettings.config";
+			if (!new File(fileName).exists()) {
+				// Assuming the client runs out of the /bin folder
+				fileName = "../clientSettings.config";
+			}
+
+			InputStream is = new FileInputStream(fileName);
+			prop.load(is);
+
+			LEVEL_LENGTH = Long.parseLong(prop.getProperty("level_length"));
+			LOCAL_SERVER = Boolean.parseBoolean(prop.getProperty("local_server"));
+
+			String vectorClass = prop.getProperty("server_class");
+			Class server = ServerIO.class.getClassLoader().loadClass(vectorClass);
+			VECTOR = (ServerIO) server.newInstance();
+			DEV_MODE = Boolean.parseBoolean(prop.getProperty("dev_mode"));
+			SERVER_IP = prop.getProperty("server_ip");
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("Config file clientSettings.config not parsed/found. Assuming web client defaults!");
-			
-			//Defaults
+
+			// Defaults
 			LEVEL_LENGTH = 60000;
-			LOCAL_SERVER = true;
+			LOCAL_SERVER = false;
 			VECTOR = new ServerIO_ServerImpl();
 			DEV_MODE = false;
 			SERVER_IP = "trait.ericfruchter.com";
-			
 		}
 	}
 
@@ -52,7 +54,7 @@ public class ClientDefaults {
 	private static ServerIO VECTOR;
 	private static boolean DEV_MODE;
 	private static String SERVER_IP;
-	
+
 	/**
 	 * Wave Length in milliseconds
 	 */
@@ -66,14 +68,14 @@ public class ClientDefaults {
 	public static boolean localServer() {
 		return LOCAL_SERVER;
 	}
-	
+
 	/**
 	 * The mechanism for IO with genevectors.
 	 */
 	public static ServerIO server() {
 		return VECTOR;
 	}
-	
+
 	/**
 	 * True to allow the devmode stuff. Only changed to false prior to version
 	 * ship.
@@ -81,7 +83,7 @@ public class ClientDefaults {
 	public static boolean devMode() {
 		return DEV_MODE;
 	}
-	
+
 	public static String serverIp() {
 		return SERVER_IP;
 	}
