@@ -90,7 +90,7 @@ public class LevelGeneratorCore extends Trait {
             info.put("username", username);
             info.put("date", Long.toString(System.currentTimeMillis()));
             info.put("vector", v.getExplorationVector().toDataString());
-            System.out.println("saving exploration vector: " + v.getExplorationVector().toDataString());
+//            System.out.println("saving exploration vector: " + v.getExplorationVector().toDataString());
             info.put("s_wave", Long.toString(waveCount));
             info.put("s_damage_player", Float.toString(TraitProjectClient.s_damage_player));
             info.put("s_damage_enemies", Float.toString(TraitProjectClient.s_damage_enemies));
