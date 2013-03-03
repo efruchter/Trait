@@ -149,10 +149,10 @@ public class VectorEditorPopup_Crummy {
         	frameLoc = frame.getLocation();
             frame.setVisible(false);
             ClientStateManager.setFlowState(FlowState.FREE);
-            ClientStateManager.setPaused(false);
             frame.dispose();
         }
         frame = null;
+        ClientStateManager.setPaused(false);
     }
     
     public static boolean isVisible() {

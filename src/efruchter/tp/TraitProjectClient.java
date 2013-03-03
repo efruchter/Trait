@@ -56,13 +56,27 @@ public class TraitProjectClient extends Applet {
 	 * Client Statistics
 	 */
 
-	public static float s_damage_player, s_damage_enemies, s_hit_player, s_hit_enemies, s_num_enemies, s_killed_enemies,
-		s_remain_enemies, s_fired_player, s_fired_enemies;
+	public static float s_damage_player;
+	public static float s_damage_enemies;
+	public static float s_num_enemies;
+	public static float s_hit_player;
+	public static float s_hit_enemies;
+	public static float s_remain_enemies;
+	public static float s_fired_player;
+	public static float s_fired_enemies;
+	public static float s_killed_enemies;
 	public static CHOICE c_choice;
 
 	public static void resetMetrics() {
-		s_damage_player = s_damage_enemies = s_num_enemies = s_fired_player = s_fired_enemies = s_killed_enemies = s_remain_enemies = 0;
-		s_hit_player = s_hit_enemies = 0;
+		s_damage_player = 0;
+		s_damage_enemies = 0;
+		s_num_enemies = 0;
+		s_hit_player = 0;
+		s_hit_enemies = 0;
+		s_remain_enemies = 0;
+		s_fired_player = 0;
+		s_fired_enemies = 0;
+		s_killed_enemies = 0;
 		c_choice = CHOICE.NONE;
 	}
 
@@ -129,6 +143,9 @@ public class TraitProjectClient extends Applet {
 	}
 
 	public void init() {
+		
+		ClientDefaults.init(this);
+		
 		setLayout(new BorderLayout());
 		try {
 			display_parent = new Canvas() {
@@ -187,8 +204,12 @@ public class TraitProjectClient extends Applet {
 					|| KeyUtil.isKeyPressed(Keyboard.KEY_ESCAPE))
 				ClientStateManager.togglePauseState();
 			
-			if (KeyUtil.isKeyPressed(Keyboard.KEY_F1) && ClientDefaults.DEV_MODE) {
-				VectorEditorPopup_Crummy.show(ClientDefaults.VECTOR.getExplorationVector().getGenes(), true, "Adjust allowable values");
+			if (KeyUtil.isKeyPressed(Keyboard.KEY_F1) && ClientDefaults.devMode()) {
+				VectorEditorPopup_Crummy.show(ClientDefaults.server().getExplorationVector().getGenes(), true, "Adjust allowable values");
+			}
+			
+			if (!ClientStateManager.isPaused() && VectorEditorPopup_Crummy.isVisible()) {
+				VectorEditorPopup_Crummy.hide();
 			}
 			
 		} catch (final Exception e) {
@@ -234,7 +255,7 @@ public class TraitProjectClient extends Applet {
 				RenderUtil.setColor(Color.GREEN);
 				RenderUtil.drawString("Progress "
 						+ level.getGeneratorCore().getPercentComplete()
-						+ (ClientDefaults.DEV_MODE ? "\n\nF1 : Edit Vector": "")
+						+ (ClientDefaults.devMode() ? "\n\nF1 : Edit Vector": "")
 						, 5,
 						Display.getHeight() - 15);
 			}
@@ -327,7 +348,7 @@ public class TraitProjectClient extends Applet {
 	}
 
 	public static List<GeneWrapper> getPlayerControlledGenes() {
-		final GeneVector geneVector = ClientDefaults.VECTOR.getExplorationVector();
+		final GeneVector geneVector = ClientDefaults.server().getExplorationVector();
 		final List<GeneWrapper> genes = new ArrayList<GeneWrapper>();
 		for (final String string : playerControlled) {
 			genes.add(geneVector.getGeneWrapper(string));
@@ -336,11 +357,11 @@ public class TraitProjectClient extends Applet {
 	}
 
 	public static Client getClient() {
-		if (ClientDefaults.LOCAL_SERVER) {
-//			System.out.println("running in local version");
+
+		if (ClientDefaults.localServer()) {
 			return new Client();
 		} else {
-			return new Client("trait.ericfruchter.com", 8000);
+			return new Client(ClientDefaults.serverIp(), 8000);
 		}
 	}
 

@@ -1,9 +1,11 @@
 package efruchter.tp;
 
+import java.io.File;
 import java.io.IOException;
 
 import com.csvreader.CsvReader;
 
+import efruchter.tp.gui.Console;
 import efruchter.tp.learning.GeneVector;
 import efruchter.tp.learning.SessionInfo;
 import efruchter.tp.learning.database.CSVDatabase;
@@ -18,13 +20,51 @@ public class TraitProjectServer implements NetworkingListener {
 
 	private static GeneVector current;
 	private static final Database db;
+	private static final String databaseLocation = "database.csv";
+	private static final String playerControlledPath = "playerControlled.csv";
 
 	static {
-		db = new CSVDatabase("database.csv");
+		// Check for existing files
+		fileCheck(databaseLocation);
+		fileCheck(playerControlledPath);
+		
+		db = new CSVDatabase(databaseLocation);
 		current = new GeneVector();
+	}
+	
+	/**
+	 * If file does not exist, create.
+	 * @param filePath
+	 */
+	private static void fileCheck(String filePath) {
+		if (!new File(filePath).exists()) {
+			try {
+				new File(filePath).createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public static void main(String[] args) {
+		boolean headless = false;
+		if (args.length > 0) {
+			for (String arg : args) {
+				if(arg.equalsIgnoreCase("-nogui")) {
+					headless = true;
+				} else if(arg.equalsIgnoreCase("-h") || arg.equalsIgnoreCase("-help")) {
+					System.out.println("-nogui: Run in headless mode." );
+				}
+			}
+			
+		}
+		
+		if (!headless) {
+			Console.init();
+			Console.setTitle("Trait Server Console");
+		}
+		
+		System.out.println("Server Activated!");
 
 		try {
 			db.init();
@@ -45,7 +85,7 @@ public class TraitProjectServer implements NetworkingListener {
 
 		final int port = 8000;
 
-		//System.out.println("Trait Server Started on port " + port + ".");
+		System.out.println("Trait Server Started on port " + port + ".");
 		new Server(port, this);
 	}
 
@@ -58,15 +98,15 @@ public class TraitProjectServer implements NetworkingListener {
 			if (message.startsWith("versioncheck")) {
 				result = "" + TraitProjectClient.VERSION.equals(message
 								.replaceFirst("versioncheck", ""));
-				//System.out.println("version check");
+				System.out.println(System.currentTimeMillis() + ": VERSION CHECK");
 			} else if ("request".equals(message)) {
 				result = "EXPLORE" + SessionInfo.SEPERATOR + current.toDataString();
-				//System.out.println("explore-vector sent");
+				System.out.println(System.currentTimeMillis() + ": EXPLORE");
 			}
             else if ("playerControlled".equals(message)) {
                 CsvReader r = null;
                 try {
-                    r = new CsvReader("playerControlled.csv");
+                    r = new CsvReader(playerControlledPath);
                     if (r.readHeaders()) {
                         final String[] headers = r.getHeaders();
                         final StringBuffer b = new StringBuffer();
@@ -74,7 +114,7 @@ public class TraitProjectServer implements NetworkingListener {
                             b.append(SessionInfo.SEPERATOR).append(str);
                         }
                         result = b.toString().replaceFirst(SessionInfo.SEPERATOR, "");
-                        //System.out.println("player-controlled sent");
+                        System.out.println(System.currentTimeMillis() + ": PLAYER CONTROLLED");
                     } else {
                         result = " ";
                     }
@@ -89,8 +129,7 @@ public class TraitProjectServer implements NetworkingListener {
 			else if (message.startsWith("store" + SessionInfo.SEPERATOR)) {
 				final String data = message.replaceFirst("store" + SessionInfo.SEPERATOR, "");
 				result = "" + store(new SessionInfo(data));
-				System.out.println("server stored: " + new SessionInfo(data));
-				//System.out.println("store");
+				System.out.println(System.currentTimeMillis() + ": STORE");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

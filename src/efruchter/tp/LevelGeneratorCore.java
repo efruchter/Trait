@@ -49,8 +49,19 @@ public class LevelGeneratorCore extends Trait {
     // Chance of a new chain forming
     final private List<Chain> chains;
 
-    private GeneCurve chainProb, chainDelay, probChainCont, enemySize, enemyHealth, enemyBigness, enemyRouteDuration;
-    private Gene intensity, polarityAmount, enemyBulletSpeed, enemyBulletSize, enemyBulletDamage, enemyBulletCooldown;
+    private GeneCurve chainProb;
+    private GeneCurve chainDelay;
+    private GeneCurve probChainCont;
+    private GeneCurve enemySize;
+    private GeneCurve enemyHealth;
+    private GeneCurve enemyBigness;
+    private GeneCurve enemyRouteDuration;
+    private Gene intensity;
+    private Gene polarityAmount;
+	private Gene enemyBulletSpeed;
+	private Gene enemyBulletSize;
+	private Gene enemyBulletDamage;
+	private Gene enemyBulletCooldown;
 
     final public static Random random = new Random(0);
 
@@ -68,7 +79,7 @@ public class LevelGeneratorCore extends Trait {
 
     	random.setSeed(0);
     	
-    	ServerIO v = ClientDefaults.VECTOR;
+    	ServerIO v = ClientDefaults.server();
     	
         if (waveCount > 0) {
             String username = System.getProperty("user.name");
@@ -158,7 +169,7 @@ public class LevelGeneratorCore extends Trait {
 
         for (final Entity ship : level.getEntities(EntityType.SHIP)) {
             if (ship.isActive()) {
-                ship.setHealth(-1);
+                //ship.setHealth(-1);
                 level.removeEntity(ship);
             }
         }
@@ -220,14 +231,14 @@ public class LevelGeneratorCore extends Trait {
         TraitProjectClient.s_remain_enemies = numEnemiesRemaining;
         chains.clear();
 
-        if (ClientDefaults.DEV_MODE && VectorEditorPopup_Crummy.isVisible()) {
-            	VectorEditorPopup_Crummy.show(v.getExplorationVector().getGenes(), true, "Gene Vectors updated.");
-        } else {
-	        List<GeneWrapper> ge = TraitProjectClient.getPlayerControlledGenes();
-	        if (!ge.isEmpty()) {
-	        	VectorEditorPopup_Crummy.show(ge, true, "Get ready for the next wave!");
-	        }
-        }
+       if (VectorEditorPopup_Crummy.isVisible()) {
+    	   VectorEditorPopup_Crummy.hide();
+       }
+  
+       List<GeneWrapper> ge = TraitProjectClient.getPlayerControlledGenes();
+	    if (!ge.isEmpty()) {
+	    	VectorEditorPopup_Crummy.show(ge, true, "Get ready for the next wave!");
+	    }
     }
 
     @Override
@@ -235,13 +246,13 @@ public class LevelGeneratorCore extends Trait {
         
         time += delta;
         
-        percentComplete = (int) (((float) time / ClientDefaults.LEVEL_LENGTH) * 100);
+        percentComplete = (int) (((float) time / ClientDefaults.levelLength()) * 100);
 
-        if (time > ClientDefaults.LEVEL_LENGTH || level.getPlayer() == null) {
+        if (time > ClientDefaults.levelLength() || level.getPlayer() == null) {
             onStart(self, level);
         }
 
-        final float mu = (float) time / ClientDefaults.LEVEL_LENGTH;
+        final float mu = (float) time / ClientDefaults.levelLength();
         final float randNum = random.nextFloat();
 
         // Gen
@@ -300,10 +311,13 @@ public class LevelGeneratorCore extends Trait {
                 	public void onStart(Entity self, Level level) {
                 		TraitProjectClient.s_num_enemies++;
                     }
+
                 	@Override
                 	public void onDeath(Entity self, Level level) {
-                		TraitProjectClient.s_killed_enemies++;
-                    }
+                		if (self.health <= 0) {
+                			TraitProjectClient.s_killed_enemies++;
+                		}
+                	}
                 });
 
                 return e;

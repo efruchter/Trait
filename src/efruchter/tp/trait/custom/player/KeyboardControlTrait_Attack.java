@@ -41,7 +41,7 @@ public class KeyboardControlTrait_Attack extends Trait {
 
 		super("Attack Control", "Entity attack linked to keyboard inputs.");
 		
-		ServerIO v = ClientDefaults.VECTOR;
+		ServerIO v = ClientDefaults.server();
 		
 		coolDown = v.getExplorationVector().storeGene("player.attack.cooldown",
 		        new Gene("Cool Down Delay", "The projectile cooldown.", 0, 1000, 64), false);
