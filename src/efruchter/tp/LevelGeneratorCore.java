@@ -81,34 +81,7 @@ public class LevelGeneratorCore extends Trait {
     	
     	ServerIO v = ClientDefaults.server();
     	
-        if (waveCount > 0) {
-            String username = System.getProperty("user.name");
-            if (username == null) {
-                username = "NO_NAME";
-            }
-            SessionInfo info = new SessionInfo();
-            info.put("username", username);
-            info.put("date", Long.toString(System.currentTimeMillis()));
-            info.put("vector", v.getExplorationVector().toDataString());
-//            System.out.println("saving exploration vector: " + v.getExplorationVector().toDataString());
-            info.put("s_wave", Long.toString(waveCount));
-            info.put("s_damage_player", Float.toString(TraitProjectClient.s_damage_player));
-            info.put("s_damage_enemies", Float.toString(TraitProjectClient.s_damage_enemies));
-            info.put("s_hit_player", Float.toString(TraitProjectClient.s_hit_player));
-            info.put("s_hit_enemies", Float.toString(TraitProjectClient.s_hit_enemies));
-            info.put("s_num_enemies", Float.toString(TraitProjectClient.s_num_enemies));
-            info.put("s_fired_player", Float.toString(TraitProjectClient.s_fired_player));
-            info.put("s_fired_enemies", Float.toString(TraitProjectClient.s_fired_enemies));
-            info.put("s_killed_enemies", Float.toString(TraitProjectClient.s_killed_enemies));
-            info.put("s_remain_enemies", Float.toString(TraitProjectClient.s_remain_enemies));
-            info.put("c_choice", (TraitProjectClient.c_choice).toString());
-            System.out.println("info: " + info.toDataString());
-//            String info2 = info.toDataString().replace("#", "THAWKISBEST");
-//            System.out.println("info2: " + info2);
-            v.storeInfo(info);
-        }
 
-        waveCount++;
 
         /*
          * Takes care of the case where the GUI has already loaded the vector.
@@ -211,10 +184,7 @@ public class LevelGeneratorCore extends Trait {
         // Add the new wave animation
         EntityFactory.buildNewWaveAnim(level.getBlankEntity(EntityType.BG));
         
-        time = 0;
-        TraitProjectClient.resetMetrics();
-        
-        //TODO - fix so this appropriately tracks enemies killed over waves
+       
         // Count remaining enemies before reset
         List<Entity> ships = level.getEntities(EntityType.SHIP);
         int numEnemiesRemaining = 0;
@@ -236,9 +206,21 @@ public class LevelGeneratorCore extends Trait {
        }
   
        List<GeneWrapper> ge = TraitProjectClient.getPlayerControlledGenes();
-	    if (!ge.isEmpty()) {
-	    	VectorEditorPopup_Crummy.show(ge, true, "Get ready for the next wave!");
-	    }
+//	    if (!ge.isEmpty()) {
+
+       // record data either after responding to query or just directly after wave
+       	if (waveCount > 1) {
+       		// show editor to allow better/worse feedback from player; start from 2nd wave
+	    	VectorEditorPopup_Crummy.show(ge, true, "Get ready for the next wave!", true, v, waveCount);
+	    } else if (waveCount > 0) {
+        	TraitProjectClient.storeData(v, waveCount);
+        }
+
+        waveCount++;
+        
+        
+        time = 0;
+        TraitProjectClient.resetMetrics();
     }
 
     @Override

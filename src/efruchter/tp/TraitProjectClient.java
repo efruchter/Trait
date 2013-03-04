@@ -23,6 +23,7 @@ import efruchter.tp.entity.EntityType;
 import efruchter.tp.entity.Level;
 import efruchter.tp.gui_broken.VectorEditorPopup_Crummy;
 import efruchter.tp.learning.GeneVector.GeneWrapper;
+import efruchter.tp.learning.server.ServerIO;
 import efruchter.tp.learning.server.comm.Client;
 import efruchter.tp.learning.GeneVector;
 import efruchter.tp.learning.SessionInfo;
@@ -65,7 +66,7 @@ public class TraitProjectClient extends Applet {
 	public static float s_fired_player;
 	public static float s_fired_enemies;
 	public static float s_killed_enemies;
-	public static CHOICE c_choice;
+	public static CHOICE c_choice = CHOICE.NONE;
 
 	public static void resetMetrics() {
 		s_damage_player = 0;
@@ -78,6 +79,33 @@ public class TraitProjectClient extends Applet {
 		s_fired_enemies = 0;
 		s_killed_enemies = 0;
 		c_choice = CHOICE.NONE;
+	}
+	
+	public static void storeData(ServerIO v, long waveCount) {
+		String username = System.getProperty("user.name");
+        if (username == null) {
+            username = "NO_NAME";
+        }
+        SessionInfo info = new SessionInfo();
+        info.put("username", username);
+        info.put("date", Long.toString(System.currentTimeMillis()));
+        info.put("vector", v.getExplorationVector().toDataString());
+//        System.out.println("saving exploration vector: " + v.getExplorationVector().toDataString());
+        info.put("s_wave", Long.toString(waveCount));
+        info.put("s_damage_player", Float.toString(TraitProjectClient.s_damage_player));
+        info.put("s_damage_enemies", Float.toString(TraitProjectClient.s_damage_enemies));
+        info.put("s_hit_player", Float.toString(TraitProjectClient.s_hit_player));
+        info.put("s_hit_enemies", Float.toString(TraitProjectClient.s_hit_enemies));
+        info.put("s_num_enemies", Float.toString(TraitProjectClient.s_num_enemies));
+        info.put("s_fired_player", Float.toString(TraitProjectClient.s_fired_player));
+        info.put("s_fired_enemies", Float.toString(TraitProjectClient.s_fired_enemies));
+        info.put("s_killed_enemies", Float.toString(TraitProjectClient.s_killed_enemies));
+        info.put("s_remain_enemies", Float.toString(TraitProjectClient.s_remain_enemies));
+        info.put("c_choice", (TraitProjectClient.c_choice).toString());
+        System.out.println("info: " + info.toDataString());
+//        String info2 = info.toDataString().replace("#", "THAWKISBEST");
+//        System.out.println("info2: " + info2);
+        v.storeInfo(info);
 	}
 
 	private static String[] playerControlled;
