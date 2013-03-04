@@ -33,6 +33,7 @@ public class VectorEditorPopup_Crummy {
 
     private static JFrame frame;
     private static Point frameLoc = null;
+    private static ActionListener onHideAction;
 
     @SuppressWarnings("serial")
     private static void rebuildGui(final List<GeneWrapper> genes, final boolean useName, final String headerText) {
@@ -90,8 +91,15 @@ public class VectorEditorPopup_Crummy {
     }
 
     public static void show(final List<GeneWrapper> genes, final boolean useName, final String headerText) {
+    	show(genes, useName, headerText, null);
+    }
+    
+    public static void show(final List<GeneWrapper> genes, final boolean useName, final String headerText, final ActionListener onHideAction) {
 
         hide();
+        
+        // Wire an action for next hide
+        VectorEditorPopup_Crummy.onHideAction = onHideAction;
 
         ClientStateManager.setPaused(true);
         ClientStateManager.setFlowState(FlowState.EDITING);
@@ -120,7 +128,11 @@ public class VectorEditorPopup_Crummy {
             ClientStateManager.setFlowState(FlowState.FREE);
             frame.dispose();
         }
+        if (onHideAction != null) {
+        	onHideAction.actionPerformed(null);
+        }
         frame = null;
+        onHideAction = null;
         ClientStateManager.setPaused(false);
     }
     
