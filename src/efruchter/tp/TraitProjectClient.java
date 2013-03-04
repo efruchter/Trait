@@ -72,7 +72,7 @@ public class TraitProjectClient extends Applet {
 		s_killed_enemies = 0;
 	}
 
-	private static String[] playerControlled;
+	private static String[] playerControlled = new String[0];
 
 	public void startLWJGL() {
 		gameThread = new Thread() {
@@ -205,6 +205,7 @@ public class TraitProjectClient extends Applet {
 			}
 			
 		} catch (final Exception e) {
+			e.printStackTrace();
 		}
 		updateFPS();
 
