@@ -33,6 +33,7 @@ public class VectorEditorPopup_Crummy {
 
     private static JFrame frame;
     private static Point frameLoc = null;
+    private static boolean blocking = false;
     private static ActionListener onHideAction;
 
     @SuppressWarnings("serial")
@@ -136,7 +137,26 @@ public class VectorEditorPopup_Crummy {
         ClientStateManager.setPaused(false);
     }
     
+    /**
+     * Block the core game thread until the window is closed.
+     */
+    public synchronized static void blockWhileOpen() {
+    	blocking = true;
+    	while (frame != null && frame.isVisible()) {
+    		try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+    	}
+    	blocking = false;
+    }
+    
     public static boolean isVisible() {
     	return frame != null;
     }
+
+	public synchronized static boolean isBlocking() {
+		return blocking;
+	}
 }

@@ -190,7 +190,7 @@ public class TraitProjectClient extends Applet {
 
 			KeyUtil.update();
 
-			level.onUpdate(ClientStateManager.isPaused() ? 0 : delta);
+			level.onUpdate(ClientStateManager.isPaused() || VectorEditorPopup_Crummy.isBlocking() ? 0 : delta);
 
 			if (KeyUtil.isKeyPressed(Keyboard.KEY_RETURN)
 					|| KeyUtil.isKeyPressed(Keyboard.KEY_ESCAPE))
@@ -292,11 +292,12 @@ public class TraitProjectClient extends Applet {
 	 * @return milliseconds passed since last frame
 	 */
 	public static int getDelta() {
-		final long time = getTime();
+		/*final long time = getTime();
 		final int delta = (int) (time - lastFrame);
 		lastFrame = time;
 
-		return delta;
+		return delta;*/
+		return 16;
 	}
 
 	public static long getTime() {
