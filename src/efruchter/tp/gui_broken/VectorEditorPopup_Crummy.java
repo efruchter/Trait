@@ -50,6 +50,10 @@ public class VectorEditorPopup_Crummy {
         frame.addKeyListener(new KeyAdapter() {
             public void keyPressed(final KeyEvent arg0) {
                 if (arg0.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                	if (v != null) {
+                		// if called w/storage data, record preference information instead
+                		TraitProjectClient.storeData(v, waveCount);
+                	}
                     hide();
                 }
             }

@@ -69,6 +69,8 @@ public class TraitProjectClient extends Applet {
 	public static CHOICE c_choice = CHOICE.NONE;
 
 	public static void resetMetrics() {
+		System.out.println("player hits: " + s_hit_player);
+		
 		s_damage_player = 0;
 		s_damage_enemies = 0;
 		s_num_enemies = 0;

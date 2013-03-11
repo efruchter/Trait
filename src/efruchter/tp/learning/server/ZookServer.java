@@ -67,7 +67,6 @@ public class ZookServer implements ServerIO {
             try {
                 c.reconnect();
                 c.send("request");
-                System.out.println(System.getProperty("user.dir"));
                 String geneText = GeneFileBuilder.getVectorFromFile("../geneText.txt");
                 final GeneVector geneVector = new GeneVector();
                 geneVector.fromDataString(geneText);
@@ -77,7 +76,8 @@ public class ZookServer implements ServerIO {
                 
                 //geneVector.fromDataString(c.receive().replace("EXPLORE" + SessionInfo.SEPERATOR, ""));
                 exploration = geneVector;
-                System.out.println("exploration vector:\n" + exploration.toDataString());
+//                System.out.println("exploration vector:\n" + exploration.toDataString());
+                System.out.println("ship thrust: " + exploration.getGene("player.move.thrust").getValue());
                 System.out.println("Successfully read gene vector from server.");
                 return;
             } catch (IOException e) {

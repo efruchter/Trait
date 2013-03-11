@@ -5,6 +5,7 @@ import java.awt.Point;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+import java.io.*;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
@@ -77,12 +78,26 @@ public class LevelGeneratorCore extends Trait {
     @Override
     public void onStart(final Entity self, final Level level) {
 
+    	try {
+    		Runtime rt = Runtime.getRuntime();
+    		Process pr = rt.exec("cmd /C \"cd ../ && Rscript r_script.R\""); // change directory, then call the r script
+    		BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+    		
+    		String line = null;
+    		while((line = input.readLine()) != null) {
+    			System.out.println(line);
+    		}
+    		int exitVal = pr.waitFor();
+    		System.out.println("exited w/error code: " + exitVal);
+    		
+    	} catch (Exception e) {
+    		System.out.println(e.toString());
+    		e.printStackTrace();
+    	}
     	random.setSeed(0);
     	
     	ServerIO v = ClientDefaults.server();
     	
-
-
         /*
          * Takes care of the case where the GUI has already loaded the vector.
          */
@@ -99,7 +114,6 @@ public class LevelGeneratorCore extends Trait {
         enemyBulletSize = v.getExplorationVector().getGene("enemy.bullet.size");
         enemyBulletDamage = v.getExplorationVector().getGene("enemy.bullet.damage");
         enemyBulletCooldown = v.getExplorationVector().getGene("enemy.bullet.cooldown");
-        System.out.println("enemy bullet size: " + v.getExplorationVector().getGene("enemy.bullet.size").getValue());
         
         intensity = v.getExplorationVector().storeGene("spawner.intensity",
                 new Gene("Intensity", "Intensity of everything.", 0, 1, 1f / 2f), false);
@@ -127,6 +141,8 @@ public class LevelGeneratorCore extends Trait {
         
         enemyRouteDuration = v.getExplorationVector().storeGeneCurve("spawner.enemy.routeDuration",
                 new GeneCurve("routeDuration", "time taken for enemies traverse their routes", 16, 1112000, 12000), false);
+        
+        
         /*
          * Canned player position.
          */
@@ -164,6 +180,7 @@ public class LevelGeneratorCore extends Trait {
         PlayerRadiusEditTrait rad = new PlayerRadiusEditTrait(3, 20, 5);
         player.addTrait(rad);
         player.name = "Player Ship";
+        
         // Add screen loop trait
         player.addTrait(new LoopScreenTrait());
         player.addTrait(new ConstantHealthBoostTrait());
@@ -191,13 +208,9 @@ public class LevelGeneratorCore extends Trait {
         for (Entity ship : ships) {
         	if (ship.collisionLabel == CollisionLabel.ENEMY_LABEL) {
         		numEnemiesRemaining++;
-//        		System.out.println("level enemy: ");
-//        		for (Trait et : ship.getTraits()) {
-//        			System.out.print(et.getName() + " : " + et.getInfo());
-//        		}
         	}
         }
-        System.out.println("\nresetting b/t waves; enemies left: " + numEnemiesRemaining);
+//        System.out.println("\nresetting b/t waves; enemies left: " + numEnemiesRemaining);
         TraitProjectClient.s_remain_enemies = numEnemiesRemaining;
         chains.clear();
 
