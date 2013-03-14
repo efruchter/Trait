@@ -41,8 +41,12 @@ public class VectorEditorPopup_Crummy {
     private static boolean blocking = false;
     private static ActionListener onHideAction;
 
-    @SuppressWarnings("serial")
     private static void rebuildGui(final List<GeneWrapper> genes, final boolean useName, final String headerText) {
+    	rebuildGui(genes, useName, headerText, null, -1);
+    }
+    
+    @SuppressWarnings("serial")
+    private static void rebuildGui(final List<GeneWrapper> genes, final boolean useName, final String headerText, final ServerIO v, final long waveCount) {
 
         frame = new JFrame("Control Panel");
         
@@ -141,7 +145,7 @@ public class VectorEditorPopup_Crummy {
     }
 
 
-    public static void show(final List<GeneWrapper> genes, final boolean useName, final String headerText, final boolean forceShow, ServerIO v, long waveCount) {
+    public static void show(final List<GeneWrapper> genes, final boolean useName, final String headerText, final boolean forceShow, final ServerIO v, long waveCount) {
 
         hide();
         
@@ -153,9 +157,9 @@ public class VectorEditorPopup_Crummy {
 
         Collections.sort(genes);
         
-        rebuildGui(genes, useName, headerText);
+        rebuildGui(genes, useName, headerText, v, waveCount);
 
-        if (genes.isEmpty()) {
+        if (genes.isEmpty() && !forceShow) {
             hide();
         } else {
             KeyUtil.clearKeys();

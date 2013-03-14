@@ -119,14 +119,14 @@ public class LevelGeneratorCore extends Trait {
                 new Gene("Intensity", "Intensity of everything.", 0, 1, 1f / 2f), false);
 
         chainProb = v.getExplorationVector().storeGeneCurve("spawner.newChainProb",
-                new GeneCurve("newChainProb", "P(new chain)", 0, 1, 0), false);
-        chainProb.genes[0].setValue(.02f);
-        chainProb.genes[1].setValue(.05f);
+                new GeneCurve("newChainProb", "P(new chain)", 0, 1, 0.5f), false);
+//        chainProb.genes[0].setValue(.03f);
+//        chainProb.genes[1].setValue(.05f);
 
         chainDelay = v.getExplorationVector().storeGeneCurve("spawner.chainDelay",
                 new GeneCurve("chainDelay", "Delay until enemy is spawned to continue a chain.", 0, 1000, 500), false);
         probChainCont = v.getExplorationVector().storeGeneCurve("spawner.probChainCont",
-                new GeneCurve("probChainCont", "P(continue chain)", 0, 1, .90f), false);
+                new GeneCurve("probChainCont", "P(continue chain)", 0, 1, 0.15f), false);
 
         enemySize = v.getExplorationVector().storeGeneCurve("spawner.enemy.radius",
                 new GeneCurve("baseRadius", "Base enemy radius.", 2, 50, 15), false);
@@ -135,13 +135,10 @@ public class LevelGeneratorCore extends Trait {
         enemyBigness = v.getExplorationVector().storeGeneCurve("spawner.enemy.bigness",
                 new GeneCurve("enemyBigness", "Additional bigness/toughness of enemy. Effects everything.", 4, 0, 100, 0), false);
         enemyBigness.setValues(0, 0f, .05f, .10f);
-        
-        polarityAmount = v.getExplorationVector().storeGene("spawner.polarity",
-                new Gene("polarity", "Amount of possible poles.", 0, PolarityController.COLORS.length, 0), false);
-        
         enemyRouteDuration = v.getExplorationVector().storeGeneCurve("spawner.enemy.routeDuration",
                 new GeneCurve("routeDuration", "time taken for enemies traverse their routes", 16, 1112000, 12000), false);
-        
+        polarityAmount = v.getExplorationVector().storeGene("spawner.polarity",
+                new Gene("polarity", "Amount of possible poles.", 0, PolarityController.COLORS.length, 0), false);
         
         /*
          * Canned player position.

@@ -1,0 +1,176 @@
+# setwd('C:/Users/Alex/Desktop/prog_proj/bullethell')
+
+require(reshape2)
+require(plyr)
+require(MASS)
+
+source('./gpFn.R')
+
+usr_data = read.csv('./database.csv')
+
+configs = read.table(file='clientSettings.config', sep='=')
+
+
+if (nrow(usr_data) > 1) {
+  ## ticker to track progress
+  load('r_iter.RData')
+  iter = iter+1
+  
+  usr_comp = usr_data[c('s_wave', 'c_choice')]
+  usr_pair = list()
+  for (i in 2:nrow(usr_comp)) {
+    if (usr_comp$c_choice[i]=='BETTER') {
+      usr_pair[[i]] = c(usr_comp$s_wave[i], usr_comp$s_wave[i-1])
+    } else if (usr_comp$c_choice[i]=='WORSE') {
+      usr_pair[[i]] = c(usr_comp$s_wave[i-1], usr_comp$s_wave[i])
+    } 
+    # ignore 'NONE' cases
+  }
+  usr_pair = ldply(usr_pair) # change to data frame
+  
+  measure_var = c('s_wave', 'player.move.thrust', 'player.move.drag')
+  usr_sample = usr_data[measure_var] # note: need to match up identical values at different waves
+  
+  # convert to set of unique samples + label them
+  uniq_sample = usr_sample
+  uniq_sample$s_wave = NULL
+  uniq_sample = unique(uniq_sample)
+  uniq_sample$label = factor(seq(1, nrow(uniq_sample)))
+  
+  # map unique sample labels to original waves
+  usr_sample = merge(usr_sample, uniq_sample)
+  wave_label = usr_sample[,c('s_wave', 'label')]
+  
+  # convert wave-based pair comparisons to sample-based
+  usr_pair = merge(usr_pair, wave_label, by.x=c('V1'), by.y=c('s_wave'))
+  usr_pair = merge(usr_pair, wave_label, by.x=c('V2'), by.y=c('s_wave'), suffixes=c('.1', '.2'))
+  
+  # clean up useless variables
+  usr_pair$V1 = NULL
+  usr_pair$V2 = NULL
+
+  #### GP preference version ####
+  
+#   control_var = c('label', 'player.move.thrust')
+#   x_sample = arrange(unique(usr_sample[control_var]), label)
+#   x_sample$label = NULL # remove IDs
+#   x_sample = as.matrix(x_sample, ncol=ncol(x_sample))
+#   
+#   x_class = usr_pair
+#   
+#   # create grid of hyperparameters to search
+#   lengthscale_grid = matrix(rep(seq(0.001, 0.01, 0.001),2), ncol=2)
+#   sigma_grid = seq(0.0005, 0.005, 0.0005)
+#   
+#   # optimize hyperparameters
+#   optmodel = optimizeHyper(lengthscale_grid, sigma_grid, x_sample, x_class, infPrefLaplace, mean.const, kernel.SqExpND)
+#   
+#   t_pts = sort(union(unique(x_class[,1]),unique(x_class[,2])))
+#   t_class = expand.grid(t_pts, t_pts)
+#   
+#   t_pred = prefPredict(optmodel, t_class, x_sample, optmodel$f_map, optmodel$W, optmodel$K, optmodel$sigma_n, kernel.SqExpND, optmodel$lenscale)
+#   plot(t_pred$pred)
+#   
+#   
+#   ## last point tested to compare against
+#   n_train = nrow(x_class)
+#   last_pt = setdiff(x_class[n_train,], 
+#                     intersect(x_class[n_train-1,], x_class[n_train,]))
+#   last_pt = as.numeric(as.character(last_pt))
+#   t_class[,1] = as.numeric(as.character(t_class[,1]))
+#   t_class[,2] = as.numeric(as.character(t_class[,2]))
+#   t_idx = which(t_class[,1]==last_pt | t_class[,2]==last_pt) # all possible pairs that will test using the most recent point
+#   t_pairs = t_class[t_idx,]
+#   t_pairs = t_pairs[t_pairs!=last_pt] # only keep other point to test against
+#   t_pairs = as.matrix(t_pairs, ncol=1)
+#   
+#   f_t = optmodel$f_map[t_pairs,]
+#   f_plus = max(optmodel$f_map)
+#   
+#   
+#   next_sample = al.maxExpectedImprovement(optmodel$f_map, f_t, as.matrix(optmodel$sigma_n, ncol=1), t_pairs, sigma_n, slack=0.1, iter)
+#   next_sample = x_sample[next_sample]
+#   
+  #### GP regression version ####
+  control_var = c('player.move.thrust', 'player.move.drag')
+  target_var = c('s_hit_player')
+  
+  x = usr_data[control_var]
+  x = as.matrix(x, ncol=length(control_var))
+  
+  tar_hit = configs[configs[,1]=='tar_hit_rate',2]
+  if (length(tar_hit) < 1) {
+    tar_hit = 2 # default value
+  } else {
+    tar_hit = as.numeric(as.character(tar_hit))
+  }
+  
+  y = usr_data[target_var]
+  y = -(y - tar_hit)^2 # - or +?
+  y = as.matrix(y, ncol=length(target_var))
+  
+  
+  ## example
+  n_pts = 30
+  x_star_thrust = matrix(seq(0+0.07/n_pts, 0.07, len=n_pts), ncol=1)
+  x_star_drag = matrix(seq(0+1/n_pts, 0.8, len=n_pts), ncol=1)
+  x_star_drag = 0.5
+  x_star = expand.grid(x_star_thrust, x_star_drag)
+  
+  sigma_n = 0.05
+  
+  params = list(x=x, y=y, x_test=x_star, sigma.noise=sigma_n, k.x_x=NULL, meanFn=mean.const, kernelFn=kernel.SqExpND)
+  #   gp.score = predictGP.score.curry(params)
+  #   gp.gradient = predictGP.gradient.curry(params)
+  
+  
+  ## optimize hyperparameters
+  save(params, file='optim_data.RData') # save out so "curry" functions can load
+  optim_param = optim(c(1,0.5,0.5), predictGP.score.curry, predictGP.gradient.curry)
+#   predictGP.score.curry(c(1,0.5,10))
+#   predictGP.gradient.curry(c(1,0.5,10))
+  
+  ## predict latent functions at test points
+  gp.pred = predictGP(x, y, x_star, sigma_n, NULL, mean.const, kernel.SqExpND, length_scale=optim_param$par[1:2], variance_scale=optim_param$par[3]^0.5)
+  
+  
+  # sample from GP to get illustrate functions
+  gp.sample = sampleGP(50, x_star, gp.pred$f.star, gp.pred$fs.cov)
+  
+  
+  ## plot results for debug
+  f_star = data.frame(x=x_star_thrust, y=gp.pred$f.star)
+  names(f_star) = c('xs', 'ys')
+  
+  f = data.frame(x=x[,1], y=y)
+  names(f) = c('x', 'y')
+  
+  png(paste('f_fit_', iter, '.png', sep=''))
+  print(
+    ggplot(gp.sample, aes(x=x.Var1,y=value)) + 
+    geom_line(aes(group=variable), colour="grey80") +
+    geom_line(data=f_star,aes(x=xs,y=ys),colour="red", size=0.5) + 
+    geom_errorbar(data=f,aes(x=x,y=NULL,ymin=y-2*sigma_n, ymax=y+2*sigma_n), width=0.002) +
+    geom_point(data=f,aes(x=x,y=y)) +
+    theme_bw() +
+    xlab("input, x")
+  )
+  dev.off()
+  
+  ## greatest expected improvement among test points
+  next_sample = al.maxExpectedImprovement(gp.pred$f.map, gp.pred$f.star, gp.pred$fs.cov, x_star, sigma_n, slack=0.1, iter)
+  
+  save(iter, file='r_iter.RData')
+  
+  ## write to control vector
+  new_vec = paste(
+    paste('player.move.thrust#Amount of control thrust.#0.0#0.09', round(next_sample[,1],3), sep='#'),
+    paste('player.move.drag#Amount of air drag.#0.0#1.0', round(next_sample[,2],3), sep='#'),
+    'player.radius.radius#Player ship radius#2.0#50.0#10.0#spawner.enemy.radius.c0#Base enemy radius.[0]#10.0#20.0#10.0#spawner.enemy.radius.c1#Base enemy radius.[1]#10.0#20.0#10.0#enemy.bullet.speed#Speed of enemy bullets.#0.0#3.0#0.8#enemy.bullet.size#Size of enemy bullets.#0#80.0#10.0#enemy.bullet.damage#Damage of enemy bullets.#0#100.0#5.0#enemy.bullet.cooldown#Cooldown time between firing enemy bullets.#0#1000.0#500.0#',
+    sep='#'
+  )
+  write(new_vec, 'geneText.txt')
+  
+  print(paste('testing: ', next_sample))
+  
+}
