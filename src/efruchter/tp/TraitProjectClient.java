@@ -110,7 +110,7 @@ public class TraitProjectClient extends Applet {
         v.storeInfo(info);
 	}
 
-	private static String[] playerControlled;
+	private static String[] playerControlled = new String[0];
 
 	public void startLWJGL() {
 		gameThread = new Thread() {
@@ -228,7 +228,7 @@ public class TraitProjectClient extends Applet {
 
 			KeyUtil.update();
 
-			level.onUpdate(ClientStateManager.isPaused() ? 0 : delta);
+			level.onUpdate(ClientStateManager.isPaused() || VectorEditorPopup_Crummy.isBlocking() ? 0 : delta);
 
 			if (KeyUtil.isKeyPressed(Keyboard.KEY_RETURN)
 					|| KeyUtil.isKeyPressed(Keyboard.KEY_ESCAPE))
@@ -243,6 +243,7 @@ public class TraitProjectClient extends Applet {
 			}
 			
 		} catch (final Exception e) {
+			e.printStackTrace();
 		}
 		updateFPS();
 
@@ -329,11 +330,12 @@ public class TraitProjectClient extends Applet {
 	 * @return milliseconds passed since last frame
 	 */
 	public static int getDelta() {
-		final long time = getTime();
+		/*final long time = getTime();
 		final int delta = (int) (time - lastFrame);
 		lastFrame = time;
 
-		return delta;
+		return delta;*/
+		return 16;
 	}
 
 	public static long getTime() {

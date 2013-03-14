@@ -38,9 +38,11 @@ public class VectorEditorPopup_Crummy {
 
     private static JFrame frame;
     private static Point frameLoc = null;
+    private static boolean blocking = false;
+    private static ActionListener onHideAction;
 
     @SuppressWarnings("serial")
-    private static void rebuildGui(final List<GeneWrapper> genes, final boolean useName, final String headerText, final ServerIO v, final long waveCount) {
+    private static void rebuildGui(final List<GeneWrapper> genes, final boolean useName, final String headerText) {
 
         frame = new JFrame("Control Panel");
         
@@ -67,6 +69,7 @@ public class VectorEditorPopup_Crummy {
         }, BorderLayout.NORTH);
 
         final JPanel traitPanel = new JPanel();
+        traitPanel.setLayout(new GridLayout(genes.size(), 1));
         traitPanel.setLayout(new GridLayout(genes.size()+2, 1));
 
         for (final GeneWrapper gene : genes) {
@@ -128,16 +131,12 @@ public class VectorEditorPopup_Crummy {
 
         frame.pack();
     }
-    
-    private static void rebuildGui(final List<GeneWrapper> genes, final boolean useName, final String headerText) {
-    	rebuildGui(genes, useName, headerText, null, -1);
-    }
-    
+
     public static void show(final List<GeneWrapper> genes, final boolean useName, final String headerText) {
-    	show(genes, useName, headerText, false);
+    	show(genes, useName, headerText, null);
     }
     
-    public static void show(final List<GeneWrapper> genes, final boolean useName, final String headerText, final boolean forceShow) {
+    public static void show(final List<GeneWrapper> genes, final boolean useName, final String headerText, final ActionListener onHideAction) {
     	show(genes, useName, headerText, false, null, -1);
     }
 
@@ -145,15 +144,18 @@ public class VectorEditorPopup_Crummy {
     public static void show(final List<GeneWrapper> genes, final boolean useName, final String headerText, final boolean forceShow, ServerIO v, long waveCount) {
 
         hide();
+        
+        // Wire an action for next hide
+        VectorEditorPopup_Crummy.onHideAction = onHideAction;
 
         ClientStateManager.setPaused(true);
         ClientStateManager.setFlowState(FlowState.EDITING);
 
         Collections.sort(genes);
         
-        rebuildGui(genes, useName, headerText, v, waveCount);
+        rebuildGui(genes, useName, headerText);
 
-        if (genes.isEmpty() && !forceShow) {
+        if (genes.isEmpty()) {
             hide();
         } else {
             KeyUtil.clearKeys();
@@ -165,7 +167,6 @@ public class VectorEditorPopup_Crummy {
             frame.setVisible(true);
         }
     }
-    
 
     public static void hide() {
         if (frame != null) {
@@ -174,11 +175,34 @@ public class VectorEditorPopup_Crummy {
             ClientStateManager.setFlowState(FlowState.FREE);
             frame.dispose();
         }
+        if (onHideAction != null) {
+        	onHideAction.actionPerformed(null);
+        }
         frame = null;
+        onHideAction = null;
         ClientStateManager.setPaused(false);
+    }
+    
+    /**
+     * Block the core game thread until the window is closed.
+     */
+    public synchronized static void blockWhileOpen() {
+    	blocking = true;
+    	while (frame != null && frame.isVisible()) {
+    		try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+    	}
+    	blocking = false;
     }
     
     public static boolean isVisible() {
     	return frame != null;
     }
+
+	public synchronized static boolean isBlocking() {
+		return blocking;
+	}
 }
