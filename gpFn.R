@@ -309,7 +309,7 @@ likPref = function(sample_pt, class_pt, mu, s2, sigma_noise) {
 #     kernelFn    - covariance function for samples
 #     sigma_n     - noise in judgements of sample preferences
 #     ...         - other parameters to pass to kernelFn or meanFn
-infPrefLaplace = function(sample_pt, class_pt, meanFn, kernelFn, sigma_n, tol=1e-6, max_iter=100, ...) {
+infPrefLaplace = function(sample_pt, class_pt, meanFn, kernelFn, sigma_n, tol=1e-6, max_iter=100, optmethod='me', ...) {
   
   m = mean.const(sample_pt, 0) # TODO: replace with other
   K = kernelFn(sample_pt, sample_pt, deriv=FALSE, ...)
@@ -337,17 +337,23 @@ infPrefLaplace = function(sample_pt, class_pt, meanFn, kernelFn, sigma_n, tol=1e
     da = b - sW %*% solve(L, sW %*% (K %*% b)) - a    # a = b - sW L' \ (L \ (sW K b))
     
     # compute best step size
-    step_best = findMinBisect(prefStepCurry, xmin=0.1, xmax=2, tol=1e-10, da, a, liks, f, K, sample_pt, class_pt, sigma_n)
-    
-    # next point to test
-    pstep = prefStepCurry(step_best$xbest, da, a, liks, f, K, sample_pt, class_pt, sigma_n)
-    a = step_best$xbest*da + a
+    # then next point to test
+    if (optmethod=='me') {
+      step_best = findMinBisect(prefStepCurry, xmin=0.1, xmax=2, tol=1e-10, da, a, liks, f, K, sample_pt, class_pt, sigma_n)
+      pstep = prefStepCurry(step_best$xbest, da, a, liks, f, K, sample_pt, class_pt, sigma_n) # version w/my optim code
+      a = step_best$xbest*da + a      
+    } else {
+      step_best = optimx(c(0.5), fn=prefStepOptimx, gr=NULL, hess=NULL, lower=0.1, upper=2, method=optmethod, itnmax=NULL, hessian=FALSE, control=NULL, da,a,liks,f,K,sample_pt,class_pt,sigma_n)
+      pstep = prefStepCurry(as.numeric(step_best$par), da, a, liks, f, K, sample_pt, class_pt, sigma_n)
+      a = as.numeric(step_best$par)*da + a
+    }
+
     f = pstep$f
     
     Psi_new = pstep$Psi
     iter = iter+1
   }
-  return(list(p_map=pstep, f_map=f, K=K))
+  return(list(p_map=pstep, f_map=f, K=K, Psi=Psi_new))
 }
 
 
@@ -359,7 +365,7 @@ prefPsi = function(lp, f, alpha) {
   #Psi = -sum(lp) + 1/2 * t(f) %*% K^-1 %*% f
   lp = lp[lp>-Inf & lp<Inf]
   Psi = -sum(lp) + 0.5 * t(alpha) %*% f
-  return(Psi)
+  return(as.numericPsi)
 }
 
 ## take a step of magnitude "step" in "a" along "da".
@@ -369,13 +375,46 @@ prefStep = function(step, da, a, liks, f, K, sample_pt, class_pt, sigma_noise) {
   a = step*da + a
   f = K %*% a
   liks = likPref(sample_pt, class_pt, f, K, sigma_noise)
-  badidx = which(tmp==Inf | tmp==-Inf) # HACK: remove anything infinite
+  badidx = which(liks$lp==Inf | liks$lp==-Inf) # HACK: remove anything infinite
   Psi = prefPsi(liks$lp[-badidx], f, a)
   return(list(Psi=Psi, liks=liks, f=f))
 }
 
+prefStepOptimx = function(step, da, a, liks, f, K, sample_pt, class_pt, sigma_noise) {
+  a = step*da + a
+  f = K %*% a
+  liks = likPref(sample_pt, class_pt, f, K, sigma_noise)
+  badidx = which(liks$lp==Inf | liks$lp==-Inf) # HACK: remove anything infinite
+  Psi = prefPsi(liks$lp[-badidx], f, a)
+  return(as.numeric(Psi))
+}
+
 prefStepCurry = function(step, ...) {
   prefStep(step, ...)
+}
+
+
+infPrefLaplaceCurry = function(kernel_params) {
+  load('optim_pref_data.RData')
+  nparam = length(kernel_params)
+  
+  ## take in list of parameters and produce optimized score
+  score = infPrefLaplace(params$sample_pt, params$class_pt, 
+                         params$meanFn, params$kernelFn, 
+                         params$sigma_noise, params$tol, params$max_iter, 
+                         length_scale=kernel_params[1:(nparam-1)],
+                         variance_scale=kernel_params[nparam])
+  
+#   score = predictGP(params$x, params$y, params$x_test, params$sigma.noise, params$k.x_x, params$meanFn, params$kernelFn, length_scale=kernel_scale[1:(nparam-1)], variance_scale=kernel_scale[nparam])
+  
+  return(score$Psi)
+}
+
+predictGP.score.curry = function(kernel_scale) {
+  load('./optim_data.RData')
+  nparam = length(kernel_scale)
+  score = predictGP(params$x, params$y, params$x_test, params$sigma.noise, params$k.x_x, params$meanFn, params$kernelFn, length_scale=kernel_scale[1:(nparam-1)], variance_scale=kernel_scale[nparam])
+  return(-score$lZ)
 }
 
 
@@ -440,29 +479,72 @@ findMinBisect = function(fn, xmin, xmax, tol=1e-10, ...) {
 #     infFn       - inference function to evaluate posterior
 #     meanFn      - mean function for samples
 #     kernelFn    - covariance function for samples
-optimizeHyper = function(lengthscale_grid, sigma_grid, sample_pt, class_pt, infFn, meanFn, kernelFn) {
-  # search hyperparameter settings
-  grid_points = list()
-  for (sigman in sigma_grid) {
-    for (lidx in 1:nrow(lengthscale_grid)) {
-      lenscale = lengthscale_grid[lidx,]
-      tpoint = infFn(sample_pt=sample_pt, class_pt=class_pt, meanFn=meanFn, kernelFn=kernelFn, sigma_n=sigman, tol=1e-8, max_iter=10, lenscale)
-      grid_points[[paste(c(lenscale, sigman), collapse=' ')]] = tpoint
+optimizeHyper = function(hypmethod='me', optmethod='me', lengthscale_grid, sigma_grid, sample_pt, class_pt, infFn, meanFn, kernelFn) {
+  
+  if (hypmethod=='me') {
+    # search hyperparameter settings
+    grid_points = list()
+    for (sigman in sigma_grid) {
+      for (lidx in 1:nrow(lengthscale_grid)) {
+        lenscale = lengthscale_grid[lidx,]
+        tpoint = infFn(sample_pt=sample_pt, class_pt=class_pt, meanFn=meanFn, kernelFn=kernelFn, sigma_n=sigman, tol=1e-8, max_iter=10, optmethod=optmethod, lenscale)
+        grid_points[[paste(c(lenscale, sigman), collapse=' ')]] = tpoint
+      }
     }
+    
+    # find highest scoring set of hyperparameters and corresponding results
+    psi_grid = lapply(grid_points, function(x) x$p_map$Psi)
+    psi_grid[which.min(unlist(psi_grid))] # minimum score (best)
+    tbest = grid_points[[which.min(unlist(psi_grid))]] # results with best hyperparameters
+    
+    minparam = names(grid_points)[which.min(unlist(psi_grid))]
+    minparam = as.numeric(unlist(strsplit(minparam, ' ')))
+    nparam = length(minparam)
+    lenscale = minparam[1:(nparam-1)]
+    sigma_n = minparam[nparam]
+    
+    return(list(model=tbest, sigma_n=sigma_n, lenscale=lenscale, f_map=tbest$f_map, K=tbest$K, W=tbest$p_map$liks$d2lp))
   }
-  # find highest scoring set of hyperparameters and corresponding results
-  psi_grid = lapply(grid_points, function(x) x$p_map$Psi)
-  psi_grid[which.min(unlist(psi_grid))] # minimum score (best)
-  tbest = grid_points[[which.min(unlist(psi_grid))]] # results with best hyperparameters
+  else {
+    len_range = apply(lengthscale_grid, 2, range)
+    len_min = apply(len_range, 2, min)
+    len_max = apply(len_range, 2, max)
+    len_mid = apply(len_range, 2, mean)
+    
+    sigma_range = range(sigma_grid)
+    
+    outres = optimx(c(len_mid,mean(sigma_range)), 
+                    fn=infPrefLaplaceOptimx, gr=NULL, hess=NULL, 
+                    lower=c(len_min, min(sigma_range)), 
+                    upper=c(len_max, max(sigma_range)), 
+                    method=hypmethod, 
+                    itnmax=NULL, hessian=FALSE, control=NULL, 
+                    sample_pt, class_pt, meanFn, kernelFn, optmethod=optmethod)
+    optparam = unlist(outres$par)
+    nparam = length(optparam)
+    optlen = optparam[1:(nparam-1)]
+    optsigma = optparam[nparam]
+    tbest = infPrefLaplace(sample_pt, class_pt, meanFn, kernelFn, tol=1e-06, max_iter=100, sigma_n=optsigma, optmethod=optmethod, optlen)
+    
+    return(list(model=tbest, sigma_n=optsigma, lenscale=optlen, f_map=tbest$f_map, K=tbest$K, W=tbest$p_map$liks$d2lp))
+    
+#     outres = optimx(c(0.0025,0.0025), fn=infPrefLaplaceOptimx, gr=NULL, hess=NULL, lower=c(0.0001,0.0015), upper=c(0.005,0.0050), method=hypmethod, itnmax=NULL, hessian=FALSE, control=NULL, x_sample, x_class, mean.const, kernel.SqExpND, optmethod=optmethod)
+  }
   
-  minparam = names(grid_points)[which.min(unlist(psi_grid))]
-  minparam = as.numeric(unlist(strsplit(minparam, ' ')))
-  nparam = length(minparam)
-  lenscale = minparam[1:(nparam-1)]
-  sigma_n = minparam[nparam]
-  
-  return(list(model=tbest, sigma_n=sigma_n, lenscale=lenscale, f_map=tbest$f_map, K=tbest$K, W=tbest$p_map$liks$d2lp))
 }
+
+infPrefLaplaceOptimx = function(inparam, sample_pt, class_pt, meanFn, kernelFn, tol=1e-6, max_iter=100, optmethod='me', ...) {
+  nparam = length(inparam)
+  lengthscale = inparam[1:(nparam-1)]
+  sigma_n = inparam[nparam]
+  outlist = infPrefLaplace(sample_pt=sample_pt, class_pt=class_pt, meanFn=meanFn, kernelFn=kernelFn, sigma_n=sigma_n, tol=tol, max_iter=max_iter, optmethod=optmethod, lengthscale)
+  return(as.numeric(outlist$Psi))
+}
+
+
+optmethod='Nelder-Mead'
+hypmethod = 'BFGS'
+system.time(optimx(c(0.0025,0.0025), fn=infPrefLaplaceOptimx, gr=NULL, hess=NULL, lower=c(0.0001,0.0015), upper=c(0.005,0.0050), method=hypmethod, itnmax=NULL, hessian=FALSE, control=NULL, x_sample, x_class, mean.const, kernel.SqExpND, optmethod=optmethod))
 
 
 ## predict preferences between pairs of samples using model provided

@@ -51,46 +51,60 @@ if (nrow(usr_data) > 1) {
 
   #### GP preference version ####
   
-#   control_var = c('label', 'player.move.thrust')
-#   x_sample = arrange(unique(usr_sample[control_var]), label)
-#   x_sample$label = NULL # remove IDs
-#   x_sample = as.matrix(x_sample, ncol=ncol(x_sample))
-#   
-#   x_class = usr_pair
-#   
-#   # create grid of hyperparameters to search
-#   lengthscale_grid = matrix(rep(seq(0.001, 0.01, 0.001),2), ncol=2)
-#   sigma_grid = seq(0.0005, 0.005, 0.0005)
-#   
-#   # optimize hyperparameters
+  control_var = c('label', 'player.move.thrust')
+  x_sample = arrange(unique(usr_sample[control_var]), label)
+  x_sample$label = NULL # remove IDs
+  x_sample = as.matrix(x_sample, ncol=ncol(x_sample))
+  
+  x_class = usr_pair
+  sigma_n = 0.05
+  
+  # create grid of hyperparameters to search
+  lengthscale_grid = matrix(rep(seq(0.001, 0.005, 0.001),ncol(x_sample)), ncol=ncol(x_sample))
+  sigma_grid = seq(0.0005, 0.005, 0.0005)
+  
+  # optimize hyperparameters
+  optmodel = optimizeHyper(hypmethod='BFGS', optmethod='Nelder-Mead', lengthscale_grid, sigma_grid, x_sample, x_class, infPrefLaplace, mean.const, kernel.SqExpND)
+  
+#   params = list(sample_pt=x_sample, class_pt=x_class, meanFn=mean.const, kernelFn=kernel.SqExpND, 
+#                 sigma_noise=sigma_n, tol=1e-6, max_iter=100)
+#   save(params, file='optim_pref_data.RData') # save out so "curry" functions can load
+#   optim_param = optim(c(1,0.5), infPrefLaplaceCurry)
+  
+  t_pts = sort(union(unique(x_class[,1]),unique(x_class[,2])))
+  t_class = expand.grid(t_pts, t_pts)
+  
+  t_pred = prefPredict(optmodel, t_class, x_sample, optmodel$f_map, optmodel$W, optmodel$K, optmodel$sigma_n, kernel.SqExpND, optmodel$lenscale)
+  plot(t_pred$pred)
+  
+  
+  # Call the R code profiler and give it an output file to hold results
+#   Rprof('optimHyper_optim.out')
+  # Call the function to be profiled
+#   optim_param = optim(c(1,0.5), infPrefLaplaceCurry)
 #   optmodel = optimizeHyper(lengthscale_grid, sigma_grid, x_sample, x_class, infPrefLaplace, mean.const, kernel.SqExpND)
-#   
-#   t_pts = sort(union(unique(x_class[,1]),unique(x_class[,2])))
-#   t_class = expand.grid(t_pts, t_pts)
-#   
-#   t_pred = prefPredict(optmodel, t_class, x_sample, optmodel$f_map, optmodel$W, optmodel$K, optmodel$sigma_n, kernel.SqExpND, optmodel$lenscale)
-#   plot(t_pred$pred)
-#   
-#   
-#   ## last point tested to compare against
-#   n_train = nrow(x_class)
-#   last_pt = setdiff(x_class[n_train,], 
-#                     intersect(x_class[n_train-1,], x_class[n_train,]))
-#   last_pt = as.numeric(as.character(last_pt))
-#   t_class[,1] = as.numeric(as.character(t_class[,1]))
-#   t_class[,2] = as.numeric(as.character(t_class[,2]))
-#   t_idx = which(t_class[,1]==last_pt | t_class[,2]==last_pt) # all possible pairs that will test using the most recent point
-#   t_pairs = t_class[t_idx,]
-#   t_pairs = t_pairs[t_pairs!=last_pt] # only keep other point to test against
-#   t_pairs = as.matrix(t_pairs, ncol=1)
-#   
-#   f_t = optmodel$f_map[t_pairs,]
-#   f_plus = max(optmodel$f_map)
-#   
-#   
-#   next_sample = al.maxExpectedImprovement(optmodel$f_map, f_t, as.matrix(optmodel$sigma_n, ncol=1), t_pairs, sigma_n, slack=0.1, iter)
-#   next_sample = x_sample[next_sample]
-#   
+#   Rprof(NULL)
+  
+  ## last point tested to compare against
+  n_train = nrow(x_class)
+  last_pt = setdiff(x_class[n_train,], 
+                    intersect(x_class[n_train-1,], x_class[n_train,]))
+  last_pt = as.numeric(as.character(last_pt))
+  t_class[,1] = as.numeric(as.character(t_class[,1]))
+  t_class[,2] = as.numeric(as.character(t_class[,2]))
+  t_idx = which(t_class[,1]==last_pt | t_class[,2]==last_pt) # all possible pairs that will test using the most recent point
+  t_pairs = t_class[t_idx,]
+  t_pairs = t_pairs[t_pairs!=last_pt] # only keep other point to test against
+  t_pairs = as.matrix(t_pairs, ncol=1)
+  
+  f_t = optmodel$f_map[t_pairs,]
+  f_plus = max(optmodel$f_map)
+  
+  
+  next_sample = al.maxExpectedImprovement(optmodel$f_map, f_t, as.matrix(optmodel$sigma_n, ncol=1), t_pairs, sigma_n, slack=0.1, iter)
+  next_sample = x_sample[next_sample]
+  
+  
   #### GP regression version ####
   control_var = c('player.move.thrust', 'player.move.drag')
   target_var = c('s_hit_player')
