@@ -66,29 +66,20 @@ if (nrow(usr_data) > 1) {
   # optimize hyperparameters
   optmodel = optimizeHyper(hypmethod='BFGS', optmethod='Nelder-Mead', lengthscale_grid, sigma_grid, x_sample, x_class, infPrefLaplace, mean.const, kernel.SqExpND)
   
-#   params = list(sample_pt=x_sample, class_pt=x_class, meanFn=mean.const, kernelFn=kernel.SqExpND, 
-#                 sigma_noise=sigma_n, tol=1e-6, max_iter=100)
-#   save(params, file='optim_pref_data.RData') # save out so "curry" functions can load
-#   optim_param = optim(c(1,0.5), infPrefLaplaceCurry)
-  
   t_pts = sort(union(unique(x_class[,1]),unique(x_class[,2])))
   t_class = expand.grid(t_pts, t_pts)
   
   t_pred = prefPredict(optmodel, t_class, x_sample, optmodel$f_map, optmodel$W, optmodel$K, optmodel$sigma_n, kernel.SqExpND, optmodel$lenscale)
   plot(t_pred$pred)
   
-  
-  # Call the R code profiler and give it an output file to hold results
-#   Rprof('optimHyper_optim.out')
-  # Call the function to be profiled
-#   optim_param = optim(c(1,0.5), infPrefLaplaceCurry)
-#   optmodel = optimizeHyper(lengthscale_grid, sigma_grid, x_sample, x_class, infPrefLaplace, mean.const, kernel.SqExpND)
-#   Rprof(NULL)
-  
   ## last point tested to compare against
   n_train = nrow(x_class)
   last_pt = setdiff(x_class[n_train,], 
                     intersect(x_class[n_train-1,], x_class[n_train,]))
+  if (sum(dim(last_pt))==0) {
+    ## catch case where last point used same parameters twice in a row
+    last_pt = x_class[n_train,1]
+  }
   last_pt = as.numeric(as.character(last_pt))
   t_class[,1] = as.numeric(as.character(t_class[,1]))
   t_class[,2] = as.numeric(as.character(t_class[,2]))
@@ -96,11 +87,12 @@ if (nrow(usr_data) > 1) {
   t_pairs = t_class[t_idx,]
   t_pairs = t_pairs[t_pairs!=last_pt] # only keep other point to test against
   t_pairs = as.matrix(t_pairs, ncol=1)
+  t_pairs = unique(t_pairs) # remove redundant
   
   f_t = optmodel$f_map[t_pairs,]
   f_plus = max(optmodel$f_map)
   
-  
+  ## pick point that optimizes objective fn
   next_sample = al.maxExpectedImprovement(optmodel$f_map, f_t, as.matrix(optmodel$sigma_n, ncol=1), t_pairs, sigma_n, slack=0.1, iter)
   next_sample = x_sample[next_sample]
   

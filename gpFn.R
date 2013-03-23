@@ -365,7 +365,7 @@ prefPsi = function(lp, f, alpha) {
   #Psi = -sum(lp) + 1/2 * t(f) %*% K^-1 %*% f
   lp = lp[lp>-Inf & lp<Inf]
   Psi = -sum(lp) + 0.5 * t(alpha) %*% f
-  return(as.numericPsi)
+  return(as.numeric(Psi))
 }
 
 ## take a step of magnitude "step" in "a" along "da".
@@ -380,6 +380,7 @@ prefStep = function(step, da, a, liks, f, K, sample_pt, class_pt, sigma_noise) {
   return(list(Psi=Psi, liks=liks, f=f))
 }
 
+## change output for optimization procedures
 prefStepOptimx = function(step, da, a, liks, f, K, sample_pt, class_pt, sigma_noise) {
   a = step*da + a
   f = K %*% a
@@ -540,11 +541,6 @@ infPrefLaplaceOptimx = function(inparam, sample_pt, class_pt, meanFn, kernelFn, 
   outlist = infPrefLaplace(sample_pt=sample_pt, class_pt=class_pt, meanFn=meanFn, kernelFn=kernelFn, sigma_n=sigma_n, tol=tol, max_iter=max_iter, optmethod=optmethod, lengthscale)
   return(as.numeric(outlist$Psi))
 }
-
-
-optmethod='Nelder-Mead'
-hypmethod = 'BFGS'
-system.time(optimx(c(0.0025,0.0025), fn=infPrefLaplaceOptimx, gr=NULL, hess=NULL, lower=c(0.0001,0.0015), upper=c(0.005,0.0050), method=hypmethod, itnmax=NULL, hessian=FALSE, control=NULL, x_sample, x_class, mean.const, kernel.SqExpND, optmethod=optmethod))
 
 
 ## predict preferences between pairs of samples using model provided
