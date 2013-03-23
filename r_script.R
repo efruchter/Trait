@@ -125,18 +125,29 @@ if (nrow(usr_data) > 1) {
   
   sigma_n = 0.05
   
-  params = list(x=x, y=y, x_test=x_star, sigma.noise=sigma_n, k.x_x=NULL, meanFn=mean.const, kernelFn=kernel.SqExpND)
+#   params = list(x=x, y=y, x_test=x_star, sigma.noise=sigma_n, k.x_x=NULL, meanFn=mean.const, kernelFn=kernel.SqExpND)
   #   gp.score = predictGP.score.curry(params)
   #   gp.gradient = predictGP.gradient.curry(params)
   
   
   ## optimize hyperparameters
-  save(params, file='optim_data.RData') # save out so "curry" functions can load
-  optim_param = optim(c(1,0.5,0.5), predictGP.score.curry, predictGP.gradient.curry)
+  optimx_param = optimx(par=c(1,0.5,0.5), 
+                        fn=predictGP.optimx, gr=NULL, hess=NULL,
+                        lower=-Inf, upper=Inf,
+                        method='Nelder-Mead',
+                        itnmax=NULL, hessian=FALSE, control=list(),
+                        xin=x, yin=y, x_test=x_star, sigma_n=sigma_n, k.x_x=NULL, meanFn=mean.const, kernelF=kernel.SqExpND
+                        )
+
+#   save(params, file='optim_data.RData') # save out so "curry" functions can load
+#   optim_param = optim(c(1,0.5,0.5), predictGP.score.curry, predictGP.gradient.curry)
 #   predictGP.score.curry(c(1,0.5,10))
 #   predictGP.gradient.curry(c(1,0.5,10))
   
   ## predict latent functions at test points
+#   sigma_n = optimx_param$par[1]
+  varscale = optimx_param$par[2]
+  lensclae = optimx_param$par[3:length(optimx_param$par)]
   gp.pred = predictGP(x, y, x_star, sigma_n, NULL, mean.const, kernel.SqExpND, length_scale=optim_param$par[1:2], variance_scale=optim_param$par[3]^0.5)
   
   

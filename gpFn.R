@@ -210,6 +210,24 @@ predictGP.gradient.curry = function(kernel_scale) {
   return(ls_grad)
 }
 
+## return score or gradient for optimx
+## mode = 'score' OR 'gradient'
+predictGP.optimx = function(kernelpar, xin, yin, x_test, sigma_n, k.x_x, meanFn, kernelFn, ...) {
+  ## kernel par should be: [variance scale, lengthscale[1], lengthscale[2], ..., lengthscale[D]]
+  ##    where D is dimensionality of xin
+  nparam = length(kernelpar)
+  outparam = predictGP(x, y, x_test, sigma_n, 
+                       k.x_x, meanFn, kernelFn, 
+                       length_scale=kernelpar[2:nparam], variance_scale=kernelpar[1])
+  return(-as.numeric(outparam$lZ))
+}
+
+
+predictGP.optimx.grad = function(kernelpar, xin, yin, x_test, sigma_n, k.x_x, meanFn, kernelFn, ...) {
+  nparam = length(kernelpar)
+  outparam = predictGP(x, y, x_test, sigma_n, k.x_x, meanFn, kernelFn, length_scale=kernelpar[1:(nparam-1)], variance_scale=kernelpar[nparam])
+  return(unlist(outparam$dlz.cov))
+}
 
 
 ## sample functions given predictive mean and covariance at a series of points
