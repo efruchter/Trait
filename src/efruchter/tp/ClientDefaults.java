@@ -3,7 +3,9 @@ package efruchter.tp;
 import java.applet.Applet;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Properties;
 
 import efruchter.tp.gui.Console;
@@ -16,7 +18,8 @@ public class ClientDefaults {
 	public static void init(Applet applet) {
 		try {
 			// GATHER THE DATA FROM APPLET PARAMS OR CONFIG FILE
-			String levelLength, localServer, vector, devMode, serverIp, console;
+			String levelLength, localServer, vector, devMode, serverIp, console, learn_mode;
+			String playerID = learn_mode = null;
 			if (applet.getParameter("canary") != null) {
 				levelLength = applet.getParameter("level_length");
 				localServer = applet.getParameter("local_server");
@@ -24,6 +27,7 @@ public class ClientDefaults {
 				devMode = applet.getParameter("dev_mode");
 				serverIp = applet.getParameter("server_ip");
 				console = applet.getParameter("console");
+//				playerID = applet.getParameter("playerID"); // read in last player ID used
 			} else {
 				Properties prop = new Properties();
 				String fileName = "clientSettings.config";
@@ -39,6 +43,13 @@ public class ClientDefaults {
 				devMode = prop.getProperty("dev_mode");
 				serverIp = prop.getProperty("server_ip");
 				console = prop.getProperty("console");
+				playerID = prop.getProperty("player_id");
+				learn_mode = prop.getProperty("learn_mode");
+				
+				PLAYER_ID = Long.parseLong(playerID) + 1; // increment from last player
+				prop.setProperty("player_id", ""+PLAYER_ID); // update value
+				OutputStream os = new FileOutputStream(fileName);
+				prop.store(os, "");
 			}
 
 			//Build the actual config options
@@ -48,6 +59,13 @@ public class ClientDefaults {
 			VECTOR = (ServerIO) server.newInstance();
 			DEV_MODE = Boolean.parseBoolean(devMode);
 			SERVER_IP = serverIp;
+			if (playerID != null) {
+				PLAYER_ID = Long.parseLong(playerID);
+			} else {
+				PLAYER_ID = 0;
+			}
+			LEARN_MODE = learn_mode;
+			
 			if (Boolean.parseBoolean(console)) {
 				Console.init();
 			}
@@ -61,6 +79,7 @@ public class ClientDefaults {
 			VECTOR = new ServerIO_ServerImpl();
 			DEV_MODE = false;
 			SERVER_IP = "trait.ericfruchter.com";
+			PLAYER_ID = 0;
 		}
 	}
 
@@ -69,6 +88,27 @@ public class ClientDefaults {
 	private static ServerIO VECTOR;
 	private static boolean DEV_MODE;
 	private static String SERVER_IP;
+	private static long PLAYER_ID;
+	private static String LEARN_MODE;
+	
+	/**
+	 * ID of current player
+	 */
+	public static long playerID() {
+		return PLAYER_ID;
+	}
+	
+	public static void setPlayerID(long newPid) {
+		PLAYER_ID = newPid;
+	}
+	
+	/**
+	 * Mode for learning algorithm
+	 * 	currently supports: regression, preference
+	 */
+	public static String learnMode() {
+		return LEARN_MODE;
+	}
 
 	/**
 	 * Wave Length in milliseconds

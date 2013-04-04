@@ -93,6 +93,7 @@ public class TraitProjectClient extends Applet {
         info.put("date", Long.toString(System.currentTimeMillis()));
         info.put("vector", v.getExplorationVector().toDataString());
 //        System.out.println("saving exploration vector: " + v.getExplorationVector().toDataString());
+        info.put("pID", ""+ClientDefaults.playerID());
         info.put("s_wave", Long.toString(waveCount));
         info.put("s_damage_player", Float.toString(TraitProjectClient.s_damage_player));
         info.put("s_damage_enemies", Float.toString(TraitProjectClient.s_damage_enemies));
@@ -175,6 +176,7 @@ public class TraitProjectClient extends Applet {
 	public void init() {
 		
 		ClientDefaults.init(this);
+		System.out.println("player ID: " + ClientDefaults.playerID());
 		
 		setLayout(new BorderLayout());
 		try {

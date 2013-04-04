@@ -648,15 +648,25 @@ al.maxExpectedImprovement = function(f_cur, f_test, f_cov, x_test, sigma_n, slac
   z_t = (f_test - f_plus - slack)/diag(f_cov)
 #   ei = (f_test - f_plus - slack) * pnorm(z_t) + sigma_n * dnorm(z_t)
   ei = (f_test - f_plus - slack) * pnorm(z_t) + diag(f_cov) * dnorm(z_t)
-  next_pt = which.max(ei)
+  colnames(ei) = 'ei'
+  
+  ## get next set of possible sample points sorted by expected information
+  tmp = cbind(ei, x_test)
+  top10 = tmp[order(-tmp[,1]),]
+  next_sample10 = top10[1:10,-c(1)]
+  
+  
+#   next_pt = which.max(ei)
   #   next_pt = t_pairs[next_pt,]
   #   next_sample = next_pt[next_pt!=last_pt]
-  next_sample = x_test[next_pt,]
+#   next_sample = x_test[next_pt,]
+  next_sample = next_sample10[1,]
   
-  plot(x_test[,1], ei)
   
   png(paste('ei_', iter, '.png', sep=''))
-  plot(x_test[,1], ei)
+  print(
+    ggplot(top10, aes(Var1, Var2, z=ei)) + stat_contour(geom='polygon', aes(fill=..level..), bins=15)  + geom_point(data=next_sample10, aes(x=Var1, y=Var2, z=1), size=5, colour='orange') + theme_bw()
+  )
   dev.off()
   
   return(next_sample)
