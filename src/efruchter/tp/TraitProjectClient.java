@@ -62,6 +62,7 @@ public class TraitProjectClient extends Applet {
 	public static float s_fired_player;
 	public static float s_fired_enemies;
 	public static float s_killed_enemies;
+	public static long displayScore;
 
 	public static void resetMetrics() {
 		s_damage_player = 0;
@@ -70,6 +71,7 @@ public class TraitProjectClient extends Applet {
 		s_fired_player = 0;
 		s_fired_enemies = 0;
 		s_killed_enemies = 0;
+		displayScore = 0;
 	}
 
 	private static String[] playerControlled = new String[0];
@@ -242,7 +244,9 @@ public class TraitProjectClient extends Applet {
 						.drawString(
 								new StringBuffer().append("")
 										// .append("health ").append(playerHealth)
-										.append("\n\n\n\n")
+										.append("\n")
+										.append("score ").append(displayScore)
+										.append("\n\n")
 										.append("wave ")
 										.append(level.getGeneratorCore().getWaveCount()).toString(), 5, 45);
 				RenderUtil.setColor(Color.GREEN);
