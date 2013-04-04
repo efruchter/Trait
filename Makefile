@@ -13,7 +13,6 @@ clean:
 	find $(SRCDIR) -type f -name "*.class" | xargs rm -f
 
 jar: clean build myKeystore.txt
-
 	jar cvf TraitProject.jar -C src/ .
 	jarsigner -keystore myKeystore.txt TraitProject.jar myself
 	mv TraitProject.jar website
