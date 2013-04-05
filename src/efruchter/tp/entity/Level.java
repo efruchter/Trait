@@ -38,10 +38,12 @@ public class Level {
         entities.put(EntityType.PROJECTILE, new ArrayList<Entity>());
         entities.put(EntityType.BG, new ArrayList<Entity>());
         entities.put(EntityType.GENERATOR, new ArrayList<Entity>());
+        entities.put(EntityType.SERVICE, new ArrayList<Entity>());
 
         recycle.put(EntityType.SHIP, new LinkedList<Entity>());
         recycle.put(EntityType.PROJECTILE, new LinkedList<Entity>());
         recycle.put(EntityType.BG, new LinkedList<Entity>());
+        recycle.put(EntityType.SERVICE, new LinkedList<Entity>());
 
         add = new LinkedList<Entity>();
         remove = new LinkedList<Entity>();
@@ -67,6 +69,10 @@ public class Level {
         }
 
         for (final Entity b : entities.get(EntityType.GENERATOR)) {
+            b.onUpdate(delta, this);
+        }
+
+        for (final Entity b : entities.get(EntityType.SERVICE)) {
             b.onUpdate(delta, this);
         }
 
