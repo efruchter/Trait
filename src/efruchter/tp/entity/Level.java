@@ -56,6 +56,11 @@ public class Level {
     }
 
     public void onUpdate(final long delta) {
+
+        for (final Entity b : entities.get(EntityType.SERVICE)) {
+            b.onUpdate(delta, this);
+        }
+
         for (final Entity b : entities.get(EntityType.PROJECTILE)) {
             b.onUpdate(delta, this);
         }
@@ -69,10 +74,6 @@ public class Level {
         }
 
         for (final Entity b : entities.get(EntityType.GENERATOR)) {
-            b.onUpdate(delta, this);
-        }
-
-        for (final Entity b : entities.get(EntityType.SERVICE)) {
             b.onUpdate(delta, this);
         }
 
