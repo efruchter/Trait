@@ -207,6 +207,13 @@ public class RenderUtil {
         GL11.glBegin(GL11.GL_POINTS);
         for (char c : s.toLowerCase().toCharArray())
             switch (c) {
+		        case '-': {
+		            for (int i = 2; i <= 6; i++) {
+		                GL11.glVertex2f(x + i, y + 4);
+		            }
+		            x += 8;
+		            break;
+		        }
                 case 'a': {
                     for (int i = 0; i < 8; i++) {
                         GL11.glVertex2f(x + 1, y + i);
