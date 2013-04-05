@@ -7,5 +7,5 @@ package efruchter.tp.entity;
  * 
  */
 public enum EntityType {
-	PROJECTILE, SHIP, BG, NONE, GENERATOR;
+	PROJECTILE, SHIP, BG, NONE, GENERATOR, SERVICE;
 }

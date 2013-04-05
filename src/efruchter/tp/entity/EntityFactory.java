@@ -132,7 +132,7 @@ public class EntityFactory {
 		e.addTrait(new GeneExpressionInterpolator(rad.radius, 1, 0, (long) (Math.random() * delay)));
 	}
 
-    public static void buildNewWaveAnim(final Entity e) {
+    public static Entity buildNewWaveAnim(final Entity e) {
 
         final long duration = 7000;
 
@@ -167,5 +167,7 @@ public class EntityFactory {
         });
 
         e.health = 0;
+        
+        return e;
     }
 }

@@ -230,6 +230,17 @@ public class LevelGeneratorCore extends Trait {
         
         time = 0;
         TraitProjectClient.resetMetrics();
+        /* Use this to perform actions on level start
+         * when ordering is becoming an issue.
+         */
+        level.getBlankEntity(EntityType.SERVICE).addTrait(new TraitAdapter(){
+        	public void onUpdate(Entity self, Level level, long delta) {
+
+        		TraitProjectClient.resetMetrics();
+
+        		level.removeEntity(self);
+        	}
+        });
     }
 
     @Override

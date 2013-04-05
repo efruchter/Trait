@@ -748,10 +748,10 @@ public class RenderUtil {
                     break;
                 }
                 case '-': {
-                	for (int i=0; i <= 4; i++) {
+                	for (int i = 2; i <= 6; i++) {
                 		GL11.glVertex2f(x+i, y+4);
                 	}
-                	x += 4;
+                	x += 8;
                 	break;
                 }
                 case ' ': {

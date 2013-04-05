@@ -118,6 +118,8 @@ if (nrow(usr_data) > 1) {
       sep='#'
     )
     write(new_vec, 'geneText.txt')
+    
+    print('preference learning')
   }
   
   
@@ -216,6 +218,8 @@ if (nrow(usr_data) > 1) {
       ggplot(gp.sample, aes(x.Var1, x.Var2, z=value)) + stat_contour(geom='polygon', aes(group=variable, fill=..level..), bins=3)  + geom_point(data=next_sample, aes(x=Var1, y=Var2, z=1), size=5, colour='orange') + theme_bw()
       )
     dev.off()
+    
+    print('regression learning')
   }
 
   save(iter, file='r_iter.RData')
