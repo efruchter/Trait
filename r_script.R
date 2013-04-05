@@ -10,8 +10,7 @@ source('./gpFn.R')
 usr_data = read.csv('./database.csv')
 
 configs = read.table(file='clientSettings.config', sep='=')
-al_mode = read.table(file='r_configs.config', sep='=')
-learn_mode = al_mode[al_mode$V1=='learn_mode',2]
+learn_mode = configs[configs$V1=='learn_mode',2]
 
 # decrement as always pID is incremented after loading, so newest player is one less than stored
 pID = as.numeric(as.character(configs[configs$V1=='player_id',2]))-1 
@@ -64,28 +63,30 @@ if (nrow(usr_data) > 1) {
     usr_pair$V2 = NULL
     
     
-    control_var = c('label', 'player.move.thrust')
-    x_sample = arrange(unique(usr_sample[control_var]), label)
-    x_sample$label = NULL # remove IDs
-    x_sample = as.matrix(x_sample, ncol=ncol(x_sample))
     
-    x_class = usr_pair
-    sigma_n = 0.05
     
-    # create grid of hyperparameters to search
-    lengthscale_grid = matrix(rep(seq(0.001, 0.005, 0.001),ncol(x_sample)), ncol=ncol(x_sample))
-    sigma_grid = seq(0.0005, 0.005, 0.0005)
     
-    # optimize hyperparameters
-    optmodel = optimizeHyper(hypmethod='BFGS', optmethod='Nelder-Mead', lengthscale_grid, sigma_grid, x_sample, x_class, infPrefLaplace, mean.const, kernel.SqExpND)
     
-    t_pts = sort(union(unique(x_class[,1]),unique(x_class[,2])))
-    t_class = expand.grid(t_pts, t_pts)
+    ## TODO: make this scale to increase sampling density as needed -> optimize iteratively
+    npts=10
+    tvarList = list(c('player.move.thrust', 0.0, 0.009),
+                    c('player.move.drag', 0.0, 1.0))
     
-    t_pred = prefPredict(optmodel, t_class, x_sample, optmodel$f_map, optmodel$W, optmodel$K, optmodel$sigma_n, kernel.SqExpND, optmodel$lenscale)
-    plot(t_pred$pred)
     
-    ## last point tested to compare against
+    tpts = list()
+    for (tvar in tvarList) {
+      tpts[[tvar[1]]] = paramGrid(npts, as.numeric(tvar[2]), as.numeric(tvar[3]))
+    }
+    tpts = expand.grid(tpts)
+#     thrust = c(0.0, 0.09)
+#     thrust_sample = paramGrid(npts, thrust[1], thrust[2])
+#     
+#     drag = c(0.0, 1.0)
+#     drag_sample = paramGrid(npts, drag[1], drag[2])
+    
+    control_var = c('label', 'player.move.thrust', 'player.move.drag')
+    sample_map = arrange(unique(usr_sample[control_var]), label)
+    
     n_train = nrow(x_class)
     last_pt = setdiff(x_class[n_train,], 
                       intersect(x_class[n_train-1,], x_class[n_train,]))
@@ -93,27 +94,100 @@ if (nrow(usr_data) > 1) {
       ## catch case where last point used same parameters twice in a row
       last_pt = x_class[n_train,1]
     }
-    last_pt = as.numeric(as.character(last_pt))
-    t_class[,1] = as.numeric(as.character(t_class[,1]))
-    t_class[,2] = as.numeric(as.character(t_class[,2]))
-    t_idx = which(t_class[,1]==last_pt | t_class[,2]==last_pt) # all possible pairs that will test using the most recent point
-    t_pairs = t_class[t_idx,]
-    t_pairs = t_pairs[t_pairs!=last_pt] # only keep other point to test against
-    t_pairs = as.matrix(t_pairs, ncol=1)
-    t_pairs = unique(t_pairs) # remove redundant
     
-    f_t = optmodel$f_map[t_pairs,]
+#     tclass = merge(sample_map, tpts)
+    tclass = cbind(seq(1:nrow(tpts)), tpts)
+    names(tclass)[1] = 'label'
+#     tclass_pair = expand.grid(tclass$label, tclass$label)
+    last_pt = as.numeric(as.character(last_pt))
+    tclass_pair[,1] = as.numeric(as.character(tclass_pair[,1]))
+    tclass_pair[,2] = as.numeric(as.character(tclass_pair[,2]))
+    
+    tclass_pair = expand.grid(last_pt, tclass$label)
+    tclass_pair = subset(tclass_pair, tclass_pair[,2] != last_pt)
+    tsample_pt = subset(tclass, tclass$label!=last_pt)
+    tsample_pt = as.matrix(tsample_pt, ncol=ncol(tsample_pt))
+    
+    
+#     tclass_pair = subset(tclass_pair, tclass_pair[,1]==last_pt & tclass_pair[,2]!=last_pt) # only check when comparing against last settings
+    t_pairs = as.matrix(tclass_pair, ncol=1)
+#     t_pairs = unique(t_pairs)
+    
+#     x_sample = sample_map
+#     x_sample$label = NULL # remove IDs
+#     x_sample = as.matrix(x_sample, ncol=ncol(x_sample))
+    
+    sample_map = unique(usr_sample[,-1])
+    x_sample = merge(sample_map, tclass)
+    x_sample$label = NULL # remove IDs
+    x_sample = as.matrix(x_sample, ncol=ncol(x_sample))
+    
+    # label training samples
+    control_var = c('player.move.thrust', 'player.move.drag')
+    train_data = usr_data[control_var]
+    train_data = merge(x_sample, train_data)
+    x_class = cbind(train_data$label[1:(nrow(train_data)-1)], train_data$label[2:(nrow(train_data))])
+    
+#     x_class = usr_pair
+    sigma_n = 0.05
+    
+    # create grid of hyperparameters to search
+    lengthscale_grid = matrix(rep(seq(0.001, 0.005, 0.001),ncol(x_sample)), ncol=ncol(x_sample))
+    sigma_grid = seq(0.0005, 0.005, 0.0005)
+    
+    # optimize hyperparameters
+    
+    ## TODO: update to look up by index
+    optmodel = optimizeHyper(hypmethod='BFGS', optmethod='Nelder-Mead', lengthscale_grid, sigma_grid, x_sample, x_class, infPrefLaplace, mean.const, kernel.SqExpND)
+    
+#     t_pts = sort(union(unique(x_class[,1]),unique(x_class[,2])))
+#     t_class = expand.grid(t_pts, t_pts)
+    
+#     t_pair = t(data.frame(c(1,1), c(1,2), c(1,3)))
+    t_pred = prefPredict.v2(optmodel, tclass_pair, tclass, x_sample, optmodel$f_map, optmodel$W, optmodel$K, optmodel$sigma_n, kernel.SqExpND, optmodel$lenscale)
+    plot(t_pred$pred)
+    
+    
+    ## last point tested to compare against
+#     n_train = nrow(x_class)
+#     last_pt = setdiff(x_class[n_train,], 
+#                       intersect(x_class[n_train-1,], x_class[n_train,]))
+#     if (sum(dim(last_pt))==0) {
+#       ## catch case where last point used same parameters twice in a row
+#       last_pt = x_class[n_train,1]
+#     }
+#     last_pt = as.numeric(as.character(last_pt))
+#     t_class[,1] = as.numeric(as.character(t_class[,1]))
+#     t_class[,2] = as.numeric(as.character(t_class[,2]))
+#     t_idx = which(t_class[,1]==last_pt | t_class[,2]==last_pt) # all possible pairs that will test using the most recent point
+#     t_pairs = t_class[t_idx,]
+#     t_pairs = t_pairs[t_pairs!=last_pt] # only keep other point to test against
+#     t_pairs = as.matrix(t_pairs, ncol=1)
+#     t_pairs = unique(t_pairs) # remove redundant
+    
+#     f_t = optmodel$f_map[t_pairs,]
     f_plus = max(optmodel$f_map)
     
+    # (1) look up predictive means for each sample value
+    f_t = t_pred$mu_s[,2] # second column are new values to compare to
+    # (2) look up predictive variance
+    sigma_t = diag(t_pred$sigma_s)
+    # (3) collect up sample values for test points
+    test_pts = tclass[tclass$label!=last_pt,-1]
+    # (4) evaluate point to try next
+    next_sample = al.maxExpectedImprovement.v2(optmodel$f_map, f_t, sigma_t, test_pts, slack=0.1, iter)
+    
+    
+    
     ## pick point that optimizes objective fn
-    next_sample = al.maxExpectedImprovement(optmodel$f_map, f_t, as.matrix(optmodel$sigma_n, ncol=1), t_pairs, sigma_n, slack=0.1, iter)
-    next_sample = x_sample[next_sample]
-    next_sample = matrix(next_sample, ncol=ncol(x_sample))
+#     next_sample = al.maxExpectedImprovement(optmodel$f_map, f_t, as.matrix(optmodel$sigma_n, ncol=1), t_pair, sigma_n, slack=0.1, iter)
+#     next_sample = x_sample[next_sample]
+    next_sample = as.matrix(next_sample, ncol=ncol(next_sample))
     
     ## write to control vector
     new_vec = paste(
-      paste('player.move.thrust#Amount of control thrust.#0.0#0.09', round(next_sample[,1],3), sep='#'),
-#       paste('player.move.drag#Amount of air drag.#0.0#1.0', round(next_sample[,2],3), sep='#'),
+      paste('player.move.thrust#Amount of control thrust.#0.0#0.09', round(next_sample[,1],4), sep='#'),
+      paste('player.move.drag#Amount of air drag.#0.0#1.0', round(next_sample[,2],4), sep='#'),
       'player.radius.radius#Player ship radius#2.0#50.0#10.0#spawner.enemy.radius.c0#Base enemy radius.[0]#10.0#20.0#10.0#spawner.enemy.radius.c1#Base enemy radius.[1]#10.0#20.0#10.0#enemy.bullet.speed#Speed of enemy bullets.#0.0#3.0#0.8#enemy.bullet.size#Size of enemy bullets.#0#80.0#10.0#enemy.bullet.damage#Damage of enemy bullets.#0#100.0#5.0#enemy.bullet.cooldown#Cooldown time between firing enemy bullets.#0#1000.0#500.0#',
       sep='#'
     )

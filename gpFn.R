@@ -263,13 +263,27 @@ prefFn = function(mu_pair, sigma_n) {
 #   t_pair - indexes into noise matrix
 #   
 prefFnVec = function(mu_pair, t_pair, sigma_n) {
+  
+#   # unpack matrix of sigma values into points for each test case
+#   sigma_vec = list()
+#   for (i in 1:nrow(t_pair)) {
+#     sigma_vec = append(sigma_vec, sigma_n[t_pair[i,1], t_pair[i,2]])
+#   }
+#   sigma_vec = unlist(sigma_vec)
+  
   # unpack matrix of sigma values into points for each test case
-  sigma_vec = list()
-  for (i in 1:nrow(t_pair)) {
-    sigma_vec = append(sigma_vec, sigma_n[t_pair[i,1], t_pair[i,2]])
-  }
-  sigma_vec = unlist(sigma_vec)
-  pnorm((mu_pair[,1] - mu_pair[,2]) / (sqrt(2) * sigma_vec))
+#   sigma_list = c()
+#   for (i in 1:nrow(sigma_n)) {
+#     for (j in 1:ncol(sigma_n)) {
+#       sigma_list = rbind(sigma_list, c(rownames(sigma_n)[i], colnames(sigma_n)[j], sigma_n[i,j]))
+#     }
+#   }
+#   
+#   sigma_vec = sigma_list[which(sigma_list[,1]==t_pair[,1] & sigma_list[,2]==t_pair[,2]),3]
+#   sigma_vec = as.numeric(sigma_vec)
+#   pnorm((mu_pair[,1] - mu_pair[,2]) / (sqrt(2) * sigma_vec))
+  
+  pnorm((mu_pair[,1] - mu_pair[,2]) / (sqrt(2) * diag(sigma_n)))
 }
 
 
@@ -628,6 +642,76 @@ prefPredict = function(model, t_pairs, sample_pt, f, W, K, sigma_n, kernelFn, ..
   return(list(pred=prefPred, mu_s=mu_t, sigma_s=sigma_s))
 }
 
+## predict preferences between pairs of samples using model provided
+#     t_pairs     - pairs of test objects to be compared; indexes into sample_pt starting at 1
+#     sample_pt   - features for objects compared
+#     f           - latent feature values
+#     W           - minus Hessian of log likelihood
+#     K           - training data sample covariance
+#     kernelFn    - covariance function for samples
+#     sigma_n     - noise in judgements of sample preferences
+#     ...         - additional parameters for kernel function
+prefPredict.v2 = function(model, t_pair, t_sample, sample_pt, f, W, K, sigma_n, kernelFn, ...) {
+  
+  # covariance b/t test samples and training samples
+  # kt = [K(r,x1) ... K(r,xn) ; K(s,x1) ... K(s,xn)]'
+  t_pt1 = as.matrix(t_sample[t_pair[,1],])
+  t_pt2 = as.matrix(t_sample[t_pair[,2],])
+  
+  kt = t(rbind(kernelFn(t_pt1, sample_pt, deriv=FALSE, ...), 
+               kernelFn(t_pt2, sample_pt, deriv=FALSE, ...)))
+  
+  # test point covariance matrix from block form
+  # Kt = [ Krr Krs ; Ksr Kss]
+  ntest = nrow(t_pair)
+  Krr = kernelFn(t_pt1, t_pt2, deriv=FALSE, ...)
+  Kss = kernelFn(t_pt2, t_pt2, deriv=FALSE, ...)
+  Krs = kernelFn(t_pt1, t_pt2, deriv=FALSE, ...)
+  Ksr = kernelFn(t_pt2, t_pt1, deriv=FALSE, ...)
+  Kt = rbind(cbind(Krr, Krs), cbind(Ksr, Kss))
+  
+  
+  W[W<0] = 0
+  sW = sqrt(W)
+  L = chol(diag(1, ncol(K)) + sW %*% t(sW) * K)     # L = cholesky(I + sW K sW)
+  
+  
+  # predictive means
+  # mu_t = t(kt) %*% a # t(kt) alpha
+  mu_t = t(kt) %*% solve(t(L), solve(L)) %*% f 
+  # mu_t = t(kt) %*% K^-1 %*% f  # this may be unstable, need to check
+  mu_t = matrix(mu_t, ncol=2)
+  
+  
+  
+  ## predictive variances is broken
+  # may be due to repeat of identical samples being summed?
+  # cf GP regression model
+  
+  # predictive variances using methods from Rasmussen + Williams
+  
+  ## v = L \ (sW kt)
+  #   v = solve(L, sW %*% kt)
+  ## V = Kt - v' v
+  #   Kstar = Kt + sqrt(t(v) %*% v)
+  
+  #   apply(kt * (L %*% kt), 2, sum)
+  # kss + sum(Ks .* (L * Ks), 1)'
+  
+  v = Kt + apply(kt * L %*% kt, 2, sum) # maybe? Kt is 10x10 while second factor is 1x10
+  Kstar = Kt + sqrt(t(v) %*% v)
+  sigma_s = 2*sigma_n + Kstar[1:ntest,1:ntest] + Kstar[(ntest+1):(2*ntest),(ntest+1):(2*ntest)] - Kstar[1:ntest,(ntest+1):(2*ntest)] - Kstar[(ntest+1):(2*ntest),1:ntest]
+  
+  rownames(sigma_s) = gsub('\\.(\\d+)*', '', rownames(sigma_s))
+  colnames(sigma_s) = gsub('\\.(\\d+)*', '', colnames(sigma_s))
+  
+  # predict preference using predictive means + variances
+  prefPred = prefFnVec(mu_t, t_pair, sigma_s)
+#   prefPred = prefFn(mu_t, sigma_n)
+  
+  return(list(pred=prefPred, mu_s=mu_t, sigma_s=sigma_s))
+}
+
 
 #### ACTIVE LEARNING ####
 
@@ -662,7 +746,6 @@ al.maxExpectedImprovement = function(f_cur, f_test, f_cov, x_test, sigma_n, slac
 #   next_sample = x_test[next_pt,]
   next_sample = next_sample10[1,]
   
-  
   png(paste('ei_', iter, '.png', sep=''))
   print(
     ggplot(top10, aes(Var1, Var2, z=ei)) + stat_contour(geom='polygon', aes(fill=..level..), bins=15)  + geom_point(data=next_sample10, aes(x=Var1, y=Var2, z=1), size=5, colour='orange') + theme_bw()
@@ -670,4 +753,45 @@ al.maxExpectedImprovement = function(f_cur, f_test, f_cov, x_test, sigma_n, slac
   dev.off()
   
   return(next_sample)
+}
+
+al.maxExpectedImprovement.v2 = function(f_cur, f_test, f_cov, x_test, slack=0.01, iter=1) {
+  f_plus = max(f_cur) # current best point
+  
+  #   usr_sample = arrange(usr_sample, s_wave)
+  #   last_pt = usr_sample[nrow(usr_sample), c('label')] # sample value most recently tested; use for pairwise tests
+  
+  #   z_t = (f_test - f_plus - slack) / sigma_n
+  z_t = (f_test - f_plus - slack)/f_cov
+  #   ei = (f_test - f_plus - slack) * pnorm(z_t) + sigma_n * dnorm(z_t)
+  ei = (f_test - f_plus - slack) * pnorm(z_t) + f_cov * dnorm(z_t)
+  ei = as.matrix(ei, ncol=1)
+  colnames(ei) = 'ei'
+  
+  ## get next set of possible sample points sorted by expected information
+  tmp = cbind(ei, x_test)
+  top10 = tmp[order(-tmp[,1]),]
+  next_sample10 = top10[1:min(10,nrow(top10)),-c(1)]
+  
+  
+  #   next_pt = which.max(ei)
+  #   next_pt = t_pairs[next_pt,]
+  #   next_sample = next_pt[next_pt!=last_pt]
+  #   next_sample = x_test[next_pt,]
+  next_sample = next_sample10[1,]
+  
+  names(top10) = c('ei', paste('Var', seq(1:(ncol(top10)-1)), sep=''))
+  
+#   png(paste('ei_', iter, '.png', sep=''))
+#   print(
+#     ggplot(top10, aes(Var1, Var2, z=ei)) + stat_contour(geom='polygon', aes(fill=..level..), bins=15)  + geom_point(data=next_sample10, aes(x=Var1, y=Var2, z=1), size=5, colour='orange') + theme_bw()
+#   )
+#   dev.off()
+  
+  return(next_sample)
+}
+
+## expands out a parameter range into a sequence of n points between the range bounds
+paramGrid = function(npts, paramMin, paramMax) {
+  return(seq(paramMin, paramMax, by=(paramMax-paramMin)/npts))
 }
