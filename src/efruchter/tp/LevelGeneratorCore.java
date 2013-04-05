@@ -77,7 +77,7 @@ public class LevelGeneratorCore extends Trait {
 
     @Override
     public void onStart(final Entity self, final Level level) {
-    	
+        
     	try {
     		Runtime rt = Runtime.getRuntime();
     		Process pr = rt.exec("cmd /C \"cd ../ && Rscript r_script.R\""); // change directory, then call the r script
@@ -198,7 +198,7 @@ public class LevelGeneratorCore extends Trait {
         // Add the new wave animation
         EntityFactory.buildNewWaveAnim(level.getBlankEntity(EntityType.BG));
         
-       
+      
         // Count remaining enemies before reset
         List<Entity> ships = level.getEntities(EntityType.SHIP);
         int numEnemiesRemaining = 0;
@@ -210,13 +210,12 @@ public class LevelGeneratorCore extends Trait {
 //        System.out.println("\nresetting b/t waves; enemies left: " + numEnemiesRemaining);
         TraitProjectClient.s_remain_enemies = numEnemiesRemaining;
         chains.clear();
-
+        
        if (VectorEditorPopup_Crummy.isVisible()) {
     	   VectorEditorPopup_Crummy.hide();
        }
   
        List<GeneWrapper> ge = TraitProjectClient.getPlayerControlledGenes();
-//	    if (!ge.isEmpty()) {
 
        // record data either after responding to query or just directly after wave
        	if (waveCount > 1 && ClientDefaults.learnMode().equals("preference")) {
@@ -306,8 +305,9 @@ public class LevelGeneratorCore extends Trait {
 
                 	@Override
                 	public void onDeath(Entity self, Level level) {
-                		if (self.health <= 0) {
+                		if (self.health <= 0 && self.isActive()) {
                 			TraitProjectClient.s_killed_enemies++;
+                			TraitProjectClient.display_score += 10;
                 		}
                 	}
                 });

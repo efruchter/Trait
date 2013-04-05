@@ -747,6 +747,13 @@ public class RenderUtil {
                     x = startX;
                     break;
                 }
+                case '-': {
+                	for (int i=0; i <= 4; i++) {
+                		GL11.glVertex2f(x+i, y+4);
+                	}
+                	x += 4;
+                	break;
+                }
                 case ' ': {
                     x += 8;
                 }

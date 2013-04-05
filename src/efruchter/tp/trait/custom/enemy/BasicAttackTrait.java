@@ -84,9 +84,10 @@ public class BasicAttackTrait extends Trait {
 				}
 				@Override
 				public void onDeath(final Entity self, final Level level) {
-					if (self.health <= 0) {
+					if (self.health <= 0 && self.isActive()) {
 						TraitProjectClient.s_damage_player += damage.getValue();
 						TraitProjectClient.s_hit_player += 1;
+						TraitProjectClient.display_score -= 25;
 					}
 				}
 			});

@@ -67,9 +67,11 @@ public class TraitProjectClient extends Applet {
 	public static float s_fired_enemies;
 	public static float s_killed_enemies;
 	public static CHOICE c_choice = CHOICE.NONE;
+	public static long display_score;
 
 	public static void resetMetrics() {
 		System.out.println("player hits: " + s_hit_player);
+		System.out.println("player score: " + display_score);
 		
 		s_damage_player = 0;
 		s_damage_enemies = 0;
@@ -81,6 +83,7 @@ public class TraitProjectClient extends Applet {
 		s_fired_enemies = 0;
 		s_killed_enemies = 0;
 		c_choice = CHOICE.NONE;
+		display_score = 0;
 	}
 	
 	public static void storeData(ServerIO v, long waveCount) {
@@ -104,10 +107,8 @@ public class TraitProjectClient extends Applet {
         info.put("s_fired_enemies", Float.toString(TraitProjectClient.s_fired_enemies));
         info.put("s_killed_enemies", Float.toString(TraitProjectClient.s_killed_enemies));
         info.put("s_remain_enemies", Float.toString(TraitProjectClient.s_remain_enemies));
+        info.put("display_score", Long.toString(TraitProjectClient.display_score));
         info.put("c_choice", (TraitProjectClient.c_choice).toString());
-        System.out.println("info: " + info.toDataString());
-//        String info2 = info.toDataString().replace("#", "THAWKISBEST");
-//        System.out.println("info2: " + info2);
         v.storeInfo(info);
 	}
 
@@ -282,7 +283,9 @@ public class TraitProjectClient extends Applet {
 						.drawString(
 								new StringBuffer().append("")
 										// .append("health ").append(playerHealth)
-										.append("\n\n\n\n")
+										.append("\n")
+										.append("score ").append(Long.toString(display_score))
+										.append("\n\n")
 										.append("wave ")
 										.append(level.getGeneratorCore().getWaveCount()).toString(), 5, 45);
 				RenderUtil.setColor(Color.GREEN);
