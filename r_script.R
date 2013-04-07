@@ -80,7 +80,7 @@ if (nrow(usr_data) > 1) {
     
     # reorder columns for label in first
     xs_dim = ncol(x_sample)-1
-    x_sample = x_sample[,c(xs_dim+1,seq(1:xs_dim))]
+    x_sample = x_sample[,c(xs_dim+1,1:xs_dim)]
     
     javaDebug('read samples', debug_mode)
     
@@ -100,12 +100,11 @@ if (nrow(usr_data) > 1) {
     sigma_grid = seq(0.0005, 0.5, length.out=10)
     
     ## only optimize hyper parameters every 3 iterations
-    if (iter %% 3 == 0 & iter > 0) {
+    if (iter %% 3 == 0 & iter > 0 | 
+          iter == 1) {
       # optimize hyperparameters + generate inferences
       optmodel = optimizeHyper(hypmethod='BFGS', optmethod='Nelder-Mead', lengthscale_grid, sigma_grid, x_sample, x_class, infPrefLaplace, mean.const, kernel.SqExpND)
       save(optmodel, file=paste('optHyper_p', pID, '.RData', sep=''))
-      
-      
     } else {
       # load previously optimized hyperparameters
       load(paste('optHyper_p', pID, '.RData', sep=''))

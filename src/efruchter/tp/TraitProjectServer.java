@@ -93,6 +93,7 @@ public class TraitProjectServer implements NetworkingListener {
 	public String messageReceived(String message, final String clientName) {
 		
 		String result = " ";
+		
 
 		try {
 			if (message.startsWith("versioncheck")) {

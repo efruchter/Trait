@@ -20,7 +20,7 @@ public class ZookProjectServer implements NetworkingListener {
 	private static final Database db;
 	
 	static {
-		db = new CSVDatabase("zook_database.csv");
+		db = new CSVDatabase("database.csv");
 		current = new GeneVector();
 	}
 	
@@ -49,6 +49,8 @@ public class ZookProjectServer implements NetworkingListener {
 	
 	public String messageReceived(String message, final String clientName) {
 		String result = " ";
+		
+		System.out.println("called messageReceived: " + message);
 		
 		try {
 			if (message.startsWith("versioncheck")) {
@@ -83,10 +85,11 @@ public class ZookProjectServer implements NetworkingListener {
                 }
             }
 			else if (message.startsWith("store" + SessionInfo.SEPERATOR)) {
+				System.out.println("calling store");
 				final String data = message.replaceFirst("store" + SessionInfo.SEPERATOR, "");
 				result = "" + store(new SessionInfo(data));
 				System.out.println("server is trying to store: " + new SessionInfo(data));
-				//System.out.println("store");
+				System.out.println("store");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
