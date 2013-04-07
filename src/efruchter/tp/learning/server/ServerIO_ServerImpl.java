@@ -24,7 +24,7 @@ public class ServerIO_ServerImpl implements ServerIO {
      */
     public GeneVector getExplorationVector() {
         if (exploration == null)
-            reloadExplorationVector();
+            reloadExplorationVector("");
         return exploration;
     }
 
@@ -59,7 +59,8 @@ public class ServerIO_ServerImpl implements ServerIO {
     /**
      * Request a new vector from the frontier.
      */
-    public void reloadExplorationVector() {
+    public void reloadExplorationVector(String fname) {
+    	// NOTE: fname is ignored in default implementation
         ClientStateManager.setFlowState(FlowState.LOADING_VECT);
         try {
             final Client c = TraitProjectClient.getClient();

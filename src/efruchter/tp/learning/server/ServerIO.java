@@ -30,5 +30,5 @@ public interface ServerIO {
 	/**
 	 * Reload it from server.
 	 */
-	public void reloadExplorationVector();
+	public void reloadExplorationVector(String fname);
 }

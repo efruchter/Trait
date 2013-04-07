@@ -100,9 +100,18 @@ public class LevelGeneratorCore extends Trait {
     	
         /*
          * Takes care of the case where the GUI has already loaded the vector.
+         * Seed search with three default locations
          */
-        if (waveCount > 1) {
-            v.reloadExplorationVector();
+    	if (waveCount == 1) {
+    		System.out.println("server class: " + v.getClass());
+    		v.reloadExplorationVector("../gene1.txt");
+    	} else if (waveCount == 2) {
+    		v.reloadExplorationVector("../gene2.txt");
+    	} else if (waveCount == 3) {
+    		v.reloadExplorationVector("../gene3.txt");
+    	}
+    	else {
+            v.reloadExplorationVector("../geneText.txt");
         }
         
         /*

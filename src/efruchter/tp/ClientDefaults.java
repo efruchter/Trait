@@ -47,7 +47,7 @@ public class ClientDefaults {
 				learn_mode = prop.getProperty("learn_mode");
 				
 				PLAYER_ID = Long.parseLong(playerID) + 1; // increment from last player
-				prop.setProperty("player_id", ""+PLAYER_ID); // update value
+				prop.setProperty("player_id", Long.toString(PLAYER_ID)); // update value
 				OutputStream os = new FileOutputStream(fileName);
 				prop.store(os, "");
 			}

@@ -6,11 +6,19 @@ require(MASS)
 require(optimx)
 
 source('./gpFn.R')
+javaDebug = function(msg, debug=FALSE) {
+  if (debug)
+    print(msg)
+}
 
 usr_data = read.csv('./database.csv')
 
 configs = read.table(file='clientSettings.config', sep='=')
 learn_mode = configs[configs$V1=='learn_mode',2]
+debug_mode = configs[configs$V1=='debug_mode',2]
+debug_mode = as.numeric(as.character(debug_mode))
+
+learn_params = read.csv('./learn_params.csv')
 
 # decrement as always pID is incremented after loading, so newest player is one less than stored
 pID = as.numeric(as.character(configs[configs$V1=='player_id',2]))-1 
@@ -18,62 +26,35 @@ pID = as.numeric(as.character(configs[configs$V1=='player_id',2]))-1
 ## keep only data from this user
 usr_data = usr_data[as.numeric(as.character(usr_data$pID)) == pID,]
 
+javaDebug("got user data", debug_mode)
+
 if (nrow(usr_data) > 1) {
-  ## ticker to track progress
-  load('r_iter.RData')
+  
+  ## ticker to track progress per player
+  if (length(dir('./', paste('r_iter_p', pID, '.RData', sep=''))) == 0) { 
+    iter=0
+  } else {
+    load(paste('r_iter_p', pID, '.RData', sep=''))
+  }
   iter = iter+1
   
 
   
   #### GP preference version ####
   
-  if (learn_mode == 'preference') {
-    ## read in pairwise preference data
-    usr_comp = usr_data[c('s_wave', 'c_choice')]
-    usr_pair = list()
-    for (i in 2:nrow(usr_comp)) {
-      if (usr_comp$c_choice[i]=='BETTER') {
-        usr_pair[[i]] = c(usr_comp$s_wave[i], usr_comp$s_wave[i-1])
-      } else if (usr_comp$c_choice[i]=='WORSE') {
-        usr_pair[[i]] = c(usr_comp$s_wave[i-1], usr_comp$s_wave[i])
-      } 
-      # ignore 'NONE' cases
-    }
-    usr_pair = ldply(usr_pair) # change to data frame
-    
-    
-    # convert to set of unique samples + label them
-    uniq_sample = usr_sample
-    uniq_sample$s_wave = NULL
-    uniq_sample = unique(uniq_sample)
-    uniq_sample$label = factor(seq(1, nrow(uniq_sample)))
-    
-    # map unique sample labels to original waves
-    usr_sample = merge(usr_sample, uniq_sample)
-    wave_label = usr_sample[,c('s_wave', 'label')]
-    
-    # convert wave-based pair comparisons to sample-based
-    usr_pair = merge(usr_pair, wave_label, by.x=c('V1'), by.y=c('s_wave'))
-    usr_pair = merge(usr_pair, wave_label, by.x=c('V2'), by.y=c('s_wave'), suffixes=c('.1', '.2'))
-    
-    # clean up useless variables
-    usr_pair$V1 = NULL
-    usr_pair$V2 = NULL
-    
-    
-    
-    
-    
-    
+  if (learn_mode == 'preference' & iter>2) {
+
     ## TODO: make this scale to increase sampling density as needed -> optimize iteratively
+    
+    javaDebug("doing preference learning", debug_mode)
+    
+    ## specify parameter ranges to adjust
     npts=10
-    tvarList = list(c('player.move.thrust', 0.0, 0.009),
-                    c('player.move.drag', 0.0, 1.0))
     
     ## construct test point grid
     tpts = list()
-    for (tvar in tvarList) {
-      tpts[[tvar[1]]] = paramGrid(npts, as.numeric(tvar[2]), as.numeric(tvar[3]))
+    for (i in 1:nrow(learn_params)) {
+      tpts[[as.character(learn_params$param[i])]] = paramGrid(npts, learn_params$min[i], learn_params$max[i])
     }
     tpts = expand.grid(tpts)
 
@@ -82,7 +63,8 @@ if (nrow(usr_data) > 1) {
     names(tclass)[1] = 'label'
     
     ## label training samples & construct pairs compared
-    control_var = c('player.move.thrust', 'player.move.drag', 'c_choice')
+#     control_var = c('player.move.thrust', 'player.move.drag', 'c_choice')
+    control_var = c(as.character(learn_params$param), 'c_choice')
     train_data = usr_data[control_var]
     train_data$pref = rep(0, nrow(train_data))
     train_data$pref[train_data$c_choice=='BETTER'] = 1
@@ -100,73 +82,49 @@ if (nrow(usr_data) > 1) {
     xs_dim = ncol(x_sample)-1
     x_sample = x_sample[,c(xs_dim+1,seq(1:xs_dim))]
     
+    javaDebug('read samples', debug_mode)
+    
     ## get last point to compare against
     n_train = nrow(x_class)
     last_pt = setdiff(x_class[n_train,], 
                       intersect(x_class[n_train-1,], x_class[n_train,]))
-    if (sum(dim(last_pt))==0) {
-      ## catch case where last point used same parameters twice in a row
-      last_pt = x_class[n_train,1]
-    }
-    last_pt = as.numeric(as.character(last_pt))
+    last_pt = last_pt[1]
     
     ## construct test pairs
     tclass_pair = expand.grid(last_pt, tclass$label)
     tclass_pair = subset(tclass_pair, tclass_pair[,2] != last_pt) # don't compare to same point again
     tclass_pair = as.matrix(tclass_pair)
     
-#     tsample_pt = subset(tclass, tclass$label!=last_pt)
-#     tsample_pt = as.matrix(tsample_pt, ncol=ncol(tsample_pt))
-#     
-#     
-#     t_pairs = as.matrix(tclass_pair, ncol=1)
-# 
-#     
-#     sample_map = unique(usr_sample[,-1])
-#     x_sample = merge(sample_map, tclass)
-#     x_sample$label = NULL # remove IDs
-#     x_sample = as.matrix(x_sample, ncol=ncol(x_sample))
-    
-
-    ## TODO: reorder pairings to reflect preferences having preferred first
-
-#     sigma_n = 0.05
-    
     # create grid of hyperparameters to search
-    lengthscale_grid = matrix(rep(seq(0.01, 0.1, length.out=20),ncol(x_sample[,-1])), ncol=ncol(x_sample[,-1]))
+    lengthscale_grid = matrix(rep(seq(0.01, 0.1, length.out=20),ncol(x_sample)-1), ncol=ncol(x_sample)-1)
     sigma_grid = seq(0.0005, 0.5, length.out=10)
     
-    # optimize hyperparameters
-    optmodel = optimizeHyper(hypmethod='BFGS', optmethod='Nelder-Mead', lengthscale_grid, sigma_grid, x_sample, x_class, infPrefLaplace, mean.const, kernel.SqExpND)
+    ## only optimize hyper parameters every 3 iterations
+    if (iter %% 3 == 0 & iter > 0) {
+      # optimize hyperparameters + generate inferences
+      optmodel = optimizeHyper(hypmethod='BFGS', optmethod='Nelder-Mead', lengthscale_grid, sigma_grid, x_sample, x_class, infPrefLaplace, mean.const, kernel.SqExpND)
+      save(optmodel, file=paste('optHyper_p', pID, '.RData', sep=''))
+      
+      
+    } else {
+      # load previously optimized hyperparameters
+      load(paste('optHyper_p', pID, '.RData', sep=''))
+      
+      # update model inferences for new data
+      tbest = infPrefLaplace(x_sample, x_class, mean.const, kernel.SqExpND, tol=1e-06, max_iter=100, sigma_n=optmodel$sigma_n, optmethod='Nelder-Mead', optmodel$lenscale)
+      optmodel$f_map = tbest$f_map
+      optmodel$W = tbest$p_map$liks$d2lp
+      optmodel$K = tbest$K
+      
+      javaDebug('loaded hypers', debug_mode)
+    }
     
-#     t_pts = sort(union(unique(x_class[,1]),unique(x_class[,2])))
-#     t_class = expand.grid(t_pts, t_pts)
-    
-#     t_pair = t(data.frame(c(1,1), c(1,2), c(1,3)))
+    ## predictive preference probability for 2nd over 1st in pair
     t_pred = prefPredict.v2(optmodel, tclass_pair, tclass, x_sample, optmodel$f_map, optmodel$W, optmodel$K, optmodel$sigma_n, kernel.SqExpND, optmodel$lenscale)
     plot(t_pred$pred)
     
-    
-    ## last point tested to compare against
-#     n_train = nrow(x_class)
-#     last_pt = setdiff(x_class[n_train,], 
-#                       intersect(x_class[n_train-1,], x_class[n_train,]))
-#     if (sum(dim(last_pt))==0) {
-#       ## catch case where last point used same parameters twice in a row
-#       last_pt = x_class[n_train,1]
-#     }
-#     last_pt = as.numeric(as.character(last_pt))
-#     t_class[,1] = as.numeric(as.character(t_class[,1]))
-#     t_class[,2] = as.numeric(as.character(t_class[,2]))
-#     t_idx = which(t_class[,1]==last_pt | t_class[,2]==last_pt) # all possible pairs that will test using the most recent point
-#     t_pairs = t_class[t_idx,]
-#     t_pairs = t_pairs[t_pairs!=last_pt] # only keep other point to test against
-#     t_pairs = as.matrix(t_pairs, ncol=1)
-#     t_pairs = unique(t_pairs) # remove redundant
-    
-#     f_t = optmodel$f_map[t_pairs,]
-    f_plus = max(optmodel$f_map)
-    
+    javaDebug('generated predictions', debug_mode)
+
     # (1) look up predictive means for each sample value
     f_t = t_pred$mu_s[,2] # second column are new values to compare to
     # (2) look up predictive variance
@@ -175,18 +133,19 @@ if (nrow(usr_data) > 1) {
     test_pts = tclass[tclass$label!=last_pt,-1]
     # (4) evaluate point to try next
     next_sample = al.maxExpectedImprovement.v2(optmodel$f_map, f_t, sigma_t, test_pts, slack=0.1, iter)
-    
-    
-    
-    ## pick point that optimizes objective fn
-#     next_sample = al.maxExpectedImprovement(optmodel$f_map, f_t, as.matrix(optmodel$sigma_n, ncol=1), t_pair, sigma_n, slack=0.1, iter)
-#     next_sample = x_sample[next_sample]
     next_sample = as.matrix(next_sample, ncol=ncol(next_sample))
     
+    javaDebug('selected sample', debug_mode)
+    
     ## write to control vector
+#     new_vec = paste(
+#       paste('player.move.thrust#Amount of control thrust.#0.0#0.09', round(next_sample[,1],4), sep='#'),
+#       paste('player.move.drag#Amount of air drag.#0.0#1.0', round(next_sample[,2],4), sep='#'),
+#       'player.radius.radius#Player ship radius#2.0#50.0#10.0#spawner.enemy.radius.c0#Base enemy radius.[0]#10.0#20.0#10.0#spawner.enemy.radius.c1#Base enemy radius.[1]#10.0#20.0#10.0#enemy.bullet.speed#Speed of enemy bullets.#0.0#3.0#0.8#enemy.bullet.size#Size of enemy bullets.#0#80.0#10.0#enemy.bullet.damage#Damage of enemy bullets.#0#100.0#5.0#enemy.bullet.cooldown#Cooldown time between firing enemy bullets.#0#1000.0#500.0#',
+#       sep='#'
+#     )
     new_vec = paste(
-      paste('player.move.thrust#Amount of control thrust.#0.0#0.09', round(next_sample[,1],4), sep='#'),
-      paste('player.move.drag#Amount of air drag.#0.0#1.0', round(next_sample[,2],4), sep='#'),
+      paste(learn_params$param, '', learn_params$min, learn_params$max, next_sample, sep='#', collapse='#'),
       'player.radius.radius#Player ship radius#2.0#50.0#10.0#spawner.enemy.radius.c0#Base enemy radius.[0]#10.0#20.0#10.0#spawner.enemy.radius.c1#Base enemy radius.[1]#10.0#20.0#10.0#enemy.bullet.speed#Speed of enemy bullets.#0.0#3.0#0.8#enemy.bullet.size#Size of enemy bullets.#0#80.0#10.0#enemy.bullet.damage#Damage of enemy bullets.#0#100.0#5.0#enemy.bullet.cooldown#Cooldown time between firing enemy bullets.#0#1000.0#500.0#',
       sep='#'
     )
@@ -197,6 +156,8 @@ if (nrow(usr_data) > 1) {
   
   
   #### GP regression version ####
+  
+  ## TODO: update to read in parameters to tweak
   
   if (learn_mode == 'regression') {
     control_var = c('player.move.thrust', 'player.move.drag')
@@ -275,6 +236,7 @@ if (nrow(usr_data) > 1) {
       sep='#'
     )
     write(new_vec, 'geneText.txt')
+
     
     ## debug 2D contour plot
     png(paste('f_fit_', iter, '.png', sep=''))
@@ -295,9 +257,9 @@ if (nrow(usr_data) > 1) {
     print('regression learning')
   }
 
-  save(iter, file='r_iter.RData')
+  save(iter, file=paste('r_iter_p', pID, '.RData', sep=''))
   
   
   
-  print(paste('testing: ', next_sample))
+#   print(paste('testing: ', next_sample))
 }

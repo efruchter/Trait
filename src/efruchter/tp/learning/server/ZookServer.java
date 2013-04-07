@@ -23,7 +23,7 @@ public class ZookServer implements ServerIO {
 		// returns loaded vector
 
 		if (exploration == null)
-			reloadExplorationVector();
+			reloadExplorationVector("../geneText.txt");
 
 		return exploration;
 	}
@@ -60,14 +60,14 @@ public class ZookServer implements ServerIO {
 	}
 
 	@Override
-	public void reloadExplorationVector() {
+	public void reloadExplorationVector(String fname) {
 		ClientStateManager.setFlowState(FlowState.LOADING_VECT);
         try {
             final Client c = TraitProjectClient.getClient();
             try {
                 c.reconnect();
                 c.send("request");
-                String geneText = GeneFileBuilder.getVectorFromFile("../geneText.txt");
+                String geneText = GeneFileBuilder.getVectorFromFile(fname); //"../geneText.txt");
                 final GeneVector geneVector = new GeneVector();
                 geneVector.fromDataString(geneText);
 //                geneVector.storeGene("player.move.drag", new Gene("Air Drag", "Amount of air drag."), false);
@@ -94,6 +94,7 @@ public class ZookServer implements ServerIO {
             ClientStateManager.setFlowState(FlowState.FREE);
         }
 	}
+	
 
 	
 }
