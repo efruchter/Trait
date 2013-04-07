@@ -150,8 +150,6 @@ if (nrow(usr_data) > 1) {
       sep='#'
     )
     write(new_vec, 'geneText.txt')
-    
-    print('preference learning')
   }
   
   
@@ -160,6 +158,8 @@ if (nrow(usr_data) > 1) {
   ## TODO: update to read in parameters to tweak
   
   if (learn_mode == 'regression') {
+    javaDebug('doing regression fitting', debug_mode)
+    
     control_var = c('player.move.thrust', 'player.move.drag')
     target_var = c('s_hit_player')
     

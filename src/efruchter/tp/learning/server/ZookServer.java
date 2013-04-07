@@ -39,8 +39,10 @@ public class ZookServer implements ServerIO {
 //                String info2 = info.toDataString().replace("#", "THAWKISBEST");
 //                c.send("store" + SessionInfo.SEPERATOR + info2);
                 boolean suc = Boolean.parseBoolean(c.receive());
-                if (suc)
+                if (suc) {
+                	System.out.println("storing: " + info.toDataString());
                     System.out.println("Successfully stored gene vector in database.");
+                }
                 else
                 	System.err.println("Cannot store vector on server.");
                 return suc;
