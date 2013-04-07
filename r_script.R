@@ -41,8 +41,6 @@ if (nrow(usr_data) > 1) {
     }
     usr_pair = ldply(usr_pair) # change to data frame
     
-    measure_var = c('s_wave', 'player.move.thrust', 'player.move.drag')
-    usr_sample = usr_data[measure_var] # note: need to match up identical values at different waves
     
     # convert to set of unique samples + label them
     uniq_sample = usr_sample
@@ -72,21 +70,37 @@ if (nrow(usr_data) > 1) {
     tvarList = list(c('player.move.thrust', 0.0, 0.009),
                     c('player.move.drag', 0.0, 1.0))
     
-    
+    ## construct test point grid
     tpts = list()
     for (tvar in tvarList) {
       tpts[[tvar[1]]] = paramGrid(npts, as.numeric(tvar[2]), as.numeric(tvar[3]))
     }
     tpts = expand.grid(tpts)
-#     thrust = c(0.0, 0.09)
-#     thrust_sample = paramGrid(npts, thrust[1], thrust[2])
-#     
-#     drag = c(0.0, 1.0)
-#     drag_sample = paramGrid(npts, drag[1], drag[2])
+
+    ## construct test point labels and pairs
+    tclass = cbind(seq(1:nrow(tpts)), tpts)
+    names(tclass)[1] = 'label'
     
-    control_var = c('label', 'player.move.thrust', 'player.move.drag')
-    sample_map = arrange(unique(usr_sample[control_var]), label)
+    ## label training samples & construct pairs compared
+    control_var = c('player.move.thrust', 'player.move.drag', 'c_choice')
+    train_data = usr_data[control_var]
+    train_data$pref = rep(0, nrow(train_data))
+    train_data$pref[train_data$c_choice=='BETTER'] = 1
+    train_data$pref[train_data$c_choice=='WORSE'] = -1
+    train_data$c_choice = NULL
     
+    x_sample = merge(tclass, train_data)
+    x_class = cbind(x_sample$label[1:(nrow(x_sample)-1)], x_sample$label[2:(nrow(x_sample))], x_sample$pref[2:nrow(x_sample)]) # get labeled pairs with preference value in third column
+    
+    x_sample$pref=NULL
+    x_sample = unique(x_sample) # only distinct points
+    x_sample = as.matrix(x_sample)
+    
+    # reorder columns for label in first
+    xs_dim = ncol(x_sample)-1
+    x_sample = x_sample[,c(xs_dim+1,seq(1:xs_dim))]
+    
+    ## get last point to compare against
     n_train = nrow(x_class)
     last_pt = setdiff(x_class[n_train,], 
                       intersect(x_class[n_train-1,], x_class[n_train,]))
@@ -94,50 +108,35 @@ if (nrow(usr_data) > 1) {
       ## catch case where last point used same parameters twice in a row
       last_pt = x_class[n_train,1]
     }
-    
-#     tclass = merge(sample_map, tpts)
-    tclass = cbind(seq(1:nrow(tpts)), tpts)
-    names(tclass)[1] = 'label'
-#     tclass_pair = expand.grid(tclass$label, tclass$label)
     last_pt = as.numeric(as.character(last_pt))
-    tclass_pair[,1] = as.numeric(as.character(tclass_pair[,1]))
-    tclass_pair[,2] = as.numeric(as.character(tclass_pair[,2]))
     
+    ## construct test pairs
     tclass_pair = expand.grid(last_pt, tclass$label)
-    tclass_pair = subset(tclass_pair, tclass_pair[,2] != last_pt)
-    tsample_pt = subset(tclass, tclass$label!=last_pt)
-    tsample_pt = as.matrix(tsample_pt, ncol=ncol(tsample_pt))
+    tclass_pair = subset(tclass_pair, tclass_pair[,2] != last_pt) # don't compare to same point again
+    tclass_pair = as.matrix(tclass_pair)
     
-    
-#     tclass_pair = subset(tclass_pair, tclass_pair[,1]==last_pt & tclass_pair[,2]!=last_pt) # only check when comparing against last settings
-    t_pairs = as.matrix(tclass_pair, ncol=1)
-#     t_pairs = unique(t_pairs)
-    
-#     x_sample = sample_map
+#     tsample_pt = subset(tclass, tclass$label!=last_pt)
+#     tsample_pt = as.matrix(tsample_pt, ncol=ncol(tsample_pt))
+#     
+#     
+#     t_pairs = as.matrix(tclass_pair, ncol=1)
+# 
+#     
+#     sample_map = unique(usr_sample[,-1])
+#     x_sample = merge(sample_map, tclass)
 #     x_sample$label = NULL # remove IDs
 #     x_sample = as.matrix(x_sample, ncol=ncol(x_sample))
     
-    sample_map = unique(usr_sample[,-1])
-    x_sample = merge(sample_map, tclass)
-    x_sample$label = NULL # remove IDs
-    x_sample = as.matrix(x_sample, ncol=ncol(x_sample))
-    
-    # label training samples
-    control_var = c('player.move.thrust', 'player.move.drag')
-    train_data = usr_data[control_var]
-    train_data = merge(x_sample, train_data)
-    x_class = cbind(train_data$label[1:(nrow(train_data)-1)], train_data$label[2:(nrow(train_data))])
-    
-#     x_class = usr_pair
-    sigma_n = 0.05
+
+    ## TODO: reorder pairings to reflect preferences having preferred first
+
+#     sigma_n = 0.05
     
     # create grid of hyperparameters to search
-    lengthscale_grid = matrix(rep(seq(0.001, 0.005, 0.001),ncol(x_sample)), ncol=ncol(x_sample))
-    sigma_grid = seq(0.0005, 0.005, 0.0005)
+    lengthscale_grid = matrix(rep(seq(0.01, 0.1, length.out=20),ncol(x_sample[,-1])), ncol=ncol(x_sample[,-1]))
+    sigma_grid = seq(0.0005, 0.5, length.out=10)
     
     # optimize hyperparameters
-    
-    ## TODO: update to look up by index
     optmodel = optimizeHyper(hypmethod='BFGS', optmethod='Nelder-Mead', lengthscale_grid, sigma_grid, x_sample, x_class, infPrefLaplace, mean.const, kernel.SqExpND)
     
 #     t_pts = sort(union(unique(x_class[,1]),unique(x_class[,2])))

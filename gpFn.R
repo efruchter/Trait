@@ -104,6 +104,16 @@ solve_chol = function(L, B) {
   solve(L, solve(t(L), B))
 }
 
+## takes a set of samples with labels in the first column and extracts two vectors for 
+#   sample values from a set of training pairs of labels
+#   sample_pt     -   samples with labels in the first column
+#   class_pt      -   pairs of sample labels to compare
+unpack_samples = function(sample_pt, class_pt) {
+  cpt1 = sample_pt[match(class_pt[,1], sample_pt[,1]),-1]
+  cpt2 = sample_pt[match(class_pt[,2], sample_pt[,1]),-1]
+  return(list(s1=cpt1, s2=cpt2))
+}
+
 
 #### GP REGRESSION ####
 
@@ -246,7 +256,19 @@ sampleGP = function(n.samples, x.test, f.mean, f.cov) {
 
 ## compute pairwise preference value for given pairs from a vector of latent values and pairs
 pairPref = function(f, class_pt, sigma_noise) {
-  Z = f[class_pt[,1]] - f[class_pt[,2]]
+  cpts = unpack_samples(f, class_pt)
+  Z = cpts$s1 - cpts$s2
+#   Z = f[class_pt[,1]] - f[class_pt[,2]]
+  Z = Z / (sqrt(2) * sigma_noise)
+  return(Z)
+}
+
+## pairwise preference from vectors of latent values for paired objects
+pairPref2Vec = function(f1, f2, sigma_noise) {
+  if (length(f1) != length(f2)) {
+    warning('Pairwise preferneces on vectors with unequal lengths!')
+  }
+  Z = f1 - f2
   Z = Z / (sqrt(2) * sigma_noise)
   return(Z)
 }
@@ -283,7 +305,7 @@ prefFnVec = function(mu_pair, t_pair, sigma_n) {
 #   sigma_vec = as.numeric(sigma_vec)
 #   pnorm((mu_pair[,1] - mu_pair[,2]) / (sqrt(2) * sigma_vec))
   
-  pnorm((mu_pair[,1] - mu_pair[,2]) / (sqrt(2) * diag(sigma_n)))
+  pnorm((mu_pair[,2] - mu_pair[,1]) / (sqrt(2) * diag(sigma_n)))
 }
 
 
@@ -297,28 +319,67 @@ prefFnVec = function(mu_pair, t_pair, sigma_n) {
 #     sigma_noise - noise in judgements of sample preferences
 #     infFn       - function to perform inference 
 likPref = function(sample_pt, class_pt, mu, s2, sigma_noise) {
-  f = mu
+#   f = mu
+  f = cbind(sample_pt[,1], mu) # construct f to have indexing for lookup
+#   Z = matrix(pairPref(f, class_pt, sigma_noise))
   Z = matrix(pairPref(f, class_pt, sigma_noise))
   p = pnorm(Z)
   lp = log(p) # note: may be unstable, cf Rasmussen's "logphi" function
   n_p = gauOverCumGauss(Z, p)
   
-  dlp = matrix(0, length(mu)) # gradient of log likelihood
+#   dlp = matrix(0, length(mu)) # gradient of log likelihood
+#   for (i in 1:nrow(sample_pt)) {
+# #   for (i in unique(sample_pt[,1])) {
+#     # preferences are encoded as preferred example 1st, unpreferred 2nd
+#     # weight preferences as +1, unpreferences as -1
+#     pos_idx = class_pt[,1] == sample_pt[i,1]
+#     neg_idx = class_pt[,2] == sample_pt[i,1]
+#     dlp[i] = sum(n_p[pos_idx]) - sum(n_p[neg_idx])
+#   }
+  
+  dlp = matrix(0, length(mu))
   for (i in 1:nrow(sample_pt)) {
-    # preferences are encoded as preferred example 1st, unpreferred 2nd
-    # weight preferences as +1, unpreferences as -1
-    pos_idx = class_pt[,1] == i
-    neg_idx = class_pt[,2] == i
+    ## find rows that use this training sample
+    s_1_row = class_pt[,1] == sample_pt[i,1]
+    s_2_row = class_pt[,2] == sample_pt[i,1]
+    
+    ## find which are positive preference, which are negative
+    pos_idx = (s_1_row & class_pt[,3] == -1) | (s_2_row & class_pt[,3] == 1)
+    neg_idx = (s_1_row & class_pt[,3] == 1) | (s_2_row & class_pt[,3] == -1)
     dlp[i] = sum(n_p[pos_idx]) - sum(n_p[neg_idx])
   }
+  
+#   d2lp = matrix(0, length(mu), length(mu)) # Hessian of log likelihood
+#   for (i in 1:nrow(sample_pt)) {
+# #   for (i in unique(sample_pt[,1])) {
+#     for (j in 1:nrow(sample_pt)) {
+# #     for (j in unique(sample_pt[,2])) {
+#       # preferences are encoded as preferred example 1st, unpreferred 2nd
+#       # weight preferences as +1, unpreferences as -1
+#       pos_idx = class_pt[,1] == sample_pt[i,1] & class_pt[,2] == sample_pt[j,1]
+#       neg_idx = class_pt[,2] == sample_pt[i,1] & class_pt[,1] == sample_pt[j,1]
+#       d2lp_pos = -n_p[pos_idx]^2 - Z[pos_idx] * n_p[pos_idx]
+#       d2lp_neg = -n_p[neg_idx]^2 - Z[neg_idx] * n_p[neg_idx]
+#       d2lp[i,j] = sum(d2lp_pos) - sum(d2lp_neg)
+#     }
+#   }
   
   d2lp = matrix(0, length(mu), length(mu)) # Hessian of log likelihood
   for (i in 1:nrow(sample_pt)) {
     for (j in 1:nrow(sample_pt)) {
-      # preferences are encoded as preferred example 1st, unpreferred 2nd
-      # weight preferences as +1, unpreferences as -1
-      pos_idx = class_pt[,1] == i & class_pt[,2] == j
-      neg_idx = class_pt[,2] == i & class_pt[,1] == j
+      ## is j preferred over i?
+      s_ij_row = class_pt[,1] == sample_pt[i,1] & class_pt[,2] == sample_pt[j,1]
+      s_ji_row = class_pt[,2] == sample_pt[i,1] & class_pt[,1] == sample_pt[j,1]
+      
+      # preferred: j 2nd and positive or j 1st and positive
+      pos_idx = (s_ij_row & class_pt[,3] == 1) |
+                (s_ji_row & class_pt[,3] == -1)
+      # not preferred: j 2nd and negative or j 1st and positive
+      neg_idx = (s_ij_row & class_pt[,3] == -1) |
+                (s_ji_row & class_pt[,3] == 1)
+      
+#       pos_idx = class_pt[,1] == sample_pt[i,1] & class_pt[,2] == sample_pt[j,1]
+#       neg_idx = class_pt[,2] == sample_pt[i,1] & class_pt[,1] == sample_pt[j,1]
       d2lp_pos = -n_p[pos_idx]^2 - Z[pos_idx] * n_p[pos_idx]
       d2lp_neg = -n_p[neg_idx]^2 - Z[neg_idx] * n_p[neg_idx]
       d2lp[i,j] = sum(d2lp_pos) - sum(d2lp_neg)
@@ -343,8 +404,11 @@ likPref = function(sample_pt, class_pt, mu, s2, sigma_noise) {
 #     ...         - other parameters to pass to kernelFn or meanFn
 infPrefLaplace = function(sample_pt, class_pt, meanFn, kernelFn, sigma_n, tol=1e-6, max_iter=100, optmethod='me', ...) {
   
-  m = mean.const(sample_pt, 0) # TODO: replace with other
-  K = kernelFn(sample_pt, sample_pt, deriv=FALSE, ...)
+#   m = mean.const(sample_pt, 0) # TODO: replace with other
+  sample_val = sample_pt[,-1]
+  m = mean.const(sample_val, 0) # TODO: replace with other
+#   K = kernelFn(sample_pt, sample_pt, deriv=FALSE, ...)
+  K = kernelFn(sample_val, sample_val, deriv=FALSE, ...)
   liks = likPref(sample_pt, class_pt, m, K, sigma_noise=sigma_n)
   
   f = m
@@ -658,16 +722,27 @@ prefPredict.v2 = function(model, t_pair, t_sample, sample_pt, f, W, K, sigma_n, 
   t_pt1 = as.matrix(t_sample[t_pair[,1],])
   t_pt2 = as.matrix(t_sample[t_pair[,2],])
   
-  kt = t(rbind(kernelFn(t_pt1, sample_pt, deriv=FALSE, ...), 
-               kernelFn(t_pt2, sample_pt, deriv=FALSE, ...)))
+  s_val = sample_pt[,-1]
+  t1_val = t_pt1[,-1]
+  t2_val = t_pt2[,-1]
+  kt = t(rbind(kernelFn(t1_val, s_val, deriv=FALSE, ...), 
+               kernelFn(t2_val, s_val, deriv=FALSE, ...)))
+  
+#   kt = t(rbind(kernelFn(t_pt1, sample_pt, deriv=FALSE, ...), 
+#                kernelFn(t_pt2, sample_pt, deriv=FALSE, ...)))
   
   # test point covariance matrix from block form
   # Kt = [ Krr Krs ; Ksr Kss]
   ntest = nrow(t_pair)
-  Krr = kernelFn(t_pt1, t_pt2, deriv=FALSE, ...)
-  Kss = kernelFn(t_pt2, t_pt2, deriv=FALSE, ...)
-  Krs = kernelFn(t_pt1, t_pt2, deriv=FALSE, ...)
-  Ksr = kernelFn(t_pt2, t_pt1, deriv=FALSE, ...)
+  Krr = kernelFn(t1_val, t2_val, deriv=FALSE, ...)
+  Kss = kernelFn(t2_val, t2_val, deriv=FALSE, ...)
+  Krs = kernelFn(t1_val, t2_val, deriv=FALSE, ...)
+  Ksr = kernelFn(t2_val, t1_val, deriv=FALSE, ...)
+  
+#   Krr = kernelFn(t_pt1, t_pt2, deriv=FALSE, ...)
+#   Kss = kernelFn(t_pt2, t_pt2, deriv=FALSE, ...)
+#   Krs = kernelFn(t_pt1, t_pt2, deriv=FALSE, ...)
+#   Ksr = kernelFn(t_pt2, t_pt1, deriv=FALSE, ...)
   Kt = rbind(cbind(Krr, Krs), cbind(Ksr, Kss))
   
   
@@ -705,8 +780,16 @@ prefPredict.v2 = function(model, t_pair, t_sample, sample_pt, f, W, K, sigma_n, 
   rownames(sigma_s) = gsub('\\.(\\d+)*', '', rownames(sigma_s))
   colnames(sigma_s) = gsub('\\.(\\d+)*', '', colnames(sigma_s))
   
+  latent = data.frame(label=seq(1:nrow(mu_t)), f=mu_t[,2], s2=diag(sigma_s))
+  ggplot(latent, aes(label, f)) + geom_point() + geom_errorbar(aes(ymin=f-sqrt(s2), ymax=f+sqrt(s2)), colour='grey80') + theme_bw()
+  
+#   sigma = data.frame(p1=rownames(sigma_n), p2=colnames(sigma_n), sigma_n)
+  
+  
   # predict preference using predictive means + variances
   prefPred = prefFnVec(mu_t, t_pair, sigma_s)
+  pref = data.frame(label=seq(1:nrow(t_pair)), pref=prefPred, s2=diag(sigma_s))
+  ggplot(pref, aes(label, pref)) + geom_point() #+ geom_errorbar(aes(ymin=pref-sqrt(s2), ymax=pref+sqrt(s2)), colour='grey80') + theme_bw()
 #   prefPred = prefFn(mu_t, sigma_n)
   
   return(list(pred=prefPred, mu_s=mu_t, sigma_s=sigma_s))
@@ -765,22 +848,30 @@ al.maxExpectedImprovement.v2 = function(f_cur, f_test, f_cov, x_test, slack=0.01
   z_t = (f_test - f_plus - slack)/f_cov
   #   ei = (f_test - f_plus - slack) * pnorm(z_t) + sigma_n * dnorm(z_t)
   ei = (f_test - f_plus - slack) * pnorm(z_t) + f_cov * dnorm(z_t)
-  ei = as.matrix(ei, ncol=1)
-  colnames(ei) = 'ei'
+#   ei = as.matrix(ei, ncol=1)
+#   colnames(ei) = 'ei'
+  
+  pred = data.frame(label=seq(1:length(f_test)), f=f_test, s2=f_cov, ei=ei)
+  png(paste('ei_', iter, '.png', sep=''))
+  print(
+    ggplot(pred, aes(label, f)) + geom_point() + theme_bw() + geom_errorbar(aes(ymin=f-sqrt(s2), ymax=f+sqrt(s2)), colour='grey80') + geom_point(aes(label, ei), colour='orange')
+  )
+  dev.off()
   
   ## get next set of possible sample points sorted by expected information
   tmp = cbind(ei, x_test)
-  top10 = tmp[order(-tmp[,1]),]
-  next_sample10 = top10[1:min(10,nrow(top10)),-c(1)]
+  next_sample = arrange(tmp, desc(ei))[1,-1]
+#   top10 = tmp[order(-tmp[,1]),]
+#   next_sample10 = top10[1:min(10,nrow(top10)),-c(1)]
   
   
   #   next_pt = which.max(ei)
   #   next_pt = t_pairs[next_pt,]
   #   next_sample = next_pt[next_pt!=last_pt]
   #   next_sample = x_test[next_pt,]
-  next_sample = next_sample10[1,]
+#   next_sample = next_sample10[1,]
   
-  names(top10) = c('ei', paste('Var', seq(1:(ncol(top10)-1)), sep=''))
+#   names(top10) = c('ei', paste('Var', seq(1:(ncol(top10)-1)), sep=''))
   
 #   png(paste('ei_', iter, '.png', sep=''))
 #   print(
