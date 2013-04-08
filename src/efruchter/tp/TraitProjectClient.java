@@ -70,9 +70,6 @@ public class TraitProjectClient extends Applet {
 	public static long display_score;
 
 	public static void resetMetrics() {
-		System.out.println("player hits: " + s_hit_player);
-		System.out.println("player score: " + display_score);
-		
 		s_damage_player = 0;
 		s_damage_enemies = 0;
 		s_num_enemies = 0;

@@ -107,14 +107,14 @@ public class VectorEditorPopup_Crummy {
         choiceBetter.addActionListener(new ActionListener() {
         	@Override
         	public void actionPerformed(ActionEvent ae) {
-        		System.out.println("picked better");
+//        		System.out.println("picked better");
         		TraitProjectClient.c_choice = CHOICE.BETTER;
         	}
         });
         choiceWorse.addActionListener(new ActionListener() {
         	@Override
         	public void actionPerformed(ActionEvent ae) {
-        		System.out.println("picked worse");
+//        		System.out.println("picked worse");
         		TraitProjectClient.c_choice = CHOICE.WORSE;
         	}
         });
