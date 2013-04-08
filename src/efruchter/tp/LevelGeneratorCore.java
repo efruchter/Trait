@@ -215,7 +215,6 @@ public class LevelGeneratorCore extends Trait {
 	    } else if (waveCount > 0) {
         	TraitProjectClient.storeData(v, waveCount);
         }
-       	runR();
 
         waveCount++;
         
@@ -233,6 +232,9 @@ public class LevelGeneratorCore extends Trait {
         		level.removeEntity(self);
         	}
         });
+        
+
+       	runR();
     }
 
     @Override

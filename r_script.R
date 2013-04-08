@@ -123,12 +123,13 @@ if (nrow(usr_data) > 1) {
     
     ## predictive preference probability for 2nd over 1st in pair
     t_pred = prefPredict.v2(optmodel, tclass_pair, tclass, x_sample, optmodel$f_map, optmodel$W, optmodel$K, optmodel$sigma_n, kernel.SqExpND, optmodel$lenscale)
-    plot(t_pred$pred)
+    plot(-t_pred$pred)
     
     javaDebug('generated predictions', debug_mode)
 
     # (1) look up predictive means for each sample value
-    f_t = t_pred$mu_s[,2] # second column are new values to compare to
+      # note: sign flip as Rasmussen swaps d2lp for -d2lp
+    f_t = -t_pred$mu_s[,2] # second column are new values to compare to
     # (2) look up predictive variance
     sigma_t = diag(t_pred$sigma_s)
     # (3) collect up sample values for test points
