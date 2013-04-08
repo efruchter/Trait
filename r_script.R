@@ -1,4 +1,5 @@
 # setwd('C:/Users/Alex/Desktop/prog_proj/bullethell')
+# setwd('./Desktop/prog_proj/bullethell/')
 
 require(reshape2)
 require(plyr)
@@ -7,12 +8,6 @@ require(optimx)
 
 #### code for running aspects of the learning ####
 source('./gpFn.R')
-
-## prints out debug statements when in debug mode
-javaDebug = function(msg, debug=FALSE) {
-  if (debug)
-    print(msg)
-}
 
 ## writes out gene vector to text file
 writeGene = function(next_sample, learn_params, fname) {
@@ -33,6 +28,8 @@ cat('called R \n')
 usr_data = read.csv('./database.csv')
 
 cat('user data read \n')
+
+cat(dim(usr_data))
 
 configs = read.table(file='clientSettings.config', sep='=')
 # learn_mode = configs[configs$V1=='learn_mode',2]
@@ -60,17 +57,27 @@ cat('\n')
 pID = as.numeric(arg_list[1]) # first argument is player ID
 # print(paste('got player ID: ', pID, sep=''))
 
+cat('got pid:') 
+cat(pID)
+cat('\n')
+
 learn_mode = arg_list[2]
 # print(paste('got learning mode: ', learn_mode, sep=''))
 
 debug_mode = as.numeric(arg_list[3])
 # print(paste('got debug mode: ', debug_mode, sep=''))
 
+cat('getting user data \n')
+
 ## keep only data from this user
 usr_data = usr_data[as.numeric(as.character(usr_data$pID)) == pID,]
 
-javaDebug("got user data", debug_mode)
+cat('got user data \n')
+cat(dim(usr_data))
+cat('\n')
 
+
+cat('about to learn \n')
 
 #### running learning process ####
 
@@ -84,15 +91,17 @@ if (nrow(usr_data) > 1) {
   }
   iter = iter+1
   
-
+  cat('loaded iterations \n')
   
   #### GP preference version ####
   
   if (learn_mode == 'preference' & iter>2) {
 
+    cat('preference learning \n')
+    
     ## TODO: make this scale to increase sampling density as needed -> optimize iteratively
     
-    javaDebug("doing preference learning", debug_mode)
+#    javaDebug("doing preference learning", debug_mode)
     
     ## specify number test points per range
     npts = 10
@@ -136,7 +145,7 @@ if (nrow(usr_data) > 1) {
     xs_dim = ncol(x_sample)-1
     x_sample = x_sample[,c(xs_dim+1,1:xs_dim)]
     
-    javaDebug('read samples', debug_mode)
+    #javaDebug('read samples', debug_mode)
     
     ## construct test pairs
     tclass_pair = expand.grid(last_pt, tclass$label)
@@ -164,14 +173,14 @@ if (nrow(usr_data) > 1) {
       optmodel$W = tbest$p_map$liks$d2lp
       optmodel$K = tbest$K
       
-      javaDebug('loaded hypers', debug_mode)
+      #javaDebug('loaded hypers', debug_mode)
     }
     
     ## predictive preference probability for 2nd over 1st in pair
     t_pred = prefPredict.v2(optmodel, tclass_pair, tclass, x_sample, optmodel$f_map, optmodel$W, optmodel$K, optmodel$sigma_n, kernel.SqExpND, optmodel$lenscale)
     plot(-t_pred$pred)
     
-    javaDebug('generated predictions', debug_mode)
+    #javaDebug('generated predictions', debug_mode)
 
     # (1) look up predictive means for each sample value
       # note: sign flip as Rasmussen swaps d2lp for -d2lp
@@ -185,7 +194,7 @@ if (nrow(usr_data) > 1) {
     next_sample = al.maxExpectedImprovement.v2(optmodel$f_map, f_t, sigma_t, test_pts, slack=0.1, iter)
     next_sample = as.matrix(next_sample, ncol=ncol(next_sample))
     
-    javaDebug('selected sample', debug_mode)
+    #javaDebug('selected sample', debug_mode)
     
     writeGene(next_sample, learn_params, 'geneText.txt')
   }
@@ -194,7 +203,10 @@ if (nrow(usr_data) > 1) {
   #### GP regression version ####
     
   if (learn_mode == 'regression') {
-    javaDebug('regression fitting', debug_mode)
+    
+    cat('doing regression \n')
+    
+    #javaDebug('regression fitting', debug_mode)
     
     control_var = as.character(learn_params$param)
     target_var = c('s_hit_player')
@@ -213,6 +225,7 @@ if (nrow(usr_data) > 1) {
     y = -(y - tar_hit)^2 # - or +?
     y = as.matrix(y, ncol=length(target_var))
     
+    cat('read in data \n')
     
     ## construct test point grid
     npts = 10
@@ -233,6 +246,8 @@ if (nrow(usr_data) > 1) {
 #     tmp = optimx_param
 #     optimx_param = optimx_param[optimx_param$method=='spg',]
     kernelpars = unlist(optimx_param$par)
+    
+    cat('optimized hypers \n')
     
     ## predict latent functions at test points
     #   sigma_n = optimx_param$par[1]
@@ -264,13 +279,17 @@ if (nrow(usr_data) > 1) {
     x_lab = merge(x2, x_star_lab)
     match_idx = !(x_star_lab$label %in% x_lab$label)
     
+    cat('setup samples \n')
+    
     ## greatest expected improvement among test points
     next_sample = al.maxExpectedImprovement.v2(gp.pred$f.map, gp.pred$f.star[match_idx], diag(gp.pred$fs.cov)[match_idx], x_star[match_idx,], slack=0.1)
     next_sample = as.matrix(next_sample, ncol=ncol(next_sample))
     
+    cat('got optimal next \n')
+    
     writeGene(next_sample, learn_params, 'geneText.txt')
-
-
+    
+    cat('wrote gene \n')
     
     ## debug 2D contour plot
 #     png(paste('f_fit_', iter, '.png', sep=''))
@@ -279,10 +298,13 @@ if (nrow(usr_data) > 1) {
 #       )
 #     dev.off()
     
-    javaDebug(paste('next point: ', paste(next_sample, collapse=', ')), debug_mode)
+    #javaDebug(paste('next point: ', paste(next_sample, collapse=', ')), debug_mode)
     
-    javaDebug('regression learning', debug_mode)
+    #javaDebug('regression learning', debug_mode)
   }
 
+  cat('saving iteration \n')
   save(iter, file=paste('r_iter_p', pID, '.RData', sep=''))
+  
+  cat('all done \n')
 }
