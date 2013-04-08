@@ -48,8 +48,9 @@ if (nrow(usr_data) > 1) {
     
     javaDebug("doing preference learning", debug_mode)
     
-    ## specify parameter ranges to adjust
+    ## specify number test points per range
     npts=10
+    ndrop = 10 # number of recently tested samples to not reuse
     
     ## construct test point grid
     tpts = list()
@@ -63,7 +64,6 @@ if (nrow(usr_data) > 1) {
     names(tclass)[1] = 'label'
     
     ## label training samples & construct pairs compared
-#     control_var = c('player.move.thrust', 'player.move.drag', 'c_choice')
     control_var = c(as.character(learn_params$param), 'c_choice', 's_wave')
     train_data = usr_data[control_var]
     train_data$pref = rep(0, nrow(train_data))
@@ -75,8 +75,11 @@ if (nrow(usr_data) > 1) {
     x_sample = arrange(x_sample, s_wave)
     
     ## get last point to compare test points against
-    last_pt = x_sample[nrow(x_sample), ]
-    last_pt = last_pt$label
+    ## also last 10 points to remove from possible tests
+    nsample = nrow(x_sample)
+    last_Npt = x_sample[max(1,(nsample-ndrop)):nsample,]
+    last_Npt = as.numeric(as.character(last_Npt$label))
+    last_pt = last_Npt[length(last_Npt)]
     
     ## construct all pairs of training points
     x_class = cbind(x_sample$label[1:(nrow(x_sample)-1)], x_sample$label[2:(nrow(x_sample))], x_sample$pref[2:nrow(x_sample)]) # get labeled pairs with preference value in third column
@@ -95,7 +98,8 @@ if (nrow(usr_data) > 1) {
     
     ## construct test pairs
     tclass_pair = expand.grid(last_pt, tclass$label)
-    tclass_pair = subset(tclass_pair, tclass_pair[,2] != last_pt) # don't compare to same point again
+#     tclass_pair = subset(tclass_pair, tclass_pair[,2] != last_pt) # don't compare to same point again
+    tclass_pair = subset(tclass_pair, !(tclass_pair[,2] %in% last_Npt)) # don't reuse recent points
     tclass_pair = as.matrix(tclass_pair)
     
     # create grid of hyperparameters to search
@@ -133,7 +137,8 @@ if (nrow(usr_data) > 1) {
     # (2) look up predictive variance
     sigma_t = diag(t_pred$sigma_s)
     # (3) collect up sample values for test points
-    test_pts = tclass[tclass$label!=last_pt,-1]
+#     test_pts = tclass[tclass$label!=last_pt,-1]
+    test_pts = tclass[!(tclass$label%in%last_Npt),-1]
     # (4) evaluate point to try next
     next_sample = al.maxExpectedImprovement.v2(optmodel$f_map, f_t, sigma_t, test_pts, slack=0.1, iter)
     next_sample = as.matrix(next_sample, ncol=ncol(next_sample))
