@@ -109,6 +109,7 @@ public class ZookServer implements ServerIO {
                 data.put("learningMode", learningMode);
                 data.put("isDebug", "" + isDebug);
 
+                System.out.println("sending to R: " + data.toDataString());
                 c.send("runR" + SessionInfo.SEPERATOR + data.toDataString());
                 c.receive();
             } catch (IOException e) {

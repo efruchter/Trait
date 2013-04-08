@@ -26,23 +26,33 @@ writeGene = function(next_sample, learn_params, fname) {
 }
 
 
-
+cat('called R \n')
 
 #### read in configuration and data for this player ####
 
 usr_data = read.csv('./database.csv')
+
+cat('user data read \n')
 
 configs = read.table(file='clientSettings.config', sep='=')
 # learn_mode = configs[configs$V1=='learn_mode',2]
 # debug_mode = configs[configs$V1=='debug_mode',2]
 # debug_mode = as.numeric(as.character(debug_mode))
 
+cat('configs read \n')
+
 learn_params = read.csv('./learn_params.csv')
+
+cat('learn_params read \n')
 
 # command line arguments:
 inArgs = commandArgs()
 arg_idx = which(inArgs == '--args')
 arg_list = inArgs[(arg_idx+1):length(inArgs)]
+
+cat('args read \n')
+cat(inArgs)
+cat('\n')
 
 # decrement as always pID is incremented after loading, so newest player is one less than stored
 # pID = as.numeric(as.character(configs[configs$V1=='player_id',2]))-1 

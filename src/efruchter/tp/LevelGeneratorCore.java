@@ -97,6 +97,9 @@ public class LevelGeneratorCore extends Trait {
             v.reloadExplorationVector("../geneText.txt");
         }
         
+    	System.out.println("thrust: " + v.getExplorationVector().getGene("player.move.thrust").getExpression());
+    	System.out.println("drag: " + v.getExplorationVector().getGene("player.move.drag").getExpression());
+    	
         /*
          * Build the gene vectors over again.
          */

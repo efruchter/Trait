@@ -117,7 +117,7 @@ public class ZookProjectServer implements NetworkingListener {
     		Runtime rt = Runtime.getRuntime();
     		Process pr;
     		if (System.getProperty("os.name").startsWith("Windows")) {
-    			pr = rt.exec("cmd /C \"cd ../ && Rscript r_script.R " + playerID + " " + learningMode + " " + isDebug + "\""); // change directory, then call the r script
+    			pr = rt.exec("cmd /C \"Rscript r_script.R " + playerID + " " + learningMode + " " + isDebug +  "\""); // change directory, then call the r script
     		} else {
     			pr = rt.exec("Rscript r_script.R " + playerID + " " + learningMode + " " + isDebug + "\""); //call the r script)
     		}
