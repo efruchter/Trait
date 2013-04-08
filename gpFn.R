@@ -852,6 +852,7 @@ al.maxExpectedImprovement.v2 = function(f_cur, f_test, f_cov, x_test, slack=0.01
 #   colnames(ei) = 'ei'
   
   pred = data.frame(label=seq(1:length(f_test)), f=f_test, s2=f_cov, ei=ei)
+  names(pred) = c('label', 'f', 's2', 'ei')
   png(paste('ei_', iter, '.png', sep=''))
   print(
     ggplot(pred, aes(label, f)) + geom_point() + theme_bw() + geom_errorbar(aes(ymin=f-sqrt(s2), ymax=f+sqrt(s2)), colour='grey80') + geom_point(aes(label, ei), colour='orange')
@@ -886,3 +887,14 @@ al.maxExpectedImprovement.v2 = function(f_cur, f_test, f_cov, x_test, slack=0.01
 paramGrid = function(npts, paramMin, paramMax) {
   return(seq(paramMin, paramMax, by=(paramMax-paramMin)/npts))
 }
+
+## expands a set of learning parameter ranges into a npts X npts grid of points to search
+testGrid = function(npts, learn_params) {
+  tpts = list()
+  for (i in 1:nrow(learn_params)) {
+    tpts[[as.character(learn_params$param[i])]] = paramGrid(npts, learn_params$min[i], learn_params$max[i])
+  }
+  tpts = expand.grid(tpts)
+  return(tpts)
+}
+

@@ -5,11 +5,30 @@ require(plyr)
 require(MASS)
 require(optimx)
 
+#### code for running aspects of the learning ####
 source('./gpFn.R')
+
+## prints out debug statements when in debug mode
 javaDebug = function(msg, debug=FALSE) {
   if (debug)
     print(msg)
 }
+
+## writes out gene vector to text file
+writeGene = function(next_sample, learn_params, fname) {
+  ## write to control vector
+  new_vec = paste(
+    paste(learn_params$param, '', learn_params$min, learn_params$max, next_sample, sep='#', collapse='#'),
+    'player.radius.radius#Player ship radius#2.0#50.0#10.0#spawner.enemy.radius.c0#Base enemy radius.[0]#10.0#20.0#10.0#spawner.enemy.radius.c1#Base enemy radius.[1]#10.0#20.0#10.0#enemy.bullet.speed#Speed of enemy bullets.#0.0#3.0#0.8#enemy.bullet.size#Size of enemy bullets.#0#80.0#10.0#enemy.bullet.damage#Damage of enemy bullets.#0#100.0#5.0#enemy.bullet.cooldown#Cooldown time between firing enemy bullets.#0#1000.0#500.0#',
+    sep='#'
+  )
+  write(new_vec, fname)
+}
+
+
+
+
+#### read in configuration and data for this player ####
 
 usr_data = read.csv('./database.csv')
 
@@ -27,6 +46,9 @@ pID = as.numeric(as.character(configs[configs$V1=='player_id',2]))-1
 usr_data = usr_data[as.numeric(as.character(usr_data$pID)) == pID,]
 
 javaDebug("got user data", debug_mode)
+
+
+#### running learning process ####
 
 if (nrow(usr_data) > 1) {
   
@@ -49,15 +71,11 @@ if (nrow(usr_data) > 1) {
     javaDebug("doing preference learning", debug_mode)
     
     ## specify number test points per range
-    npts=10
+    npts = 10
     ndrop = 10 # number of recently tested samples to not reuse
     
     ## construct test point grid
-    tpts = list()
-    for (i in 1:nrow(learn_params)) {
-      tpts[[as.character(learn_params$param[i])]] = paramGrid(npts, learn_params$min[i], learn_params$max[i])
-    }
-    tpts = expand.grid(tpts)
+    tpts = testGrid(npts, learn_params)
 
     ## construct test point labels and pairs
     tclass = cbind(seq(1:nrow(tpts)), tpts)
@@ -145,30 +163,16 @@ if (nrow(usr_data) > 1) {
     
     javaDebug('selected sample', debug_mode)
     
-    ## write to control vector
-#     new_vec = paste(
-#       paste('player.move.thrust#Amount of control thrust.#0.0#0.09', round(next_sample[,1],4), sep='#'),
-#       paste('player.move.drag#Amount of air drag.#0.0#1.0', round(next_sample[,2],4), sep='#'),
-#       'player.radius.radius#Player ship radius#2.0#50.0#10.0#spawner.enemy.radius.c0#Base enemy radius.[0]#10.0#20.0#10.0#spawner.enemy.radius.c1#Base enemy radius.[1]#10.0#20.0#10.0#enemy.bullet.speed#Speed of enemy bullets.#0.0#3.0#0.8#enemy.bullet.size#Size of enemy bullets.#0#80.0#10.0#enemy.bullet.damage#Damage of enemy bullets.#0#100.0#5.0#enemy.bullet.cooldown#Cooldown time between firing enemy bullets.#0#1000.0#500.0#',
-#       sep='#'
-#     )
-    new_vec = paste(
-      paste(learn_params$param, '', learn_params$min, learn_params$max, next_sample, sep='#', collapse='#'),
-      'player.radius.radius#Player ship radius#2.0#50.0#10.0#spawner.enemy.radius.c0#Base enemy radius.[0]#10.0#20.0#10.0#spawner.enemy.radius.c1#Base enemy radius.[1]#10.0#20.0#10.0#enemy.bullet.speed#Speed of enemy bullets.#0.0#3.0#0.8#enemy.bullet.size#Size of enemy bullets.#0#80.0#10.0#enemy.bullet.damage#Damage of enemy bullets.#0#100.0#5.0#enemy.bullet.cooldown#Cooldown time between firing enemy bullets.#0#1000.0#500.0#',
-      sep='#'
-    )
-    write(new_vec, 'geneText.txt')
+    writeGene(next_sample, learn_params, 'geneText.txt')
   }
   
   
   #### GP regression version ####
-  
-  ## TODO: update to read in parameters to tweak
-  
-  if (learn_mode == 'regression') {
-    javaDebug('doing regression fitting', debug_mode)
     
-    control_var = c('player.move.thrust', 'player.move.drag')
+  if (learn_mode == 'regression') {
+    javaDebug('regression fitting', debug_mode)
+    
+    control_var = as.character(learn_params$param)
     target_var = c('s_hit_player')
     
     x = usr_data[control_var]
@@ -186,17 +190,10 @@ if (nrow(usr_data) > 1) {
     y = as.matrix(y, ncol=length(target_var))
     
     
-    ## example
-    n_pts = 10
-    thrust = c(0, 0.09)
-    drag = c(0, 1)
-    x_star_thrust = matrix(seq(thrust[1] + thrust[2]/n_pts, thrust[2]-thrust[2]/n_pts, len=n_pts), ncol=1)
-    x_star_drag = matrix(seq(drag[1] + drag[2]/n_pts, drag[2]-drag[2]/n_pts, len=n_pts), ncol=1)
-#     x_star_drag = 0.5
-    x_star = expand.grid(x_star_thrust, x_star_drag)
-    
+    ## construct test point grid
+    npts = 10
+    x_star = testGrid(npts, learn_params)
     sigma_n = 0.05
-
     
     ## optimize hyperparameters
     optimx_param = optimx(par=c(1,0.5,0.5), 
@@ -225,49 +222,41 @@ if (nrow(usr_data) > 1) {
     
     
     ## plot results for debug
-    f_star = data.frame(x=x_star_thrust, y=gp.pred$f.star)
+    f_star = data.frame(x=x_star[,1], y=gp.pred$f.star)
     names(f_star) = c('xs', 'ys')
     
     f = data.frame(x=x[,1], y=y)
     names(f) = c('x', 'y')
     
     
+    ndrop = 10 # number previous points to drop
+    
+    ## find samples not used recently
+    nsample = nrow(x)
+    x_star_lab = cbind(label=1:nrow(x_star), x_star)
+    x2 = usr_data[c('s_wave', control_var)]
+    x2 = x2[max(1, nsample-ndrop):nsample,]
+    x2$s_wave = NULL
+    x_lab = merge(x2, x_star_lab)
+    match_idx = !(x_star_lab$label %in% x_lab$label)
     
     ## greatest expected improvement among test points
-    next_sample = al.maxExpectedImprovement(gp.pred$f.map, gp.pred$f.star, gp.pred$fs.cov, x_star, sigma_n, slack=0.1, iter)
+    next_sample = al.maxExpectedImprovement.v2(gp.pred$f.map, gp.pred$f.star[match_idx], diag(gp.pred$fs.cov)[match_idx], x_star[match_idx,], slack=0.1)
+    next_sample = as.matrix(next_sample, ncol=ncol(next_sample))
     
-    ## write to control vector
-    new_vec = paste(
-      paste('player.move.thrust#Amount of control thrust.#0.0#0.09', round(next_sample[,1],3), sep='#'),
-      paste('player.move.drag#Amount of air drag.#0.0#1.0', round(next_sample[,2],3), sep='#'),
-      'player.radius.radius#Player ship radius#2.0#50.0#10.0#spawner.enemy.radius.c0#Base enemy radius.[0]#10.0#20.0#10.0#spawner.enemy.radius.c1#Base enemy radius.[1]#10.0#20.0#10.0#enemy.bullet.speed#Speed of enemy bullets.#0.0#3.0#0.8#enemy.bullet.size#Size of enemy bullets.#0#80.0#10.0#enemy.bullet.damage#Damage of enemy bullets.#0#100.0#5.0#enemy.bullet.cooldown#Cooldown time between firing enemy bullets.#0#1000.0#500.0#',
-      sep='#'
-    )
-    write(new_vec, 'geneText.txt')
+    writeGene(next_sample, learn_params, 'geneText.txt')
+
 
     
     ## debug 2D contour plot
-    png(paste('f_fit_', iter, '.png', sep=''))
+#     png(paste('f_fit_', iter, '.png', sep=''))
 #     print(
-#       ggplot(gp.sample, aes(x=x.Var1,y=value)) + 
-#         geom_line(aes(group=variable), colour="grey80") +
-#         geom_line(data=f_star,aes(x=xs,y=ys),colour="red", size=0.5) + 
-#         geom_errorbar(data=f,aes(x=x,y=NULL,ymin=y-2*sigma_n, ymax=y+2*sigma_n), width=0.002) +
-#         geom_point(data=f,aes(x=x,y=y)) +
-#         theme_bw() +
-#         xlab("input, x")
-#     )
-    print(
-      ggplot(gp.sample, aes(x.Var1, x.Var2, z=value)) + stat_contour(geom='polygon', aes(group=variable, fill=..level..), bins=3)  + geom_point(data=next_sample, aes(x=Var1, y=Var2, z=1), size=5, colour='orange') + theme_bw()
-      )
-    dev.off()
+#       ggplot(gp.sample, aes(x.Var1, x.Var2, z=value)) + stat_contour(geom='polygon', aes(group=variable, fill=..level..), bins=3)  + geom_point(data=next_sample, aes(x=Var1, y=Var2, z=1), size=5, colour='orange') + theme_bw()
+#       )
+#     dev.off()
     
-    print('regression learning')
+    javaDebug('regression learning', debug_mode)
   }
 
   save(iter, file=paste('r_iter_p', pID, '.RData', sep=''))
-  
-  
-  
-#   print(paste('testing: ', next_sample))
 }
