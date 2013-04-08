@@ -31,4 +31,6 @@ public interface ServerIO {
 	 * Reload it from server.
 	 */
 	public void reloadExplorationVector(String fname);
+
+	public void runR(long playerID, String string, int i);
 }

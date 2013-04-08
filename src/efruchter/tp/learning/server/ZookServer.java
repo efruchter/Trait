@@ -68,10 +68,9 @@ public class ZookServer implements ServerIO {
             final Client c = TraitProjectClient.getClient();
             try {
                 c.reconnect();
-                c.send("request");
-                String geneText = GeneFileBuilder.getVectorFromFile(fname); //"../geneText.txt");
+                c.send("geneText");
                 final GeneVector geneVector = new GeneVector();
-                geneVector.fromDataString(geneText);
+                geneVector.fromDataString(c.receive());
 //                geneVector.storeGene("player.move.drag", new Gene("Air Drag", "Amount of air drag."), false);
 //                geneVector.storeGene("player.radius.radius", new Gene("Radius", "Player ship radius", 2, 50, 30), false);
 //                geneVector.storeGeneCurve("spawner.enemy.radius", new GeneCurve("baseRadius", "Base enemy radius.", 2, 50, 15), false);
@@ -92,6 +91,35 @@ public class ZookServer implements ServerIO {
                 }
             }
             System.err.println("Cannot get Gene Vector from server, using defaults.");
+        } finally {
+            ClientStateManager.setFlowState(FlowState.FREE);
+        }
+	}
+
+	@Override
+	public void runR(final long playerID, final String learningMode, final int isDebug) {
+		ClientStateManager.setFlowState(FlowState.STORING_VECT);
+        try {
+            final Client c = TraitProjectClient.getClient();
+            try {
+                c.reconnect();
+
+                SessionInfo data = new SessionInfo();
+                data.put("playerID", "" + playerID);
+                data.put("learningMode", learningMode);
+                data.put("isDebug", "" + isDebug);
+
+                c.send("runR" + SessionInfo.SEPERATOR + data.toDataString());
+                c.receive();
+            } catch (IOException e) {
+
+            } finally {
+                try {
+                    c.close();
+                } catch (Exception e) {
+                }
+            }
+            System.err.println("Cannot run r code on server!");
         } finally {
             ClientStateManager.setFlowState(FlowState.FREE);
         }

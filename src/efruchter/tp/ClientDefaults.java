@@ -27,7 +27,8 @@ public class ClientDefaults {
 				devMode = applet.getParameter("dev_mode");
 				serverIp = applet.getParameter("server_ip");
 				console = applet.getParameter("console");
-//				playerID = applet.getParameter("playerID"); // read in last player ID used
+				playerID = applet.getParameter("player_id");
+				learn_mode = applet.getParameter("learn_mode");
 			} else {
 				Properties prop = new Properties();
 				String fileName = "clientSettings.config";

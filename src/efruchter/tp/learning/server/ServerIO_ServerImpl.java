@@ -86,4 +86,9 @@ public class ServerIO_ServerImpl implements ServerIO {
             ClientStateManager.setFlowState(FlowState.FREE);
         }
     }
+
+	@Override
+	public void runR(long playerID, String string, int i) {
+
+	}
 }

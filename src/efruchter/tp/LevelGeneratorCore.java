@@ -235,8 +235,7 @@ public class LevelGeneratorCore extends Trait {
         	}
         });
         
-
-       	runR(ClientDefaults.playerID(), "regression", 1);
+        v.runR(ClientDefaults.playerID(), "regression", 1);
     }
 
     @Override
@@ -378,28 +377,7 @@ public class LevelGeneratorCore extends Trait {
     public void onDeath(Entity self, Level level) {
 
     }
-    
-    /**
-     * Calls R code for learning process
-     */
-    private void runR(long playerID, String learningMode, int isDebug) {
-    	try {
-    		Runtime rt = Runtime.getRuntime();
-    		Process pr = rt.exec("cmd /C \"cd ../ && Rscript r_script.R " + playerID + " " + learningMode + " " + isDebug + "\""); // change directory, then call the r script
-    		BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
-    		
-    		String line = null;
-    		while((line = input.readLine()) != null) {
-    			System.out.println(line);
-    		}
-    		int exitVal = pr.waitFor();
-    		System.out.println("exited w/error code: " + exitVal);
-    		
-    	} catch (Exception e) {
-    		System.out.println(e.toString());
-    		e.printStackTrace();
-    	}
-    }
+
 
     private static class Chain {
         final private GenFunction genFunc;
