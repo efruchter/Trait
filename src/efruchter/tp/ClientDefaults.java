@@ -15,7 +15,7 @@ public class ClientDefaults {
 	public static void init(Applet applet) {
 		try {
 			// GATHER THE DATA FROM APPLET PARAMS OR CONFIG FILE
-			String levelLength, localServer, vector, devMode, serverIp, console;
+			String levelLength, localServer, vector, devMode, serverIp, console, port;
 			if (applet.getParameter("canary") != null) {
 				levelLength = applet.getParameter("level_length");
 				localServer = applet.getParameter("local_server");
@@ -23,6 +23,7 @@ public class ClientDefaults {
 				devMode = applet.getParameter("dev_mode");
 				serverIp = applet.getParameter("server_ip");
 				console = applet.getParameter("console");
+				port = applet.getParameter("server_port");
 			} else {
 				Properties prop = new Properties();
 				String fileName = "clientSettings.config";
@@ -38,6 +39,7 @@ public class ClientDefaults {
 				devMode = prop.getProperty("dev_mode");
 				serverIp = prop.getProperty("server_ip");
 				console = prop.getProperty("console");
+				port = prop.getProperty("server_port");
 			}
 
 			//Build the actual config options
@@ -47,6 +49,7 @@ public class ClientDefaults {
 			VECTOR = (ServerIO) server.newInstance();
 			DEV_MODE = Boolean.parseBoolean(devMode);
 			SERVER_IP = serverIp;
+			SERVER_PORT = Integer.parseInt(port);
 			if (Boolean.parseBoolean(console)) {
 				Console.init();
 			}
@@ -60,6 +63,7 @@ public class ClientDefaults {
 			VECTOR = new ServerIO_ServerImpl();
 			DEV_MODE = false;
 			SERVER_IP = "trait.ericfruchter.com";
+			SERVER_PORT = 8000;
 		}
 	}
 
@@ -68,6 +72,7 @@ public class ClientDefaults {
 	private static ServerIO VECTOR;
 	private static boolean DEV_MODE;
 	private static String SERVER_IP;
+	private static int SERVER_PORT;
 
 	/**
 	 * Wave Length in milliseconds
@@ -100,5 +105,9 @@ public class ClientDefaults {
 
 	public static String serverIp() {
 		return SERVER_IP;
+	}
+
+	public static int serverPort() {
+		return SERVER_PORT;
 	}
 }

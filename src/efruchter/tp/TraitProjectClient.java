@@ -356,9 +356,9 @@ public class TraitProjectClient extends Applet {
 
 	public static Client getClient() {
 		if (ClientDefaults.localServer()) {
-			return new Client();
+			return new Client(ClientDefaults.serverPort());
 		} else {
-			return new Client(ClientDefaults.serverIp(), 8000);
+			return new Client(ClientDefaults.serverIp(), ClientDefaults.serverPort());
 		}
 	}
 

@@ -48,15 +48,19 @@ public class TraitProjectServer implements NetworkingListener {
 
 	public static void main(String[] args) {
 		boolean headless = false;
+		int port = 8000;
 		if (args.length > 0) {
-			for (String arg : args) {
-				if(arg.equalsIgnoreCase("-nogui")) {
+			for (int i = 0; i < args.length; i++) {
+				final String arg = args[i];
+				if (arg.equalsIgnoreCase("-nogui")) {
 					headless = true;
 				} else if(arg.equalsIgnoreCase("-h") || arg.equalsIgnoreCase("-help")) {
 					System.out.println("-nogui: Run in headless mode." );
+					System.out.println("-server_port: specify a port." );
+				} else if (arg.equalsIgnoreCase("-server_port")) {
+					port = Integer.parseInt(args[i + 1]);
 				}
 			}
-			
 		}
 		
 		if (!headless) {
@@ -73,7 +77,7 @@ public class TraitProjectServer implements NetworkingListener {
 		}
 
 		try {
-			new TraitProjectServer();
+			new TraitProjectServer(port);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
@@ -81,9 +85,7 @@ public class TraitProjectServer implements NetworkingListener {
 		}
 	}
 
-	public TraitProjectServer() throws IOException, InterruptedException {
-
-		final int port = 8000;
+	public TraitProjectServer(final int port) throws IOException, InterruptedException {
 
 		System.out.println("Trait Server Started on port " + port + ".");
 		new Server(port, this);
