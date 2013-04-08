@@ -64,7 +64,7 @@ if (nrow(usr_data) > 1) {
     
     ## label training samples & construct pairs compared
 #     control_var = c('player.move.thrust', 'player.move.drag', 'c_choice')
-    control_var = c(as.character(learn_params$param), 'c_choice')
+    control_var = c(as.character(learn_params$param), 'c_choice', 's_wave')
     train_data = usr_data[control_var]
     train_data$pref = rep(0, nrow(train_data))
     train_data$pref[train_data$c_choice=='BETTER'] = 1
@@ -72,9 +72,18 @@ if (nrow(usr_data) > 1) {
     train_data$c_choice = NULL
     
     x_sample = merge(tclass, train_data)
+    x_sample = arrange(x_sample, s_wave)
+    
+    ## get last point to compare test points against
+    last_pt = x_sample[nrow(x_sample), ]
+    last_pt = last_pt$label
+    
+    ## construct all pairs of training points
     x_class = cbind(x_sample$label[1:(nrow(x_sample)-1)], x_sample$label[2:(nrow(x_sample))], x_sample$pref[2:nrow(x_sample)]) # get labeled pairs with preference value in third column
     
+    ## clean up labels for samples
     x_sample$pref=NULL
+    x_sample$s_wave=NULL
     x_sample = unique(x_sample) # only distinct points
     x_sample = as.matrix(x_sample)
     
@@ -83,12 +92,6 @@ if (nrow(usr_data) > 1) {
     x_sample = x_sample[,c(xs_dim+1,1:xs_dim)]
     
     javaDebug('read samples', debug_mode)
-    
-    ## get last point to compare against
-    n_train = nrow(x_class)
-    last_pt = setdiff(x_class[n_train,], 
-                      intersect(x_class[n_train-1,], x_class[n_train,]))
-    last_pt = last_pt[1]
     
     ## construct test pairs
     tclass_pair = expand.grid(last_pt, tclass$label)

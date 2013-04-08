@@ -78,22 +78,7 @@ public class LevelGeneratorCore extends Trait {
     @Override
     public void onStart(final Entity self, final Level level) {
         
-    	try {
-    		Runtime rt = Runtime.getRuntime();
-    		Process pr = rt.exec("cmd /C \"cd ../ && Rscript r_script.R\""); // change directory, then call the r script
-    		BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
-    		
-    		String line = null;
-    		while((line = input.readLine()) != null) {
-    			System.out.println(line);
-    		}
-    		int exitVal = pr.waitFor();
-    		System.out.println("exited w/error code: " + exitVal);
-    		
-    	} catch (Exception e) {
-    		System.out.println(e.toString());
-    		e.printStackTrace();
-    	}
+
     	random.setSeed(0);
     	
     	ServerIO v = ClientDefaults.server();
@@ -116,8 +101,6 @@ public class LevelGeneratorCore extends Trait {
         /*
          * Build the gene vectors over again.
          */
-
-        
         enemyBulletSpeed = v.getExplorationVector().getGene("enemy.bullet.speed");
         enemyBulletSize = v.getExplorationVector().getGene("enemy.bullet.size");
         enemyBulletDamage = v.getExplorationVector().getGene("enemy.bullet.damage");
@@ -232,6 +215,7 @@ public class LevelGeneratorCore extends Trait {
 	    } else if (waveCount > 0) {
         	TraitProjectClient.storeData(v, waveCount);
         }
+       	runR();
 
         waveCount++;
         
@@ -389,6 +373,28 @@ public class LevelGeneratorCore extends Trait {
     @Override
     public void onDeath(Entity self, Level level) {
 
+    }
+    
+    /**
+     * Calls R code for learning process
+     */
+    private void runR() {
+    	try {
+    		Runtime rt = Runtime.getRuntime();
+    		Process pr = rt.exec("cmd /C \"cd ../ && Rscript r_script.R\""); // change directory, then call the r script
+    		BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+    		
+    		String line = null;
+    		while((line = input.readLine()) != null) {
+    			System.out.println(line);
+    		}
+    		int exitVal = pr.waitFor();
+    		System.out.println("exited w/error code: " + exitVal);
+    		
+    	} catch (Exception e) {
+    		System.out.println(e.toString());
+    		e.printStackTrace();
+    	}
     }
 
     private static class Chain {
