@@ -33,14 +33,28 @@ writeGene = function(next_sample, learn_params, fname) {
 usr_data = read.csv('./database.csv')
 
 configs = read.table(file='clientSettings.config', sep='=')
-learn_mode = configs[configs$V1=='learn_mode',2]
-debug_mode = configs[configs$V1=='debug_mode',2]
-debug_mode = as.numeric(as.character(debug_mode))
+# learn_mode = configs[configs$V1=='learn_mode',2]
+# debug_mode = configs[configs$V1=='debug_mode',2]
+# debug_mode = as.numeric(as.character(debug_mode))
 
 learn_params = read.csv('./learn_params.csv')
 
+# command line arguments:
+inArgs = commandArgs()
+arg_idx = which(inArgs == '--args')
+arg_list = inArgs[(arg_idx+1):length(inArgs)]
+
 # decrement as always pID is incremented after loading, so newest player is one less than stored
-pID = as.numeric(as.character(configs[configs$V1=='player_id',2]))-1 
+# pID = as.numeric(as.character(configs[configs$V1=='player_id',2]))-1 
+
+pID = as.numeric(arg_list[1]) # first argument is player ID
+# print(paste('got player ID: ', pID, sep=''))
+
+learn_mode = arg_list[2]
+# print(paste('got learning mode: ', learn_mode, sep=''))
+
+debug_mode = as.numeric(arg_list[3])
+# print(paste('got debug mode: ', debug_mode, sep=''))
 
 ## keep only data from this user
 usr_data = usr_data[as.numeric(as.character(usr_data$pID)) == pID,]

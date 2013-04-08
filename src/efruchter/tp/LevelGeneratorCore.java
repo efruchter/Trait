@@ -236,7 +236,7 @@ public class LevelGeneratorCore extends Trait {
         });
         
 
-       	runR();
+       	runR(ClientDefaults.playerID(), "regression", 1);
     }
 
     @Override
@@ -382,10 +382,10 @@ public class LevelGeneratorCore extends Trait {
     /**
      * Calls R code for learning process
      */
-    private void runR() {
+    private void runR(long playerID, String learningMode, int isDebug) {
     	try {
     		Runtime rt = Runtime.getRuntime();
-    		Process pr = rt.exec("cmd /C \"cd ../ && Rscript r_script.R\""); // change directory, then call the r script
+    		Process pr = rt.exec("cmd /C \"cd ../ && Rscript r_script.R " + playerID + " " + learningMode + " " + isDebug + "\""); // change directory, then call the r script
     		BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
     		
     		String line = null;
