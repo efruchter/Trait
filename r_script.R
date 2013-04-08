@@ -255,6 +255,8 @@ if (nrow(usr_data) > 1) {
 #       )
 #     dev.off()
     
+    javaDebug(paste('next point: ', paste(next_sample, collapse=', ')), debug_mode)
+    
     javaDebug('regression learning', debug_mode)
   }
 

@@ -134,14 +134,17 @@ public class LevelGeneratorCore extends Trait {
          * Canned player position.
          */
         final float playerX, playerY;
-        if (level.getPlayer() != null) {
-            playerX = level.getPlayer().x;
-            playerY = level.getPlayer().y;
-            // level.removeEntity(level.getPlayer());
-        } else {
-            playerX = Display.getWidth() / 2;
-            playerY = Display.getHeight() * .15f;
-        }
+        // for testing purposes always restart from same position
+//        if (level.getPlayer() != null) {
+//            playerX = level.getPlayer().x;
+//            playerY = level.getPlayer().y;
+//            // level.removeEntity(level.getPlayer());
+//        } else {
+//            playerX = Display.getWidth() / 2;
+//            playerY = Display.getHeight() * .15f;
+//        }
+        playerX = Display.getWidth() / 2;
+        playerY = Display.getHeight() * 0.15f;
 
         for (final Entity ship : level.getEntities(EntityType.SHIP)) {
             if (ship.isActive()) {
