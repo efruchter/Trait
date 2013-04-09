@@ -12,9 +12,14 @@ source('./gpFn.R')
 ## writes out gene vector to text file
 writeGene = function(next_sample, learn_params, fname) {
   ## write to control vector
+#   new_vec = paste(
+#     paste(learn_params$param, '', learn_params$min, learn_params$max, next_sample, sep='#', collapse='#'),
+#     'player.radius.radius#Player ship radius#2.0#50.0#10.0#spawner.enemy.radius.c0#Base enemy radius.[0]#10.0#20.0#10.0#spawner.enemy.radius.c1#Base enemy radius.[1]#10.0#20.0#10.0#enemy.bullet.speed#Speed of enemy bullets.#0.0#3.0#0.8#enemy.bullet.size#Size of enemy bullets.#0#80.0#10.0#enemy.bullet.damage#Damage of enemy bullets.#0#100.0#5.0#enemy.bullet.cooldown#Cooldown time between firing enemy bullets.#0#1000.0#500.0#',
+#     sep='#'
+#   )
   new_vec = paste(
     paste(learn_params$param, '', learn_params$min, learn_params$max, next_sample, sep='#', collapse='#'),
-    'player.radius.radius#Player ship radius#2.0#50.0#10.0#spawner.enemy.radius.c0#Base enemy radius.[0]#10.0#20.0#10.0#spawner.enemy.radius.c1#Base enemy radius.[1]#10.0#20.0#10.0#enemy.bullet.speed#Speed of enemy bullets.#0.0#3.0#0.8#enemy.bullet.size#Size of enemy bullets.#0#80.0#10.0#enemy.bullet.damage#Damage of enemy bullets.#0#100.0#5.0#enemy.bullet.cooldown#Cooldown time between firing enemy bullets.#0#1000.0#500.0#',
+    'player.radius.radius#Player ship radius#2.0#50.0#10.0#spawner.enemy.radius.c0#Base enemy radius.[0]#10.0#20.0#10.0#spawner.enemy.radius.c1#Base enemy radius.[1]#10.0#20.0#10.0#enemy.bullet.damage#Damage of enemy bullets.#0#100.0#5.0#player.move.thrust##0.0#0.09#0.04#player.move.drag##0.0#1.0#0.4#',
     sep='#'
   )
   write(new_vec, fname)
@@ -71,6 +76,10 @@ cat('getting user data \n')
 
 ## keep only data from this user
 usr_data = usr_data[as.numeric(as.character(usr_data$pID)) == pID,]
+
+cat('got pID: ')
+cat(pID)
+cat('\n')
 
 cat('got user data \n')
 cat(dim(usr_data))
@@ -222,6 +231,7 @@ if (nrow(usr_data) > 1) {
     }
     
     y = usr_data[target_var]
+    y = as.numeric(as.character(y[,1]))
     y = -(y - tar_hit)^2 # - or +?
     y = as.matrix(y, ncol=length(target_var))
     
@@ -233,7 +243,8 @@ if (nrow(usr_data) > 1) {
     sigma_n = 0.05
     
     ## optimize hyperparameters
-    optimx_param = optimx(par=c(1,0.5,0.5), 
+    optim_inpar = c(1, rep(0.5, ncol(x_star))) # initial parameters are 1 for variance scale, 0.5 for all length scales
+    optimx_param = optimx(par=optim_inpar, 
                           fn=predictGP.optimx, gr=NULL, hess=NULL,
                           lower=1e-3, upper=1e3,
 #                           method='Nelder-Mead',

@@ -1,3 +1,4 @@
 param, min, max
-player.move.thrust, 0.01, 0.05
-player.move.drag, 0.1, 1.0
+enemy.bullet.speed, 0.5, 3.0
+enemy.bullet.size, 5.0, 80.0
+enemy.bullet.cooldown, 100.0, 1000.0
