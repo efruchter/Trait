@@ -10,7 +10,7 @@ public class ClientStateManager {
     }
 
     public static enum FlowState {
-        INIT("Initializing"), EDITING("Editing Vector"), LOADING_VECT("Loading Vector"), STORING_VECT("Storing Vector"), PLAYING("Playing"), FREE("Ready");
+        INIT("Initializing"), EDITING("Editing Vector"), LOADING_VECT("Loading Vector"), STORING_VECT("Storing Vector"), PLAYING("Playing"), FREE("Ready"), FETCHING_ID("Fetching unique ID");
         
         private final String name;
         

@@ -1,7 +1,9 @@
 package efruchter.tp;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Scanner;
 
 import com.csvreader.CsvReader;
 
@@ -48,15 +50,19 @@ public class TraitProjectServer implements NetworkingListener {
 
 	public static void main(String[] args) {
 		boolean headless = false;
+		int port = 8000;
 		if (args.length > 0) {
-			for (String arg : args) {
-				if(arg.equalsIgnoreCase("-nogui")) {
+			for (int i = 0; i < args.length; i++) {
+				final String arg = args[i];
+				if (arg.equalsIgnoreCase("-nogui")) {
 					headless = true;
 				} else if(arg.equalsIgnoreCase("-h") || arg.equalsIgnoreCase("-help")) {
 					System.out.println("-nogui: Run in headless mode." );
+					System.out.println("-server_port: specify a port." );
+				} else if (arg.equalsIgnoreCase("-server_port")) {
+					port = Integer.parseInt(args[i + 1]);
 				}
 			}
-			
 		}
 		
 		if (!headless) {
@@ -73,7 +79,7 @@ public class TraitProjectServer implements NetworkingListener {
 		}
 
 		try {
-			new TraitProjectServer();
+			new TraitProjectServer(port);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
@@ -81,9 +87,7 @@ public class TraitProjectServer implements NetworkingListener {
 		}
 	}
 
-	public TraitProjectServer() throws IOException, InterruptedException {
-
-		final int port = 8000;
+	public TraitProjectServer(final int port) throws IOException, InterruptedException {
 
 		System.out.println("Trait Server Started on port " + port + ".");
 		new Server(port, this);
@@ -103,8 +107,7 @@ public class TraitProjectServer implements NetworkingListener {
 			} else if ("request".equals(message)) {
 				result = "EXPLORE" + SessionInfo.SEPERATOR + current.toDataString();
 				System.out.println(System.currentTimeMillis() + ": EXPLORE");
-			}
-            else if ("playerControlled".equals(message)) {
+			} else if ("playerControlled".equals(message)) {
                 CsvReader r = null;
                 try {
                     r = new CsvReader(playerControlledPath);
@@ -126,12 +129,14 @@ public class TraitProjectServer implements NetworkingListener {
                     if (r != null)
                         r.close();
                 }
-            }
-			else if (message.startsWith("store" + SessionInfo.SEPERATOR)) {
+            } else if (message.startsWith("store" + SessionInfo.SEPERATOR)) {
 				final String data = message.replaceFirst("store" + SessionInfo.SEPERATOR, "");
 				result = "" + store(new SessionInfo(data));
 				System.out.println(System.currentTimeMillis() + ": STORE");
-			}
+			} else if ("getID".equals(message)) {
+            	result = "" + getID();
+            	System.out.println(System.currentTimeMillis() + ": Fetched id " + result);
+            }
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -141,5 +146,21 @@ public class TraitProjectServer implements NetworkingListener {
 
 	public synchronized boolean store(SessionInfo userInfo) {
 		return db.storeVector(userInfo);
+	}
+
+	public synchronized long getID() throws IOException {
+		final File idFile = new File("playerID.txt");
+		if (!idFile.exists()) {
+			idFile.createNewFile();
+			final FileWriter f = new FileWriter(idFile);
+			f.write("0");
+			f.close();
+		}
+		final Scanner scanner = new Scanner(idFile);
+		final long id = Long.parseLong(scanner.next());
+		final FileWriter f = new FileWriter(idFile);
+		f.write((id + 1) + "");
+		f.close();
+		return id;
 	}
 }

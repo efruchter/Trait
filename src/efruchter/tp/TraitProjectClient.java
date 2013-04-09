@@ -66,8 +66,10 @@ public class TraitProjectClient extends Applet {
 	public static float s_fired_player;
 	public static float s_fired_enemies;
 	public static float s_killed_enemies;
+
 	public static CHOICE c_choice = CHOICE.NONE;
 	public static long display_score;
+	public static long playerID;
 
 	public static void resetMetrics() {
 		s_damage_player = 0;
@@ -93,7 +95,7 @@ public class TraitProjectClient extends Applet {
         info.put("date", Long.toString(System.currentTimeMillis()));
         info.put("vector", v.getExplorationVector().toDataString());
 //        System.out.println("saving exploration vector: " + v.getExplorationVector().toDataString());
-        info.put("pID", Long.toString(ClientDefaults.playerID()));
+        info.put("pID", Long.toString(TraitProjectClient.playerID));
         info.put("s_wave", Long.toString(waveCount));
         info.put("s_damage_player", Float.toString(TraitProjectClient.s_damage_player));
         info.put("s_damage_enemies", Float.toString(TraitProjectClient.s_damage_enemies));
@@ -147,6 +149,8 @@ public class TraitProjectClient extends Applet {
 		lastFPS = getTime();
 
 		versionCheck();
+		
+		playerID = getUniqueID();
 
 		level = new Level();
 
@@ -172,10 +176,9 @@ public class TraitProjectClient extends Applet {
 	}
 
 	public void init() {
-		
+
 		ClientDefaults.init(this);
-		System.out.println("player ID: " + ClientDefaults.playerID());
-		
+
 		setLayout(new BorderLayout());
 		try {
 			display_parent = new Canvas() {
@@ -381,6 +384,33 @@ public class TraitProjectClient extends Applet {
 		System.err.println("Cannot check server version.");
 	}
 
+	private static long getUniqueID() {
+        ClientStateManager.setFlowState(FlowState.FETCHING_ID);
+        try {
+            final Client c = TraitProjectClient.getClient();
+            try {
+                c.reconnect();
+                c.send("getID");
+                
+                System.out.println("Successfully ID fetched from server.");
+                
+                return Long.parseLong(c.receive());
+            } catch (Exception e) {
+
+            } finally {
+                try {
+                    c.close();
+                } catch (Exception e) {
+                }
+            }
+            System.err.println("Cannot fetch ID!.");
+        } finally {
+            ClientStateManager.setFlowState(FlowState.FREE);
+        }
+
+		return -1;
+	}
+
 	public static List<GeneWrapper> getPlayerControlledGenes() {
 		final GeneVector geneVector = ClientDefaults.server().getExplorationVector();
 		final List<GeneWrapper> genes = new ArrayList<GeneWrapper>();
@@ -393,9 +423,9 @@ public class TraitProjectClient extends Applet {
 	public static Client getClient() {
 
 		if (ClientDefaults.localServer()) {
-			return new Client();
+			return new Client(ClientDefaults.serverPort());
 		} else {
-			return new Client(ClientDefaults.serverIp(), 8000);
+			return new Client(ClientDefaults.serverIp(), ClientDefaults.serverPort());
 		}
 	}
 

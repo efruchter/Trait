@@ -82,6 +82,24 @@ public class LevelGeneratorCore extends Trait {
     	random.setSeed(0);
     	
     	ServerIO v = ClientDefaults.server();
+
+        if (waveCount > 0) {
+            SessionInfo info = new SessionInfo();
+            info.put("username", Long.toString(TraitProjectClient.playerID));
+            info.put("date", Long.toString(System.currentTimeMillis()));
+            info.put("vector", v.getExplorationVector().toDataString());
+            info.put("s_wave", Long.toString(waveCount));
+            info.put("s_damage_player", Float.toString(TraitProjectClient.s_damage_player));
+            info.put("s_damage_enemies", Float.toString(TraitProjectClient.s_damage_enemies));
+            info.put("s_num_enemies", Float.toString(TraitProjectClient.s_num_enemies));
+            info.put("s_fired_player", Float.toString(TraitProjectClient.s_fired_player));
+            info.put("s_fired_enemies", Float.toString(TraitProjectClient.s_fired_enemies));
+            info.put("s_killed_enemies", Float.toString(TraitProjectClient.s_killed_enemies));
+            v.storeInfo(info);
+        }
+
+        waveCount++;
+
         /*
          * Takes care of the case where the GUI has already loaded the vector.
          * Seed search with three default locations
@@ -239,7 +257,7 @@ public class LevelGeneratorCore extends Trait {
         	}
         });
         
-        v.runR(ClientDefaults.playerID(), "regression", 1);
+        v.runR(TraitProjectClient.playerID, ClientDefaults.learnMode(), 1);
     }
 
     @Override

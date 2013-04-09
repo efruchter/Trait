@@ -1,8 +1,11 @@
 package efruchter.tp;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Scanner;
 
 import com.csvreader.CsvReader;
 
@@ -97,7 +100,10 @@ public class ZookProjectServer implements NetworkingListener {
 				SessionInfo data = new SessionInfo(message.replaceFirst("runR" + SessionInfo.SEPERATOR, ""));
 				runR(Long.parseLong(data.get("playerID")), data.get("learningMode"), Integer.parseInt(data.get("isDebug")));
 				System.out.println("runR");
-			}
+			} else if ("getID".equals(message)) {
+            	result = "" + getID();
+            	System.out.println(System.currentTimeMillis() + ": Fetched id " + result);
+            }
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -135,4 +141,20 @@ public class ZookProjectServer implements NetworkingListener {
     		e.printStackTrace();
     	}
     }
+
+	public synchronized long getID() throws IOException {
+		final File idFile = new File("playerID.txt");
+		if (!idFile.exists()) {
+			idFile.createNewFile();
+			final FileWriter f = new FileWriter(idFile);
+			f.write("0");
+			f.close();
+		}
+		final Scanner scanner = new Scanner(idFile);
+		final long id = Long.parseLong(scanner.next());
+		final FileWriter f = new FileWriter(idFile);
+		f.write((id + 1) + "");
+		f.close();
+		return id;
+	}
 }

@@ -27,11 +27,14 @@ public class Client {
     }
     
     /**
-     * Creates a new Client networking object without opening a connection.
+     * Creates a new localhost Client networking object without opening a connection.
      * 
-     * @param ipAddress the IP address of the server to connect to
      * @param portNumber the port number on the server to connect on
      */
+    public Client(int portNumber) {
+        this("127.0.0.1", portNumber);
+    }
+
     public Client(String ipAddress, int portNumber) {
         this.ipAddress = ipAddress;
         this.portNumber = portNumber;
