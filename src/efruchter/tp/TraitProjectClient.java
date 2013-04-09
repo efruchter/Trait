@@ -63,6 +63,7 @@ public class TraitProjectClient extends Applet {
 	public static float s_fired_enemies;
 	public static float s_killed_enemies;
 	public static long displayScore;
+	public static long playerID;
 
 	public static void resetMetrics() {
 		s_damage_player = 0;
@@ -112,6 +113,8 @@ public class TraitProjectClient extends Applet {
 		lastFPS = getTime();
 
 		versionCheck();
+		
+		playerID = getUniqueID();
 
 		level = new Level();
 
@@ -343,6 +346,33 @@ public class TraitProjectClient extends Applet {
 			}
 		}
 		System.err.println("Cannot check server version.");
+	}
+
+	private static long getUniqueID() {
+        ClientStateManager.setFlowState(FlowState.FETCHING_ID);
+        try {
+            final Client c = TraitProjectClient.getClient();
+            try {
+                c.reconnect();
+                c.send("getID");
+                
+                System.out.println("Successfully ID fetched from server.");
+                
+                return Long.parseLong(c.receive());
+            } catch (Exception e) {
+
+            } finally {
+                try {
+                    c.close();
+                } catch (Exception e) {
+                }
+            }
+            System.err.println("Cannot fetch ID!.");
+        } finally {
+            ClientStateManager.setFlowState(FlowState.FREE);
+        }
+
+		return -1;
 	}
 
 	public static List<GeneWrapper> getPlayerControlledGenes() {

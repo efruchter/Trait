@@ -78,12 +78,8 @@ public class LevelGeneratorCore extends Trait {
     	ServerIO v = ClientDefaults.server();
     	
         if (waveCount > 0) {
-            String username = System.getProperty("user.name");
-            if (username == null) {
-                username = "NO_NAME";
-            }
             SessionInfo info = new SessionInfo();
-            info.put("username", username);
+            info.put("username", Long.toString(TraitProjectClient.playerID));
             info.put("date", Long.toString(System.currentTimeMillis()));
             info.put("vector", v.getExplorationVector().toDataString());
             info.put("s_wave", Long.toString(waveCount));

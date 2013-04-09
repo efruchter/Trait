@@ -1,7 +1,9 @@
 package efruchter.tp;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Scanner;
 
 import com.csvreader.CsvReader;
 
@@ -104,8 +106,7 @@ public class TraitProjectServer implements NetworkingListener {
 			} else if ("request".equals(message)) {
 				result = "EXPLORE" + SessionInfo.SEPERATOR + current.toDataString();
 				System.out.println(System.currentTimeMillis() + ": EXPLORE");
-			}
-            else if ("playerControlled".equals(message)) {
+			} else if ("playerControlled".equals(message)) {
                 CsvReader r = null;
                 try {
                     r = new CsvReader(playerControlledPath);
@@ -127,12 +128,14 @@ public class TraitProjectServer implements NetworkingListener {
                     if (r != null)
                         r.close();
                 }
-            }
-			else if (message.startsWith("store" + SessionInfo.SEPERATOR)) {
+            } else if (message.startsWith("store" + SessionInfo.SEPERATOR)) {
 				final String data = message.replaceFirst("store" + SessionInfo.SEPERATOR, "");
 				result = "" + store(new SessionInfo(data));
 				System.out.println(System.currentTimeMillis() + ": STORE");
-			}
+			} else if ("getID".equals(message)) {
+            	result = "" + getID();
+            	System.out.println(System.currentTimeMillis() + ": Fetched id " + result);
+            }
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -142,5 +145,21 @@ public class TraitProjectServer implements NetworkingListener {
 
 	public synchronized boolean store(SessionInfo userInfo) {
 		return db.storeVector(userInfo);
+	}
+
+	public synchronized long getID() throws IOException {
+		final File idFile = new File("playerID.txt");
+		if (!idFile.exists()) {
+			idFile.createNewFile();
+			final FileWriter f = new FileWriter(idFile);
+			f.write("0");
+			f.close();
+		}
+		final Scanner scanner = new Scanner(idFile);
+		final long id = Long.parseLong(scanner.next());
+		final FileWriter f = new FileWriter(idFile);
+		f.write((id + 1) + "");
+		f.close();
+		return id;
 	}
 }
