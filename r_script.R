@@ -113,11 +113,10 @@ if (nrow(usr_data) > 1) {
 #    javaDebug("doing preference learning", debug_mode)
     
     ## specify number test points per range
-    npts = 10
     ndrop = 10 # number of recently tested samples to not reuse
     
     ## construct test point grid
-    tpts = testGrid(npts, learn_params)
+    tpts = testGrid(learn_params)
 
     ## construct test point labels and pairs
     tclass = cbind(seq(1:nrow(tpts)), tpts)
@@ -203,9 +202,9 @@ if (nrow(usr_data) > 1) {
     next_sample = al.maxExpectedImprovement.v2(optmodel$f_map, f_t, sigma_t, test_pts, slack=0.1, iter)
     next_sample = as.matrix(next_sample, ncol=ncol(next_sample))
     
-    #javaDebug('selected sample', debug_mode)
-    
     writeGene(next_sample, learn_params, 'geneText.txt')
+    
+    cat('testing:\n', paste(as.character(learn_params$param), next_sample, sep=': ', collapse='\n'))
   }
   
   
@@ -238,8 +237,7 @@ if (nrow(usr_data) > 1) {
     cat('read in data \n')
     
     ## construct test point grid
-    npts = 10
-    x_star = testGrid(npts, learn_params)
+    x_star = testGrid(learn_params)
     sigma_n = 0.05
     
     ## optimize hyperparameters
@@ -300,6 +298,7 @@ if (nrow(usr_data) > 1) {
     
     writeGene(next_sample, learn_params, 'geneText.txt')
     
+    cat('testing:\n', paste(as.character(learn_params$param), next_sample, sep=': ', collapse='\n'))
     cat('wrote gene \n')
     
     ## debug 2D contour plot

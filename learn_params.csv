@@ -1,4 +1,4 @@
-param, min, max
-enemy.bullet.speed, 0.5, 3.0
-enemy.bullet.size, 5.0, 80.0
-enemy.bullet.cooldown, 100.0, 1000.0
+param, min, max, npts
+enemy.bullet.speed, 0.5, 5.0, 10
+enemy.bullet.size, 20.0, 60.0, 5
+enemy.bullet.cooldown, 100.0, 1000.0, 5

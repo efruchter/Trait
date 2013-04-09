@@ -889,10 +889,10 @@ paramGrid = function(npts, paramMin, paramMax) {
 }
 
 ## expands a set of learning parameter ranges into a npts X npts grid of points to search
-testGrid = function(npts, learn_params) {
+testGrid = function(learn_params) {
   tpts = list()
   for (i in 1:nrow(learn_params)) {
-    tpts[[as.character(learn_params$param[i])]] = paramGrid(npts, learn_params$min[i], learn_params$max[i])
+    tpts[[as.character(learn_params$param[i])]] = paramGrid(learn_params$npts[i], learn_params$min[i], learn_params$max[i])
   }
   tpts = expand.grid(tpts)
   return(tpts)

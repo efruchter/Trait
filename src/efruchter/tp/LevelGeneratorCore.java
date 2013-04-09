@@ -97,8 +97,9 @@ public class LevelGeneratorCore extends Trait {
             v.reloadExplorationVector("../geneText.txt");
         }
         
-    	System.out.println("thrust: " + v.getExplorationVector().getGene("player.move.thrust").getExpression());
-    	System.out.println("drag: " + v.getExplorationVector().getGene("player.move.drag").getExpression());
+    	System.out.println("bullet speed: " + v.getExplorationVector().getGene("enemy.bullet.speed").getValue());
+    	System.out.println("bullet size: " + v.getExplorationVector().getGene("enemy.bullet.size").getValue());
+    	System.out.println("fire rate: " + v.getExplorationVector().getGene("enemy.bullet.cooldown").getValue());
     	
         /*
          * Build the gene vectors over again.
