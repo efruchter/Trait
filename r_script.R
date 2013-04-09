@@ -10,18 +10,35 @@ require(optimx)
 source('./gpFn.R')
 
 ## writes out gene vector to text file
-writeGene = function(next_sample, learn_params, fname) {
+writeGene = function(next_sample, learn_params, fname, learn_mode) {
   ## write to control vector
-#   new_vec = paste(
-#     paste(learn_params$param, '', learn_params$min, learn_params$max, next_sample, sep='#', collapse='#'),
-#     'player.radius.radius#Player ship radius#2.0#50.0#10.0#spawner.enemy.radius.c0#Base enemy radius.[0]#10.0#20.0#10.0#spawner.enemy.radius.c1#Base enemy radius.[1]#10.0#20.0#10.0#enemy.bullet.speed#Speed of enemy bullets.#0.0#3.0#0.8#enemy.bullet.size#Size of enemy bullets.#0#80.0#10.0#enemy.bullet.damage#Damage of enemy bullets.#0#100.0#5.0#enemy.bullet.cooldown#Cooldown time between firing enemy bullets.#0#1000.0#500.0#',
-#     sep='#'
-#   )
-  new_vec = paste(
-    paste(learn_params$param, '', learn_params$min, learn_params$max, next_sample, sep='#', collapse='#'),
-    'player.radius.radius#Player ship radius#2.0#50.0#10.0#spawner.enemy.radius.c0#Base enemy radius.[0]#10.0#20.0#10.0#spawner.enemy.radius.c1#Base enemy radius.[1]#10.0#20.0#10.0#enemy.bullet.damage#Damage of enemy bullets.#0#100.0#5.0#player.move.thrust##0.0#0.09#0.04#player.move.drag##0.0#1.0#0.4#',
-    sep='#'
-  )
+  if (learn_mode == 'preference') {
+    
+    ## first 3 iterations used fixed examples
+    if (iter == 1) {
+      new_vec = 'player.move.thrust#Amount of control thrust.#0.0#0.09#0.054#player.move.drag#Amount of air drag.#0.0#1.0#0.3#player.radius.radius#Player ship radius#2.0#50.0#10.0#spawner.enemy.radius.c0#Base enemy radius.[0]#10.0#20.0#10.0#spawner.enemy.radius.c1#Base enemy radius.[1]#10.0#20.0#10.0#enemy.bullet.speed#Speed of enemy bullets.#0.0#3.0#0.8#enemy.bullet.size#Size of enemy bullets.#0#80.0#10.0#enemy.bullet.damage#Damage of enemy bullets.#0#100.0#5.0#enemy.bullet.cooldown#Cooldown time between firing enemy bullets.#0#1000.0#500.0#'  
+    } else if (iter == 2) {
+      new_vec = 'player.move.thrust#Amount of control thrust.#0.0#0.09#0.018#player.move.drag#Amount of air drag.#0.0#1.0#0.3#player.radius.radius#Player ship radius#2.0#50.0#10.0#spawner.enemy.radius.c0#Base enemy radius.[0]#10.0#20.0#10.0#spawner.enemy.radius.c1#Base enemy radius.[1]#10.0#20.0#10.0#enemy.bullet.speed#Speed of enemy bullets.#0.0#3.0#0.8#enemy.bullet.size#Size of enemy bullets.#0#80.0#10.0#enemy.bullet.damage#Damage of enemy bullets.#0#100.0#5.0#enemy.bullet.cooldown#Cooldown time between firing enemy bullets.#0#1000.0#500.0#
+'
+    } else if (iter == 3) {
+      new_vec = 'player.move.thrust#Amount of control thrust.#0.0#0.09#0.054#player.move.drag#Amount of air drag.#0.0#1.0#0.8#player.radius.radius#Player ship radius#2.0#50.0#10.0#spawner.enemy.radius.c0#Base enemy radius.[0]#10.0#20.0#10.0#spawner.enemy.radius.c1#Base enemy radius.[1]#10.0#20.0#10.0#enemy.bullet.speed#Speed of enemy bullets.#0.0#3.0#0.8#enemy.bullet.size#Size of enemy bullets.#0#80.0#10.0#enemy.bullet.damage#Damage of enemy bullets.#0#100.0#5.0#enemy.bullet.cooldown#Cooldown time between firing enemy bullets.#0#1000.0#500.0#
+'
+    } else {
+      new_vec = paste(
+        paste(learn_params$param, '', learn_params$min, learn_params$max, next_sample, sep='#', collapse='#'),
+        'player.radius.radius#Player ship radius#2.0#50.0#10.0#spawner.enemy.radius.c0#Base enemy radius.[0]#10.0#20.0#10.0#spawner.enemy.radius.c1#Base enemy radius.[1]#10.0#20.0#10.0#enemy.bullet.speed#Speed of enemy bullets.#0.0#3.0#0.8#enemy.bullet.size#Size of enemy bullets.#0#80.0#10.0#enemy.bullet.damage#Damage of enemy bullets.#0#100.0#5.0#enemy.bullet.cooldown#Cooldown time between firing enemy bullets.#0#1000.0#500.0#',
+        sep='#'
+      )
+    }
+  }
+  else if (learn_mode == 'regression') {
+    new_vec = paste(
+      paste(learn_params$param, '', learn_params$min, learn_params$max, next_sample, sep='#', collapse='#'),
+      'player.radius.radius#Player ship radius#2.0#50.0#10.0#spawner.enemy.radius.c0#Base enemy radius.[0]#10.0#20.0#10.0#spawner.enemy.radius.c1#Base enemy radius.[1]#10.0#20.0#10.0#enemy.bullet.damage#Damage of enemy bullets.#0#100.0#5.0#player.move.thrust##0.0#0.09#0.04#player.move.drag##0.0#1.0#0.4#',
+      sep='#'
+    )
+  }
+
   write(new_vec, fname)
 }
 
@@ -110,13 +127,13 @@ if (nrow(usr_data) > 1) {
     
     ## TODO: make this scale to increase sampling density as needed -> optimize iteratively
     
-#    javaDebug("doing preference learning", debug_mode)
-    
     ## specify number test points per range
     ndrop = 10 # number of recently tested samples to not reuse
     
     ## construct test point grid
     tpts = testGrid(learn_params)
+    
+    cat('made test point grid \n')
 
     ## construct test point labels and pairs
     tclass = cbind(seq(1:nrow(tpts)), tpts)
@@ -153,7 +170,7 @@ if (nrow(usr_data) > 1) {
     xs_dim = ncol(x_sample)-1
     x_sample = x_sample[,c(xs_dim+1,1:xs_dim)]
     
-    #javaDebug('read samples', debug_mode)
+    cat('unique sample dimensionality: ', dim(x_sample), '\n')
     
     ## construct test pairs
     tclass_pair = expand.grid(last_pt, tclass$label)
@@ -165,31 +182,34 @@ if (nrow(usr_data) > 1) {
     lengthscale_grid = matrix(rep(seq(0.01, 0.1, length.out=20),ncol(x_sample)-1), ncol=ncol(x_sample)-1)
     sigma_grid = seq(0.0005, 0.5, length.out=10)
     
+    cat('constructed points to use \n')
+    
+    optmodel = optimizeHyper(hypmethod='BFGS', optmethod='Nelder-Mead', lengthscale_grid, sigma_grid, x_sample, x_class, infPrefLaplace, mean.const, kernel.SqExpND)
+    
+    cat('optimized hyperparameters \n')
     ## only optimize hyper parameters every 3 iterations
-    if (iter %% 3 == 0 & iter > 0 | 
-          iter == 1) {
-      # optimize hyperparameters + generate inferences
-      optmodel = optimizeHyper(hypmethod='BFGS', optmethod='Nelder-Mead', lengthscale_grid, sigma_grid, x_sample, x_class, infPrefLaplace, mean.const, kernel.SqExpND)
-      save(optmodel, file=paste('optHyper_p', pID, '.RData', sep=''))
-    } else {
-      # load previously optimized hyperparameters
-      load(paste('optHyper_p', pID, '.RData', sep=''))
-      
-      # update model inferences for new data
-      tbest = infPrefLaplace(x_sample, x_class, mean.const, kernel.SqExpND, tol=1e-06, max_iter=100, sigma_n=optmodel$sigma_n, optmethod='Nelder-Mead', optmodel$lenscale)
-      optmodel$f_map = tbest$f_map
-      optmodel$W = tbest$p_map$liks$d2lp
-      optmodel$K = tbest$K
-      
-      #javaDebug('loaded hypers', debug_mode)
-    }
+#     if (iter %% 3 == 0 & iter > 0 | 
+#           iter == 1) {
+#       # optimize hyperparameters + generate inferences
+#       optmodel = optimizeHyper(hypmethod='BFGS', optmethod='Nelder-Mead', lengthscale_grid, sigma_grid, x_sample, x_class, infPrefLaplace, mean.const, kernel.SqExpND)
+#       save(optmodel, file=paste('optHyper_p', pID, '.RData', sep=''))
+#     } else {
+#       # load previously optimized hyperparameters
+#       load(paste('optHyper_p', pID, '.RData', sep=''))
+#       
+#       # update model inferences for new data
+#       tbest = infPrefLaplace(x_sample, x_class, mean.const, kernel.SqExpND, tol=1e-06, max_iter=100, sigma_n=optmodel$sigma_n, optmethod='Nelder-Mead', optmodel$lenscale)
+#       optmodel$f_map = tbest$f_map
+#       optmodel$W = tbest$p_map$liks$d2lp
+#       optmodel$K = tbest$K
+#     }
     
     ## predictive preference probability for 2nd over 1st in pair
     t_pred = prefPredict.v2(optmodel, tclass_pair, tclass, x_sample, optmodel$f_map, optmodel$W, optmodel$K, optmodel$sigma_n, kernel.SqExpND, optmodel$lenscale)
     plot(-t_pred$pred)
     
-    #javaDebug('generated predictions', debug_mode)
-
+    cat('generated predictions \n')
+    
     # (1) look up predictive means for each sample value
       # note: sign flip as Rasmussen swaps d2lp for -d2lp
     f_t = -t_pred$mu_s[,2] # second column are new values to compare to
@@ -202,9 +222,12 @@ if (nrow(usr_data) > 1) {
     next_sample = al.maxExpectedImprovement.v2(optmodel$f_map, f_t, sigma_t, test_pts, slack=0.1, iter)
     next_sample = as.matrix(next_sample, ncol=ncol(next_sample))
     
-    writeGene(next_sample, learn_params, 'geneText.txt')
+    cat('predicted sample \n')
     
     cat('testing:\n', paste(as.character(learn_params$param), next_sample, sep=': ', collapse='\n'))
+    
+    writeGene(next_sample, learn_params, 'geneText.txt', learn_mode)
+    
   }
   
   
@@ -303,7 +326,7 @@ if (nrow(usr_data) > 1) {
     
     cat('got optimal next \n')
     
-    writeGene(next_sample, learn_params, 'geneText.txt')
+    writeGene(next_sample, learn_params, 'geneText.txt', learn_mode)
     
     cat('testing:\n', paste(as.character(learn_params$param), next_sample, sep=': ', collapse='\n'))
     cat('wrote gene \n')
