@@ -240,6 +240,13 @@ if (nrow(usr_data) > 1) {
     x_star = testGrid(learn_params)
     sigma_n = 0.05
     
+    cat('made test points \n')
+    cat('test point dimensions: ', dim(x_star), ' \n')
+    cat('training x dimensions: ', dim(x), ' \n')
+    cat('training y dimensions: ', dim(y), ' \n')
+    
+    require(optimx)
+    
     ## optimize hyperparameters
     optim_inpar = c(1, rep(0.5, ncol(x_star))) # initial parameters are 1 for variance scale, 0.5 for all length scales
     optimx_param = optimx(par=optim_inpar, 
