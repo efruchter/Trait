@@ -268,6 +268,7 @@ public class LevelGeneratorCore extends Trait {
         	}
         });
         
+        System.out.println("calling R to learn with: " + TraitProjectClient.playerID + " " + ClientDefaults.learnMode() + " " + waveCount);
         v.runR(TraitProjectClient.playerID, ClientDefaults.learnMode(), waveCount);
         
 

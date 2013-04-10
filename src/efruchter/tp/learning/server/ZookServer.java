@@ -97,7 +97,7 @@ public class ZookServer implements ServerIO {
 	}
 
 	@Override
-	public void runR(final long playerID, final String learningMode, final long isDebug) {
+	public void runR(final long playerID, final String learningMode, final long iteration) {
 		ClientStateManager.setFlowState(FlowState.STORING_VECT);
         try {
             final Client c = TraitProjectClient.getClient();
@@ -107,7 +107,7 @@ public class ZookServer implements ServerIO {
                 SessionInfo data = new SessionInfo();
                 data.put("playerID", "" + playerID);
                 data.put("learningMode", learningMode);
-                data.put("isDebug", "" + isDebug);
+                data.put("iteration", "" + iteration);
 
                 System.out.println("sending to R: " + data.toDataString());
                 c.send("runR" + SessionInfo.SEPERATOR + data.toDataString());
