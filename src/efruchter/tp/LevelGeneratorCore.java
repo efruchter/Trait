@@ -21,6 +21,7 @@ import efruchter.tp.gui_broken.VectorEditorPopup_Crummy;
 import efruchter.tp.learning.SessionInfo;
 import efruchter.tp.learning.GeneVector.GeneWrapper;
 import efruchter.tp.learning.server.ServerIO;
+import efruchter.tp.state.ClientStateManager;
 import efruchter.tp.trait.Trait;
 import efruchter.tp.trait.behavior.Behavior;
 import efruchter.tp.trait.behavior.BehaviorChain;
@@ -250,6 +251,7 @@ public class LevelGeneratorCore extends Trait {
        	if (waveCount > 1 && ClientDefaults.learnMode().equals("preference")) {
        		// show editor to allow better/worse feedback from player; start from 2nd wave
 	    	VectorEditorPopup_Crummy.show(ge, true, "Get ready for the next wave!", true, v, waveCount);
+//	    	VectorEditorPopup_Crummy.blockWhileOpen();
 	    } else if (waveCount > 0) {
         	TraitProjectClient.storeData(v, waveCount);
         }
@@ -268,9 +270,10 @@ public class LevelGeneratorCore extends Trait {
         	}
         });
         
+        ClientStateManager.togglePauseState();
         System.out.println("calling R to learn with: " + TraitProjectClient.playerID + " " + ClientDefaults.learnMode() + " " + waveCount);
         v.runR(TraitProjectClient.playerID, ClientDefaults.learnMode(), waveCount);
-        
+        ClientStateManager.togglePauseState();
 
         waveCount++;
     }
@@ -293,9 +296,12 @@ public class LevelGeneratorCore extends Trait {
         final float probNewChain = chainProb.getValue(mu);
 
         // start new chain?
-        if (randNum < probNewChain * intensity.getExpression()) {
+        if (chains.isEmpty() && randNum < probNewChain * intensity.getExpression()) { 
+//        if (randNum < probNewChain * intensity.getExpression()) {
             Chain c = new Chain(getNewChainFunction(level, mu), level, mu);
             chains.add(c);
+            Chain c2 = new Chain(getNewChainFunction(level, mu), level, mu);
+            chains.add(c2);
         }
 
         // update chains
