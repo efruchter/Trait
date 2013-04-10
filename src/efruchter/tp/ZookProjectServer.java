@@ -70,10 +70,9 @@ public class ZookProjectServer implements NetworkingListener {
 	}
 
 	public ZookProjectServer(final int port) throws IOException, InterruptedException {
-		System.out.println("Trait Server Started on port " + port + ".");
+		System.out.println("Zook Server Started on port " + port + ".");
 		new Server(port, this);
 	}
-
 
 	public String messageReceived(String message, final String clientName) {
 		String result = " ";
