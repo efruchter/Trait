@@ -21,6 +21,7 @@ public class ClientDefaults {
 			String levelLength, localServer, vector, devMode, serverIp, console, port, learn_mode;
 
 			if (applet.getParameter("canary") != null) {
+				System.out.println("running from applet");
 				levelLength = applet.getParameter("level_length");
 				localServer = applet.getParameter("local_server");
 				vector = applet.getParameter("server_class");
@@ -30,6 +31,7 @@ public class ClientDefaults {
 				learn_mode = applet.getParameter("learn_mode");
 				port = applet.getParameter("server_port");
 			} else {
+				System.out.println("running from console");
 				Properties prop = new Properties();
 				String fileName = "clientSettings.config";
 				if (!new File(fileName).exists()) {
