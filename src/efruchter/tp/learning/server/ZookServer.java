@@ -107,7 +107,7 @@ public class ZookServer implements ServerIO {
                 SessionInfo data = new SessionInfo();
                 data.put("playerID", "" + playerID);
                 data.put("learningMode", learningMode);
-                data.put("iteration", "" + iteration);
+                data.put("iteration", Long.toString(iteration));
 
                 System.out.println("sending to R: " + data.toDataString());
                 c.send("runR" + SessionInfo.SEPERATOR + data.toDataString());
