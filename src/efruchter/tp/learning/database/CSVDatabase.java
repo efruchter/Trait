@@ -57,7 +57,12 @@ public class CSVDatabase implements Database {
             	if (sessionInfo.containsKey(headers[i])) {
             		record[i] = sessionInfo.get(headers[i]);
             	} else {
-                    record[i] = "" + v.getGene(headers[i]).getValue();
+            		try {
+            			record[i] = "" + v.getGene(headers[i]).getValue();
+            		} catch (Exception e) {
+            			System.err.println("error recording: " + headers[i]);
+            			e.printStackTrace();
+            		}
                 }
             }
             try {

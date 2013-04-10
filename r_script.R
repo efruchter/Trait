@@ -11,35 +11,23 @@ source('./gpFn.R')
 
 ## writes out gene vector to text file
 writeGene = function(next_sample, learn_params, fname, learn_mode) {
-  ## write to control vector
-  if (learn_mode == 'preference') {
-    
-    ## first 3 iterations used fixed examples
-    if (iter == 1) {
-      new_vec = 'player.move.thrust#Amount of control thrust.#0.0#0.09#0.054#player.move.drag#Amount of air drag.#0.0#1.0#0.3#player.radius.radius#Player ship radius#2.0#50.0#10.0#spawner.enemy.radius.c0#Base enemy radius.[0]#10.0#20.0#10.0#spawner.enemy.radius.c1#Base enemy radius.[1]#10.0#20.0#10.0#enemy.bullet.speed#Speed of enemy bullets.#0.0#3.0#0.8#enemy.bullet.size#Size of enemy bullets.#0#80.0#10.0#enemy.bullet.damage#Damage of enemy bullets.#0#100.0#5.0#enemy.bullet.cooldown#Cooldown time between firing enemy bullets.#0#1000.0#500.0#'  
-    } else if (iter == 2) {
-      new_vec = 'player.move.thrust#Amount of control thrust.#0.0#0.09#0.018#player.move.drag#Amount of air drag.#0.0#1.0#0.3#player.radius.radius#Player ship radius#2.0#50.0#10.0#spawner.enemy.radius.c0#Base enemy radius.[0]#10.0#20.0#10.0#spawner.enemy.radius.c1#Base enemy radius.[1]#10.0#20.0#10.0#enemy.bullet.speed#Speed of enemy bullets.#0.0#3.0#0.8#enemy.bullet.size#Size of enemy bullets.#0#80.0#10.0#enemy.bullet.damage#Damage of enemy bullets.#0#100.0#5.0#enemy.bullet.cooldown#Cooldown time between firing enemy bullets.#0#1000.0#500.0#
-'
-    } else if (iter == 3) {
-      new_vec = 'player.move.thrust#Amount of control thrust.#0.0#0.09#0.054#player.move.drag#Amount of air drag.#0.0#1.0#0.8#player.radius.radius#Player ship radius#2.0#50.0#10.0#spawner.enemy.radius.c0#Base enemy radius.[0]#10.0#20.0#10.0#spawner.enemy.radius.c1#Base enemy radius.[1]#10.0#20.0#10.0#enemy.bullet.speed#Speed of enemy bullets.#0.0#3.0#0.8#enemy.bullet.size#Size of enemy bullets.#0#80.0#10.0#enemy.bullet.damage#Damage of enemy bullets.#0#100.0#5.0#enemy.bullet.cooldown#Cooldown time between firing enemy bullets.#0#1000.0#500.0#
-'
-    } else {
-      new_vec = paste(
-        paste(learn_params$param, '', learn_params$min, learn_params$max, next_sample, sep='#', collapse='#'),
-        'player.radius.radius#Player ship radius#2.0#50.0#10.0#spawner.enemy.radius.c0#Base enemy radius.[0]#10.0#20.0#10.0#spawner.enemy.radius.c1#Base enemy radius.[1]#10.0#20.0#10.0#enemy.bullet.speed#Speed of enemy bullets.#0.0#3.0#0.8#enemy.bullet.size#Size of enemy bullets.#0#80.0#10.0#enemy.bullet.damage#Damage of enemy bullets.#0#100.0#5.0#enemy.bullet.cooldown#Cooldown time between firing enemy bullets.#0#1000.0#500.0#',
-        sep='#'
-      )
-    }
-  }
-  else if (learn_mode == 'regression') {
-    new_vec = paste(
-      paste(learn_params$param, '', learn_params$min, learn_params$max, next_sample, sep='#', collapse='#'),
-      'player.radius.radius#Player ship radius#2.0#50.0#10.0#spawner.enemy.radius.c0#Base enemy radius.[0]#10.0#20.0#10.0#spawner.enemy.radius.c1#Base enemy radius.[1]#10.0#20.0#10.0#enemy.bullet.damage#Damage of enemy bullets.#0#100.0#5.0#player.move.thrust##0.0#0.09#0.04#player.move.drag##0.0#1.0#0.4#',
-      sep='#'
-    )
-  }
+## write to control vector
+if (learn_mode == 'preference') {
+  new_vec = paste(
+    paste(learn_params$param, '', learn_params$min, learn_params$max, next_sample, sep='#', collapse='#'),
+    'player.radius.radius#Player ship radius#2.0#50.0#10.0#spawner.enemy.radius.c0#Base enemy radius.[0]#10.0#20.0#10.0#spawner.enemy.radius.c1#Base enemy radius.[1]#10.0#20.0#10.0#enemy.bullet.speed#Speed of enemy bullets.#0.0#3.0#0.8#enemy.bullet.size#Size of enemy bullets.#0#80.0#10.0#enemy.bullet.damage#Damage of enemy bullets.#0#100.0#5.0#enemy.bullet.cooldown#Cooldown time between firing enemy bullets.#0#1000.0#500.0#',
+    sep='#'
+  )
+}
+else if (learn_mode == 'regression') {
+  new_vec = paste(
+    paste(learn_params$param, '', learn_params$min, learn_params$max, next_sample, sep='#', collapse='#'),
+    'player.radius.radius#Player ship radius#2.0#50.0#10.0#spawner.enemy.radius.c0#Base enemy radius.[0]#10.0#20.0#10.0#spawner.enemy.radius.c1#Base enemy radius.[1]#10.0#20.0#10.0#enemy.bullet.damage#Damage of enemy bullets.#0#100.0#5.0#player.move.thrust##0.0#0.09#0.04#player.move.drag##0.0#1.0#0.4#',
+    sep='#'
+  )
+}
 
-  write(new_vec, fname)
+write(new_vec, fname)
 }
 
 
@@ -49,9 +37,7 @@ cat('called R \n')
 
 usr_data = read.csv('./database.csv')
 
-cat('user data read \n')
-
-cat(dim(usr_data))
+cat('user data read', dim(usr_data), '\n')
 
 configs = read.table(file='clientSettings.config', sep='=')
 # learn_mode = configs[configs$V1=='learn_mode',2]
@@ -69,63 +55,70 @@ inArgs = commandArgs()
 arg_idx = which(inArgs == '--args')
 arg_list = inArgs[(arg_idx+1):length(inArgs)]
 
-cat('args read \n')
-cat(inArgs)
-cat('\n')
+cat('args read\n', inArgs, '\n')
 
 # decrement as always pID is incremented after loading, so newest player is one less than stored
 # pID = as.numeric(as.character(configs[configs$V1=='player_id',2]))-1 
 
 pID = as.numeric(arg_list[1]) # first argument is player ID
-# print(paste('got player ID: ', pID, sep=''))
 
-cat('got pid:') 
-cat(pID)
-cat('\n')
+cat('got pid: ', pID, '\n') 
 
 learn_mode = arg_list[2]
-# print(paste('got learning mode: ', learn_mode, sep=''))
+cat('learning mode: ', learn_mode, '\n')
 
-debug_mode = as.numeric(arg_list[3])
-# print(paste('got debug mode: ', debug_mode, sep=''))
+iter = as.numeric(arg_list[3])
+cat('iteration: ', iter, '\n')
 
 cat('getting user data \n')
 
 ## keep only data from this user
 usr_data = usr_data[as.numeric(as.character(usr_data$pID)) == pID,]
 
-cat('got pID: ')
-cat(pID)
-cat('\n')
 
-cat('got user data \n')
-cat(dim(usr_data))
-cat('\n')
-
-
-cat('about to learn \n')
+cat('got user data', dim(usr_data),  '\n')
 
 #### running learning process ####
 
-if (nrow(usr_data) > 1) {
-  
-  ## ticker to track progress per player
-  if (length(dir('./', paste('r_iter_p', pID, '.RData', sep=''))) == 0) { 
-    iter=0
-  } else {
-    load(paste('r_iter_p', pID, '.RData', sep=''))
-  }
-  iter = iter+1
-  
-  cat('loaded iterations \n')
-  
-  #### GP preference version ####
-  
-  if (learn_mode == 'preference' & iter>2) {
 
-    cat('preference learning \n')
+## ticker to track progress per player
+#   if (length(dir('./', paste('r_iter_p', pID, '.RData', sep=''))) == 0) { 
+#     iter=0
+#   } else {
+#     load(paste('r_iter_p', pID, '.RData', sep=''))
+#   }
+#   iter = iter+1
+
+#   cat('loaded iterations \n')
+
+#### GP preference version ####
+
+if (learn_mode == 'preference') {
+  
+  cat('preference learning \n')
+  
+  if (iter < 4) {
+    
+    cat('fixed iteration: ', iter, '\n')
+    
+    ## first 3 iterations use fixed examples
+    if (iter < 2) {
+      new_vec = 'player.move.thrust#Amount of control thrust.#0.0#0.09#0.050#player.move.drag#Amount of air drag.#0.0#1.0#0.28#player.radius.radius#Player ship radius#2.0#50.0#10.0#spawner.enemy.radius.c0#Base enemy radius.[0]#10.0#20.0#10.0#spawner.enemy.radius.c1#Base enemy radius.[1]#10.0#20.0#10.0#enemy.bullet.speed#Speed of enemy bullets.#0.0#3.0#0.8#enemy.bullet.size#Size of enemy bullets.#0#80.0#10.0#enemy.bullet.damage#Damage of enemy bullets.#0#100.0#5.0#enemy.bullet.cooldown#Cooldown time between firing enemy bullets.#0#1000.0#500.0#'  
+    } else if (iter == 2) {
+      new_vec = 'player.move.thrust#Amount of control thrust.#0.0#0.09#0.022#player.move.drag#Amount of air drag.#0.0#1.0#0.28#player.radius.radius#Player ship radius#2.0#50.0#10.0#spawner.enemy.radius.c0#Base enemy radius.[0]#10.0#20.0#10.0#spawner.enemy.radius.c1#Base enemy radius.[1]#10.0#20.0#10.0#enemy.bullet.speed#Speed of enemy bullets.#0.0#3.0#0.8#enemy.bullet.size#Size of enemy bullets.#0#80.0#10.0#enemy.bullet.damage#Damage of enemy bullets.#0#100.0#5.0#enemy.bullet.cooldown#Cooldown time between firing enemy bullets.#0#1000.0#500.0#
+'
+    } else if (iter == 3) {
+      new_vec = 'player.move.thrust#Amount of control thrust.#0.0#0.09#0.042#player.move.drag#Amount of air drag.#0.0#1.0#0.82#player.radius.radius#Player ship radius#2.0#50.0#10.0#spawner.enemy.radius.c0#Base enemy radius.[0]#10.0#20.0#10.0#spawner.enemy.radius.c1#Base enemy radius.[1]#10.0#20.0#10.0#enemy.bullet.speed#Speed of enemy bullets.#0.0#3.0#0.8#enemy.bullet.size#Size of enemy bullets.#0#80.0#10.0#enemy.bullet.damage#Damage of enemy bullets.#0#100.0#5.0#enemy.bullet.cooldown#Cooldown time between firing enemy bullets.#0#1000.0#500.0#
+'
+    }
+    
+    write(new_vec, 'geneText.txt')
+    
+  } else {
     
     ## TODO: make this scale to increase sampling density as needed -> optimize iteratively
+    
+    cat('learning iteration \n')
     
     ## specify number test points per range
     ndrop = 10 # number of recently tested samples to not reuse
@@ -146,6 +139,14 @@ if (nrow(usr_data) > 1) {
     train_data$pref[train_data$c_choice=='BETTER'] = 1
     train_data$pref[train_data$c_choice=='WORSE'] = -1
     train_data$c_choice = NULL
+    train_data = subset(train_data, train_data$pref != 0) # remove "NONE" choices
+    
+    ## construct test point labels and pairs
+    tclass = rbind(train_data[as.character(learn_params$param)], tpts)
+    tclass = unique(tclass)
+    tclass = cbind(1:nrow(tclass), tclass)
+    names(tclass)[1] = 'label'
+    
     
     x_sample = merge(tclass, train_data)
     x_sample = arrange(x_sample, s_wave)
@@ -224,21 +225,30 @@ if (nrow(usr_data) > 1) {
     
     cat('predicted sample \n')
     
-    cat('testing:\n', paste(as.character(learn_params$param), next_sample, sep=': ', collapse='\n'))
+    cat('testing:\n', paste(as.character(learn_params$param), next_sample, sep=': ', collapse='\n'), '\n')
     
     writeGene(next_sample, learn_params, 'geneText.txt', learn_mode)
     
   }
+}
+
+
+#### GP regression version ####
   
+if (learn_mode == 'regression') {
   
-  #### GP regression version ####
+  cat('doing regression \n')
+  
+  if (iter < 2) {
+    cat('fixed iteration: ', iter, '\n')
     
-  if (learn_mode == 'regression') {
+    new_vec = 'player.move.thrust#Amount of control thrust.#0.0#0.09#0.054#player.move.drag#Amount of air drag.#0.0#1.0#0.3#player.radius.radius#Player ship radius#2.0#50.0#10.0#spawner.enemy.radius.c0#Base enemy radius.[0]#10.0#20.0#10.0#spawner.enemy.radius.c1#Base enemy radius.[1]#10.0#20.0#10.0#enemy.bullet.speed#Speed of enemy bullets.#0.0#3.0#0.8#enemy.bullet.size#Size of enemy bullets.#0#80.0#10.0#enemy.bullet.damage#Damage of enemy bullets.#0#100.0#5.0#enemy.bullet.cooldown#Cooldown time between firing enemy bullets.#0#1000.0#500.0#'
+    write(new_vec, 'geneText.txt')
     
-    cat('doing regression \n')
+  } else {
     
-    #javaDebug('regression fitting', debug_mode)
-    
+    cat('learning iteration \n')
+
     control_var = as.character(learn_params$param)
     target_var = c('s_hit_player')
     
@@ -337,14 +347,10 @@ if (nrow(usr_data) > 1) {
 #       ggplot(gp.sample, aes(x.Var1, x.Var2, z=value)) + stat_contour(geom='polygon', aes(group=variable, fill=..level..), bins=3)  + geom_point(data=next_sample, aes(x=Var1, y=Var2, z=1), size=5, colour='orange') + theme_bw()
 #       )
 #     dev.off()
-    
-    #javaDebug(paste('next point: ', paste(next_sample, collapse=', ')), debug_mode)
-    
-    #javaDebug('regression learning', debug_mode)
   }
-
-  cat('saving iteration \n')
-  save(iter, file=paste('r_iter_p', pID, '.RData', sep=''))
-  
-  cat('all done \n')
 }
+
+#   cat('saving iteration \n')
+#   save(iter, file=paste('r_iter_p', pID, '.RData', sep=''))
+
+cat('all done \n')

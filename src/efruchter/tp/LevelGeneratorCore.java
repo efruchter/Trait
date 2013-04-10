@@ -83,38 +83,51 @@ public class LevelGeneratorCore extends Trait {
     	
     	ServerIO v = ClientDefaults.server();
 
-        if (waveCount > 0) {
-            SessionInfo info = new SessionInfo();
-            info.put("username", Long.toString(TraitProjectClient.playerID));
-            info.put("date", Long.toString(System.currentTimeMillis()));
-            info.put("vector", v.getExplorationVector().toDataString());
-            info.put("s_wave", Long.toString(waveCount));
-            info.put("s_damage_player", Float.toString(TraitProjectClient.s_damage_player));
-            info.put("s_damage_enemies", Float.toString(TraitProjectClient.s_damage_enemies));
-            info.put("s_num_enemies", Float.toString(TraitProjectClient.s_num_enemies));
-            info.put("s_fired_player", Float.toString(TraitProjectClient.s_fired_player));
-            info.put("s_fired_enemies", Float.toString(TraitProjectClient.s_fired_enemies));
-            info.put("s_killed_enemies", Float.toString(TraitProjectClient.s_killed_enemies));
-            v.storeInfo(info);
-        }
+//        if (waveCount > 0) {
+//            SessionInfo info = new SessionInfo();
+//            info.put("username", Long.toString(TraitProjectClient.playerID));
+//            info.put("pID", Long.toString(TraitProjectClient.playerID));
+//            info.put("date", Long.toString(System.currentTimeMillis()));
+//            info.put("vector", v.getExplorationVector().toDataString());
+//            info.put("s_wave", Long.toString(waveCount));
+//            info.put("s_damage_player", Float.toString(TraitProjectClient.s_damage_player));
+//            info.put("s_damage_enemies", Float.toString(TraitProjectClient.s_damage_enemies));
+//            info.put("s_num_enemies", Float.toString(TraitProjectClient.s_num_enemies));
+//            info.put("s_fired_player", Float.toString(TraitProjectClient.s_fired_player));
+//            info.put("s_fired_enemies", Float.toString(TraitProjectClient.s_fired_enemies));
+//            info.put("s_killed_enemies", Float.toString(TraitProjectClient.s_killed_enemies));
+//            info.put("s_hit_player", Float.toString(TraitProjectClient.s_hit_player));
+//            info.put("s_hit_enemies", Float.toString(TraitProjectClient.s_hit_enemies));
+//            info.put("display_score", Float.toString(TraitProjectClient.display_score));
+//            info.put("c_choice", (TraitProjectClient.c_choice).toString());
+//            v.storeInfo(info);
+//        }
 
-        waveCount++;
+//        waveCount++;
 
         /*
          * Takes care of the case where the GUI has already loaded the vector.
          * Seed search with three default locations
          */
-    	if (waveCount == 1) {
-    		v.reloadExplorationVector("../gene1.txt");
-    	} else if (waveCount == 2) {
-    		v.reloadExplorationVector("../gene2.txt");
-    	} else if (waveCount == 3) {
-    		v.reloadExplorationVector("../gene3.txt");
-    	}
-    	else {
-            v.reloadExplorationVector("../geneText.txt");
-        }
+//    	if (waveCount == 1) {
+//    		v.reloadExplorationVector("../gene1.txt");
+//    	} else if (waveCount == 2) {
+//    		v.reloadExplorationVector("../gene2.txt");
+//    	} else if (waveCount == 3) {
+//    		v.reloadExplorationVector("../gene3.txt");
+//    	}
+//    	else {
+//            v.reloadExplorationVector("../geneText.txt");
+//        }
+        System.out.println("wave: " + waveCount);
         
+        if (waveCount == 1) {
+        	v.runR(TraitProjectClient.playerID, ClientDefaults.learnMode(), waveCount);
+        }
+        v.reloadExplorationVector("../geneText.txt");
+        
+        System.out.println("player thrust: " + v.getExplorationVector().getGene("player.move.thrust").getValue());
+        System.out.println("player drag: " + v.getExplorationVector().getGene("player.move.drag").getValue());
     	System.out.println("bullet speed: " + v.getExplorationVector().getGene("enemy.bullet.speed").getValue());
     	System.out.println("bullet size: " + v.getExplorationVector().getGene("enemy.bullet.size").getValue());
     	System.out.println("fire rate: " + v.getExplorationVector().getGene("enemy.bullet.cooldown").getValue());
@@ -240,9 +253,6 @@ public class LevelGeneratorCore extends Trait {
         	TraitProjectClient.storeData(v, waveCount);
         }
 
-        waveCount++;
-        
-        
         time = 0;
         TraitProjectClient.resetMetrics();
         /* Use this to perform actions on level start
@@ -257,7 +267,10 @@ public class LevelGeneratorCore extends Trait {
         	}
         });
         
-        v.runR(TraitProjectClient.playerID, ClientDefaults.learnMode(), 1);
+        v.runR(TraitProjectClient.playerID, ClientDefaults.learnMode(), waveCount);
+        
+
+        waveCount++;
     }
 
     @Override

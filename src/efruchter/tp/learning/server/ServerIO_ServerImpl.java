@@ -88,7 +88,7 @@ public class ServerIO_ServerImpl implements ServerIO {
     }
 
 	@Override
-	public void runR(final long playerID, final String learningMode, final int isDebug) {
+	public void runR(final long playerID, final String learningMode, final long isDebug) {
 
 	}
 }

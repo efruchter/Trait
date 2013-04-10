@@ -32,5 +32,5 @@ public interface ServerIO {
 	 */
 	public void reloadExplorationVector(String fname);
 
-	public void runR(final long playerID, final String learningMode, final int isDebug);
+	public void runR(final long playerID, final String learningMode, final long isDebug);
 }
