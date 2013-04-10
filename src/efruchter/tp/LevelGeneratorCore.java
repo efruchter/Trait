@@ -121,7 +121,7 @@ public class LevelGeneratorCore extends Trait {
 //        }
         System.out.println("wave: " + waveCount);
         
-        if (waveCount == 1) {
+        if (waveCount < 2) {
         	v.runR(TraitProjectClient.playerID, ClientDefaults.learnMode(), waveCount);
         }
         v.reloadExplorationVector("../geneText.txt");

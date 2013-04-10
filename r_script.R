@@ -43,9 +43,6 @@ configs = read.table(file='clientSettings.config', sep='=')
 
 cat('configs read \n')
 
-learn_params = read.csv('./learn_params.csv')
-
-cat('learn_params read \n')
 
 # command line arguments:
 inArgs = commandArgs()
@@ -60,6 +57,17 @@ cat('got pid: ', pID, '\n')
 
 learn_mode = arg_list[2]
 cat('learning mode: ', learn_mode, '\n')
+
+if (learn_mode == 'preference') {
+  learn_params = read.csv('./learn_params_pref.csv')
+} else if (learn_mode == 'regression') {
+  learn_params = read.csv('./learn_params_reg.csv')
+} else {
+  cat('error in learning mode: no learning parameters!\n')
+}
+
+cat('learn_params read \n')
+
 
 iter = as.numeric(arg_list[3])
 cat('iteration: ', iter, '\n')
@@ -213,7 +221,7 @@ if (learn_mode == 'regression') {
   if (iter < 2) {
     cat('fixed iteration: ', iter, '\n')
     
-    new_vec = 'player.move.thrust#Amount of control thrust.#0.0#0.09#0.054#player.move.drag#Amount of air drag.#0.0#1.0#0.3#player.radius.radius#Player ship radius#2.0#50.0#10.0#spawner.enemy.radius.c0#Base enemy radius.[0]#10.0#20.0#10.0#spawner.enemy.radius.c1#Base enemy radius.[1]#10.0#20.0#10.0#enemy.bullet.speed#Speed of enemy bullets.#0.0#3.0#0.8#enemy.bullet.size#Size of enemy bullets.#0#80.0#10.0#enemy.bullet.damage#Damage of enemy bullets.#0#100.0#5.0#enemy.bullet.cooldown#Cooldown time between firing enemy bullets.#0#1000.0#500.0#'
+    new_vec = 'player.move.thrust#Amount of control thrust.#0.0#0.09#0.040#player.move.drag#Amount of air drag.#0.0#1.0#0.3#player.radius.radius#Player ship radius#2.0#50.0#10.0#spawner.enemy.radius.c0#Base enemy radius.[0]#10.0#20.0#10.0#spawner.enemy.radius.c1#Base enemy radius.[1]#10.0#20.0#10.0#enemy.bullet.speed#Speed of enemy bullets.#0.0#3.0#0.8#enemy.bullet.size#Size of enemy bullets.#0#80.0#10.0#enemy.bullet.damage#Damage of enemy bullets.#0#100.0#5.0#enemy.bullet.cooldown#Cooldown time between firing enemy bullets.#0#1000.0#500.0#'
     write(new_vec, 'geneText.txt')
     
   } else {
@@ -292,7 +300,10 @@ if (learn_mode == 'regression') {
     
     ## find samples not used recently
     nsample = nrow(x)
-    x_star_lab = cbind(label=1:nrow(x_star), x_star)
+    x_all = rbind(x, x_star)
+    x_all = unique(x_all)
+    x_star_lab = cbind(label=1:nrow(x_all), x_all)
+#     x_star_lab = cbind(label=1:nrow(x_star), x_star)
     x2 = usr_data[c('s_wave', control_var)]
     x2 = x2[max(1, nsample-ndrop):nsample,]
     x2$s_wave = NULL
@@ -309,15 +320,12 @@ if (learn_mode == 'regression') {
     
     writeGene(next_sample, learn_params, 'geneText.txt', learn_mode)
     
-    cat('testing:\n', paste(as.character(learn_params$param), next_sample, sep=': ', collapse='\n'))
+    cat('testing:\n', paste(as.character(learn_params$param), next_sample, sep=': ', collapse='\n'), '\n')
     cat('wrote gene \n')
     
-    ## debug 2D contour plot
-#     png(paste('f_fit_', iter, '.png', sep=''))
-#     print(
-#       ggplot(gp.sample, aes(x.Var1, x.Var2, z=value)) + stat_contour(geom='polygon', aes(group=variable, fill=..level..), bins=3)  + geom_point(data=next_sample, aes(x=Var1, y=Var2, z=1), size=5, colour='orange') + theme_bw()
-#       )
-#     dev.off()
+    debug_data = c(pID, iter, nrow(usr_data), next_sample, varscale, lenscale)
+    names(debug_data) = c('pID','iter','nsamples', as.character(learn_params$param), 'varscale', paste('lenscale', 1:length(lenscale), sep=''))
+    write(debug_data, 'reg_debug.csv', sep=',', append=TRUE)
   }
 }
 
