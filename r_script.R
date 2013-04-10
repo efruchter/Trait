@@ -68,7 +68,7 @@ if (learn_mode == 'preference') {
 
 cat('learn_params read \n')
 
-cat('raw iteration data: ', arg_list[3])
+cat('raw iteration data: ', arg_list[3], '\n')
 iter = as.numeric(arg_list[3])
 cat('iteration: ', iter, '\n')
 

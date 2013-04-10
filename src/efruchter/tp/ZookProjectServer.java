@@ -98,7 +98,7 @@ public class ZookProjectServer implements NetworkingListener {
 				System.out.println("store");
 			} else if (message.startsWith("runR" + SessionInfo.SEPERATOR)) {
 				SessionInfo data = new SessionInfo(message.replaceFirst("runR" + SessionInfo.SEPERATOR, ""));
-				runR(Long.parseLong(data.get("playerID")), data.get("learningMode"), Integer.parseInt(data.get("iteration")));
+				runR(Long.parseLong(data.get("playerID")), data.get("learningMode"), Long.parseLong(data.get("iteration")));
 				System.out.println("runR");
 			} else if ("getID".equals(message)) {
             	result = "" + getID();
@@ -118,14 +118,14 @@ public class ZookProjectServer implements NetworkingListener {
     /**
      * Calls R code for learning process
      */
-    private synchronized void runR(long playerID, String learningMode, int isDebug) {
+    private synchronized void runR(long playerID, String learningMode, long iteration) {
     	try {
     		Runtime rt = Runtime.getRuntime();
     		Process pr;
     		if (System.getProperty("os.name").startsWith("Windows")) {
-    			pr = rt.exec("cmd /C \"Rscript r_script.R " + playerID + " " + learningMode + " " + isDebug +  "\""); // change directory, then call the r script
+    			pr = rt.exec("cmd /C \"Rscript r_script.R " + playerID + " " + learningMode + " " + iteration +  "\""); // change directory, then call the r script
     		} else {
-    			pr = rt.exec("Rscript r_script.R " + playerID + " " + learningMode + " " + isDebug + "\""); //call the r script)
+    			pr = rt.exec("Rscript r_script.R " + playerID + " " + learningMode + " " + iteration); //call the r script
     		}
     		BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
     		
