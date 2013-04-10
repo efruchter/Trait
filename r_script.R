@@ -40,9 +40,6 @@ usr_data = read.csv('./database.csv')
 cat('user data read', dim(usr_data), '\n')
 
 configs = read.table(file='clientSettings.config', sep='=')
-# learn_mode = configs[configs$V1=='learn_mode',2]
-# debug_mode = configs[configs$V1=='debug_mode',2]
-# debug_mode = as.numeric(as.character(debug_mode))
 
 cat('configs read \n')
 
@@ -56,9 +53,6 @@ arg_idx = which(inArgs == '--args')
 arg_list = inArgs[(arg_idx+1):length(inArgs)]
 
 cat('args read\n', inArgs, '\n')
-
-# decrement as always pID is incremented after loading, so newest player is one less than stored
-# pID = as.numeric(as.character(configs[configs$V1=='player_id',2]))-1 
 
 pID = as.numeric(arg_list[1]) # first argument is player ID
 
@@ -80,16 +74,6 @@ cat('got user data', dim(usr_data),  '\n')
 
 #### running learning process ####
 
-
-## ticker to track progress per player
-#   if (length(dir('./', paste('r_iter_p', pID, '.RData', sep=''))) == 0) { 
-#     iter=0
-#   } else {
-#     load(paste('r_iter_p', pID, '.RData', sep=''))
-#   }
-#   iter = iter+1
-
-#   cat('loaded iterations \n')
 
 #### GP preference version ####
 
@@ -175,7 +159,6 @@ if (learn_mode == 'preference') {
     
     ## construct test pairs
     tclass_pair = expand.grid(last_pt, tclass$label)
-#     tclass_pair = subset(tclass_pair, tclass_pair[,2] != last_pt) # don't compare to same point again
     tclass_pair = subset(tclass_pair, !(tclass_pair[,2] %in% last_Npt)) # don't reuse recent points
     tclass_pair = as.matrix(tclass_pair)
     
@@ -188,23 +171,7 @@ if (learn_mode == 'preference') {
     optmodel = optimizeHyper(hypmethod='BFGS', optmethod='Nelder-Mead', lengthscale_grid, sigma_grid, x_sample, x_class, infPrefLaplace, mean.const, kernel.SqExpND)
     
     cat('optimized hyperparameters \n')
-    ## only optimize hyper parameters every 3 iterations
-#     if (iter %% 3 == 0 & iter > 0 | 
-#           iter == 1) {
-#       # optimize hyperparameters + generate inferences
-#       optmodel = optimizeHyper(hypmethod='BFGS', optmethod='Nelder-Mead', lengthscale_grid, sigma_grid, x_sample, x_class, infPrefLaplace, mean.const, kernel.SqExpND)
-#       save(optmodel, file=paste('optHyper_p', pID, '.RData', sep=''))
-#     } else {
-#       # load previously optimized hyperparameters
-#       load(paste('optHyper_p', pID, '.RData', sep=''))
-#       
-#       # update model inferences for new data
-#       tbest = infPrefLaplace(x_sample, x_class, mean.const, kernel.SqExpND, tol=1e-06, max_iter=100, sigma_n=optmodel$sigma_n, optmethod='Nelder-Mead', optmodel$lenscale)
-#       optmodel$f_map = tbest$f_map
-#       optmodel$W = tbest$p_map$liks$d2lp
-#       optmodel$K = tbest$K
-#     }
-    
+
     ## predictive preference probability for 2nd over 1st in pair
     t_pred = prefPredict.v2(optmodel, tclass_pair, tclass, x_sample, optmodel$f_map, optmodel$W, optmodel$K, optmodel$sigma_n, kernel.SqExpND, optmodel$lenscale)
     plot(-t_pred$pred)
@@ -229,6 +196,10 @@ if (learn_mode == 'preference') {
     
     writeGene(next_sample, learn_params, 'geneText.txt', learn_mode)
     
+    
+    debug_data = c(pID, iter, nrow(usr_data), next_sample, optmodel$sigma_n, optmodel$lenscale)
+    names(debug_data) = c('pID','iter','nsamples', as.character(learn_params$param), 'sigma_n', paste('lenscale', 1:length(optmodel$lenscale), sep=''))
+    write(debug_data, 'pref_debug.csv', sep=',', append=TRUE)
   }
 }
 
