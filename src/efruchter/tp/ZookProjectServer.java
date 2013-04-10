@@ -98,7 +98,7 @@ public class ZookProjectServer implements NetworkingListener {
 				System.out.println("store");
 			} else if (message.startsWith("runR" + SessionInfo.SEPERATOR)) {
 				SessionInfo data = new SessionInfo(message.replaceFirst("runR" + SessionInfo.SEPERATOR, ""));
-				runR(Long.parseLong(data.get("playerID")), data.get("learningMode"), Integer.parseInt(data.get("isDebug")));
+				runR(Long.parseLong(data.get("playerID")), data.get("learningMode"), Integer.parseInt(data.get("iteration")));
 				System.out.println("runR");
 			} else if ("getID".equals(message)) {
             	result = "" + getID();
