@@ -9,6 +9,7 @@ import java.util.Scanner;
 
 import com.csvreader.CsvReader;
 
+import efruchter.tp.gui.Console;
 import efruchter.tp.learning.GeneVector;
 import efruchter.tp.learning.SessionInfo;
 import efruchter.tp.learning.database.CSVDatabase;
@@ -28,30 +29,52 @@ public class ZookProjectServer implements NetworkingListener {
 		db = new CSVDatabase("database.csv");
 		current = new GeneVector();
 	}
-	
+
 	public static void main(String[] args) {
+		boolean headless = false;
+		int port = 8000;
+		if (args.length > 0) {
+			for (int i = 0; i < args.length; i++) {
+				final String arg = args[i];
+				if (arg.equalsIgnoreCase("-nogui")) {
+					headless = true;
+				} else if(arg.equalsIgnoreCase("-h") || arg.equalsIgnoreCase("-help")) {
+					System.out.println("-nogui: Run in headless mode." );
+					System.out.println("-server_port: specify a port." );
+				} else if (arg.equalsIgnoreCase("-server_port")) {
+					port = Integer.parseInt(args[i + 1]);
+				}
+			}
+		}
+		
+		if (!headless) {
+			Console.init();
+			Console.setTitle("Zook Server Console");
+		}
+		
+		System.out.println("Server Activated!");
+
 		try {
 			db.init();
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
-		
+
 		try {
-			new ZookProjectServer();
+			new ZookProjectServer(port);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
-	
-	public ZookProjectServer() throws IOException, InterruptedException {
-		final int port = 8000;
-		
+
+	public ZookProjectServer(final int port) throws IOException, InterruptedException {
+		System.out.println("Trait Server Started on port " + port + ".");
 		new Server(port, this);
 	}
-	
-	
+
+
 	public String messageReceived(String message, final String clientName) {
 		String result = " ";
 		
