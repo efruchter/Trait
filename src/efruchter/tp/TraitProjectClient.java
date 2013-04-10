@@ -396,7 +396,8 @@ public class TraitProjectClient extends Applet {
                 
                 return Long.parseLong(c.receive());
             } catch (Exception e) {
-
+            	System.err.println("failed to get ID");
+            	e.printStackTrace();
             } finally {
                 try {
                     c.close();
