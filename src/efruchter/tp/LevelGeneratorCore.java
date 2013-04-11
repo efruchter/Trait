@@ -270,10 +270,10 @@ public class LevelGeneratorCore extends Trait {
         	}
         });
         
-        ClientStateManager.togglePauseState();
+//        ClientStateManager.togglePauseState();
         System.out.println("calling R to learn with: " + TraitProjectClient.playerID + " " + ClientDefaults.learnMode() + " " + waveCount);
         v.runR(TraitProjectClient.playerID, ClientDefaults.learnMode(), waveCount);
-        ClientStateManager.togglePauseState();
+//        ClientStateManager.togglePauseState();
 
         waveCount++;
     }
