@@ -6,82 +6,94 @@
 		<link rel="stylesheet" type="text/css" href="main.css">
 	</head>
 	<body>
-		<center>
-			<h1>Trait Project</h1>
-			<h2>An Interactively Learning Shoot-Em-Up</h2>
-			<applet code="org.lwjgl.util.applet.AppletLoader" archive="lwjgl_util_applet.jar" codebase="." width="800" height="600">
-
-				<!-- applet customization parameters -->
-				<param name="canary" value="true">
-				<param name="level_length" value="8000">
-				<param name="local_server" value="false">
-				<param name="server_class" value="efruchter.tp.learning.server.ZookServer">
-				<param name="dev_mode" value="false">
-				<param name="server_ip" value="trait.ericfruchter.com">
-				<param name="console" value="true">
-				<param name="learn_mode" value="regression">
-				<param name="debug_mode" value="1">
-				<param name="server_port" value="8000">
-
-				<!-- The following tags are mandatory -->	
-				<!-- Name of Applet, will be used as name of directory it is saved in, and will uniquely identify it in cache -->
-				<param name="al_title" value="traitproject">
-				
-				<!-- Main Applet Class -->
-				<param name="al_main" value="efruchter.tp.TraitProjectClient">
-				
-				<!-- List of Jars to add to classpath -->
-				<param name="al_jars" value="TraitProject.jar, lwjgl_applet.jar, lwjgl.jar, jinput.jar, lwjgl_util.jar">
-				
-				<!-- signed windows natives jar in a jar --> 
-				<param name="al_windows" value="windows_natives.jar">
-				
-				<!-- signed linux natives jar in a jar --> 
-				<param name="al_linux" value="linux_natives.jar">
-				
-				<!-- signed mac osx natives jar in a jar --> 
-				<param name="al_mac" value="macosx_natives.jar">
-				
-				<!-- signed solaris natives jar in a jar --> 
-				<param name="al_solaris" value="solaris_natives.jar">
-				
-				<!-- Tags under here are optional -->
-				
-				<!-- whether to use cache - defaults to true -->
-				<!-- <param name="al_cache" value="true"> -->
-				
-				<!-- Version of Applet (case insensitive String), applet files not redownloaded if same version already in cache -->
-				<!-- <param name="al_version" value="0.1"> -->
-				
-				<!-- Specify the minimum JRE version required by your applet, defaults to "1.5" -->
-				<param name="al_min_jre" value="1.6">
-				
-				<!-- background color to paint with, defaults to white -->
-				<!-- <param name="boxbgcolor" value="#000000"> -->
-				
-				<!-- foreground color to paint with, defaults to black -->
-				<!-- <param name="boxfgcolor" value="#ffffff"> -->
-				
-				<!-- logo to paint while loading, will be centered, defaults to "appletlogo.gif" -->
-				<!-- <param name="al_logo" value="appletlogo.gif"> -->
-				
-				<!-- progressbar to paint while loading. Will be painted on top of logo, width clipped to percentage done, defaults to "appletprogress.gif" -->
-				<!-- <param name="al_progressbar" value="appletprogress.gif"> -->
-				
-				<!-- whether to run in debug mode -->
-				<!-- <param name="al_debug" value="true"> -->
-				
-				<!-- whether to prepend host to cache path - defaults to true -->
-				<!-- <param name="al_prepend_host" value="true"> -->
-				
-				<param name="separate_jvm" value="true">
-			</applet>
+	<div class="textblock">
+		<div class="colleft">
+			<h1>Instructions</h1>
+			<p>Please accept the two agreements: one is to use the game code, the other is for the <a href="http://www.lwjgl.org/">LWJGL java game engine</a></p>
 			<p>Kill enemies and avoid being hit to get a high score!</p>
+			<p>The <b>game will pause between waves of enemies</b> - please be patient, it's busy thinking!!!</p>
+			<p>See what happens when you finish the 10th wave!</p>
+			
 			<h1>Controls</h1>
 			<p>[WASD]/[ArrowKeys]: Move</p>
 			<p>[SPACE]: Fire Weapon</p>
-			<p>The <b>game will pause between waves of enemies</b> - please be patient, it's busy thinking!!!</p>
 			
-		</center>
+			<h2>Problems?</h2>
+			<p>Mac OSX Chrome will not work, but Safari and Firefox will.</p>
+		</div>
+		<div class="maintext">
+			<center>
+				<h1>Trait Project</h1>
+				<h2>An Interactively Learning Shoot-Em-Up</h2>
+				<applet code="org.lwjgl.util.applet.AppletLoader" archive="lwjgl_util_applet.jar" codebase="." width="800" height="600">
+
+					<!-- applet customization parameters -->
+					<param name="canary" value="true">
+					<param name="level_length" value="8000">
+					<param name="local_server" value="false">
+					<param name="server_class" value="efruchter.tp.learning.server.ZookServer">
+					<param name="dev_mode" value="false">
+					<param name="server_ip" value="trait.ericfruchter.com">
+					<param name="console" value="true">
+					<param name="learn_mode" value="regression">
+					<param name="debug_mode" value="1">
+					<param name="server_port" value="8000">
+
+					<!-- The following tags are mandatory -->	
+					<!-- Name of Applet, will be used as name of directory it is saved in, and will uniquely identify it in cache -->
+					<param name="al_title" value="traitproject">
+					
+					<!-- Main Applet Class -->
+					<param name="al_main" value="efruchter.tp.TraitProjectClient">
+					
+					<!-- List of Jars to add to classpath -->
+					<param name="al_jars" value="TraitProject.jar, lwjgl_applet.jar, lwjgl.jar, jinput.jar, lwjgl_util.jar">
+					
+					<!-- signed windows natives jar in a jar --> 
+					<param name="al_windows" value="windows_natives.jar">
+					
+					<!-- signed linux natives jar in a jar --> 
+					<param name="al_linux" value="linux_natives.jar">
+					
+					<!-- signed mac osx natives jar in a jar --> 
+					<param name="al_mac" value="macosx_natives.jar">
+					
+					<!-- signed solaris natives jar in a jar --> 
+					<param name="al_solaris" value="solaris_natives.jar">
+					
+					<!-- Tags under here are optional -->
+					
+					<!-- whether to use cache - defaults to true -->
+					<!-- <param name="al_cache" value="true"> -->
+					
+					<!-- Version of Applet (case insensitive String), applet files not redownloaded if same version already in cache -->
+					<!-- <param name="al_version" value="0.1"> -->
+					
+					<!-- Specify the minimum JRE version required by your applet, defaults to "1.5" -->
+					<param name="al_min_jre" value="1.6">
+					
+					<!-- background color to paint with, defaults to white -->
+					<!-- <param name="boxbgcolor" value="#000000"> -->
+					
+					<!-- foreground color to paint with, defaults to black -->
+					<!-- <param name="boxfgcolor" value="#ffffff"> -->
+					
+					<!-- logo to paint while loading, will be centered, defaults to "appletlogo.gif" -->
+					<!-- <param name="al_logo" value="appletlogo.gif"> -->
+					
+					<!-- progressbar to paint while loading. Will be painted on top of logo, width clipped to percentage done, defaults to "appletprogress.gif" -->
+					<!-- <param name="al_progressbar" value="appletprogress.gif"> -->
+					
+					<!-- whether to run in debug mode -->
+					<!-- <param name="al_debug" value="true"> -->
+					
+					<!-- whether to prepend host to cache path - defaults to true -->
+					<!-- <param name="al_prepend_host" value="true"> -->
+					
+					<param name="separate_jvm" value="true">
+				</applet>
+			</center>
+		</div>
+	</div>
 	</body>
 </html>
