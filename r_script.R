@@ -1,4 +1,4 @@
-# setwd('C:/Users/Alex/Desktop/prog_proj/bullethell')
+# setwd('C:/Users/Alex/Desktop/prog_proj/bullethell_merge')
 # setwd('./Desktop/prog_proj/bullethell/')
 
 require(reshape2)
@@ -12,14 +12,14 @@ source('./gpFn.R')
 ## writes out gene vector to text file
 writeGene = function(next_sample, learn_params, fname, learn_mode) {
 ## write to control vector
-if (learn_mode == 'preference') {
+if (learn_mode == 'preference' | learn_mode == 'preference+random') {
   new_vec = paste(
     paste(learn_params$param, '', learn_params$min, learn_params$max, next_sample, sep='#', collapse='#'),
     'player.radius.radius#Player ship radius#2.0#50.0#10.0#spawner.enemy.radius.c0#Base enemy radius.[0]#10.0#20.0#10.0#spawner.enemy.radius.c1#Base enemy radius.[1]#10.0#20.0#10.0#enemy.bullet.speed#Speed of enemy bullets.#0.0#3.0#0.8#enemy.bullet.size#Size of enemy bullets.#0#80.0#10.0#enemy.bullet.damage#Damage of enemy bullets.#0#100.0#5.0#enemy.bullet.cooldown#Cooldown time between firing enemy bullets.#0#1000.0#500.0#',
     sep='#'
   )
 }
-else if (learn_mode == 'regression') {
+else if (learn_mode == 'regression' | learn_mode == 'regression+random') {
   new_vec = paste(
     paste(learn_params$param, '', learn_params$min, learn_params$max, next_sample, sep='#', collapse='#'),
     'player.radius.radius#Player ship radius#2.0#50.0#10.0#spawner.enemy.radius.c0#Base enemy radius.[0]#10.0#20.0#10.0#spawner.enemy.radius.c1#Base enemy radius.[1]#10.0#20.0#10.0#enemy.bullet.damage#Damage of enemy bullets.#0#100.0#5.0#player.move.thrust##0.0#0.09#0.04#player.move.drag##0.0#1.0#0.4#',
@@ -58,9 +58,9 @@ cat('got pid: ', pID, '\n')
 learn_mode = arg_list[2]
 cat('learning mode: ', learn_mode, '\n')
 
-if (learn_mode == 'preference') {
+if (learn_mode == 'preference' | learn_mode == 'preference+random') {
   learn_params = read.csv('./learn_params_pref.csv')
-} else if (learn_mode == 'regression') {
+} else if (learn_mode == 'regression' | learn_mode == 'regression+random') {
   learn_params = read.csv('./learn_params_reg.csv')
 } else {
   cat('error in learning mode: no learning parameters!\n')
@@ -81,6 +81,20 @@ usr_data = usr_data[as.numeric(as.character(usr_data$pID)) == pID,]
 cat('got user data', dim(usr_data),  '\n')
 
 #### running learning process ####
+
+
+#### random sampling ####
+
+if (learn_mode == 'preference+random' | learn_mode == 'regression+random') {
+  
+  cat('random sampling: ', learn_mode, '\n')
+  
+  next_sample = randomPts(1, learn_params)
+  
+  cat('next point:\n', paste(learn_params$param, '', learn_params$min, learn_params$max, next_sample, sep=' ', collapse='\n'), '\n')
+  
+  writeGene(next_sample, learn_params, 'geneText.txt', learn_mode)
+}
 
 
 #### GP preference version ####

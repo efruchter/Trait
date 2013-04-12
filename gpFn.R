@@ -888,6 +888,7 @@ paramGrid = function(npts, paramMin, paramMax) {
   return(seq(paramMin, paramMax, by=(paramMax-paramMin)/npts))
 }
 
+
 ## expands a set of learning parameter ranges into a npts X npts grid of points to search
 testGrid = function(learn_params) {
   tpts = list()
@@ -898,3 +899,17 @@ testGrid = function(learn_params) {
   return(tpts)
 }
 
+## uniformly generate random points b/t min and max
+paramRandom = function(npts, paramMin, paramMax) {
+  return(runif(n=npts, min=paramMin, max=paramMax))
+}
+
+## generate npts random sample points w/in ranges specified by learn_params
+randomPts = function(npts, learn_params) {
+  rpts = list()
+  for (i in 1:nrow(learn_params)) {
+    rpts[[as.character(learn_params$param[i])]] = paramRandom(npts, learn_params$min[i], learn_params$max[i])
+  }
+  rpts = expand.grid(rpts)
+  return(rpts)
+}

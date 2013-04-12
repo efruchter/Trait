@@ -68,12 +68,15 @@ public class LevelGeneratorCore extends Trait {
     final public static Random random = new Random(0);
 
     public long waveCount;
+    public String learningMode;
     private int percentComplete;
 
     public LevelGeneratorCore() {
         super("Level Generator : Spawner", "The level generating structure.");
         waveCount = 0;
         chains = new LinkedList<Chain>();
+        String isRandom = TraitProjectClient.playerID % 2 == 0 ? "+random" : "";
+        learningMode = ClientDefaults.learnMode() + isRandom;
     }
 
     @Override
@@ -123,8 +126,10 @@ public class LevelGeneratorCore extends Trait {
         System.out.println("wave: " + waveCount);
         
         if (waveCount < 2) {
-        	System.out.println("calling R to initialize with: " + TraitProjectClient.playerID + " " + ClientDefaults.learnMode() + " " + waveCount);
-        	v.runR(TraitProjectClient.playerID, ClientDefaults.learnMode(), waveCount);
+//        	System.out.println("calling R to initialize with: " + TraitProjectClient.playerID + " " + ClientDefaults.learnMode() + " " + waveCount);
+        	System.out.println("calling R to initialize with: " + TraitProjectClient.playerID + " " + learningMode + " " + waveCount);
+//        	v.runR(TraitProjectClient.playerID, ClientDefaults.learnMode(), waveCount);
+        	v.runR(TraitProjectClient.playerID, learningMode, waveCount);
         }
         v.reloadExplorationVector("../geneText.txt");
         
@@ -271,8 +276,10 @@ public class LevelGeneratorCore extends Trait {
         });
         
 //        ClientStateManager.togglePauseState();
-        System.out.println("calling R to learn with: " + TraitProjectClient.playerID + " " + ClientDefaults.learnMode() + " " + waveCount);
-        v.runR(TraitProjectClient.playerID, ClientDefaults.learnMode(), waveCount);
+//        System.out.println("calling R to learn with: " + TraitProjectClient.playerID + " " + ClientDefaults.learnMode() + " " + waveCount);
+        System.out.println("calling R to learn with: " + TraitProjectClient.playerID + " " + learningMode + " " + waveCount);
+//        v.runR(TraitProjectClient.playerID, ClientDefaults.learnMode(), waveCount);
+        v.runR(TraitProjectClient.playerID, learningMode, waveCount);
 //        ClientStateManager.togglePauseState();
 
         waveCount++;
