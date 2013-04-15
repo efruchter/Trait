@@ -111,7 +111,7 @@ public class ZookServer implements ServerIO {
 
                 System.out.println("sending to R: " + data.toDataString());
                 c.send("runR" + SessionInfo.SEPERATOR + data.toDataString());
-//                c.receive();
+                c.receive();
             } catch (IOException e) {
             	System.err.println("Cannot run r code on server!");
             } finally {

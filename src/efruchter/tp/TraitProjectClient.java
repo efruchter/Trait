@@ -287,7 +287,9 @@ public class TraitProjectClient extends Applet {
 										.append("score ").append(Long.toString(display_score))
 										.append("\n\n")
 										.append("wave ")
-										.append(level.getGeneratorCore().getWaveCount()).toString(), 5, 45);
+										.append(level.getGeneratorCore().getWaveCount()).toString(), 
+											(int)(Display.getWidth()*0.875), 
+											(int)(Display.getHeight()*0.99));
 				RenderUtil.setColor(Color.GREEN);
 				RenderUtil.drawString("Progress "
 						+ level.getGeneratorCore().getPercentComplete()
