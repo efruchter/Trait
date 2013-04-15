@@ -87,7 +87,7 @@ public class BasicAttackTrait extends Trait {
 					if (self.health <= 0 && self.isActive()) {
 						TraitProjectClient.s_damage_player += damage.getValue();
 						TraitProjectClient.s_hit_player += 1;
-						TraitProjectClient.display_score -= 25;
+						TraitProjectClient.display_score -= 10;
 					}
 				}
 			});

@@ -87,6 +87,14 @@ cat('got user data', dim(usr_data),  '\n')
 
 if (learn_mode == 'preference+random' | learn_mode == 'regression+random') {
   
+  if (iter < 2 & learn_mode == 'regression+random') {
+    cat('fixed iteration: ', iter, '\n')
+    
+    new_vec = 'player.move.thrust#Amount of control thrust.#0.0#0.09#0.040#player.move.drag#Amount of air drag.#0.0#1.0#0.3#player.radius.radius#Player ship radius#2.0#50.0#10.0#spawner.enemy.radius.c0#Base enemy radius.[0]#10.0#20.0#10.0#spawner.enemy.radius.c1#Base enemy radius.[1]#10.0#20.0#10.0#enemy.bullet.speed#Speed of enemy bullets.#0.0#3.0#0.8#enemy.bullet.size#Size of enemy bullets.#0#80.0#10.0#enemy.bullet.damage#Damage of enemy bullets.#0#100.0#5.0#enemy.bullet.cooldown#Cooldown time between firing enemy bullets.#0#1000.0#500.0#'
+    write(new_vec, 'geneText.txt')
+    
+  }
+  
   cat('random sampling: ', learn_mode, '\n')
   
   next_sample = randomPts(1, learn_params)
