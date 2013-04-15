@@ -94,8 +94,8 @@ public class VectorEditorPopup_Crummy {
 
         frame.add(new JScrollPane(traitPanel){{setPreferredSize(new Dimension(700, 300));}}, BorderLayout.CENTER);
 
-        String betterString = "I enjoyed this wave more than the one before";
-        String worseString = "I enjoyed the wave before this one more";
+        String betterString = "better than before";
+        String worseString = "worse than before";
         JRadioButton choiceBetter = new JRadioButton(betterString);
         choiceBetter.setActionCommand(betterString);
         JRadioButton choiceWorse = new JRadioButton(worseString);

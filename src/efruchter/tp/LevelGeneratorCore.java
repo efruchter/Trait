@@ -255,7 +255,7 @@ public class LevelGeneratorCore extends Trait {
        // record data either after responding to query or just directly after wave
        	if (waveCount > 1 && ClientDefaults.learnMode().equals("preference")) {
        		// show editor to allow better/worse feedback from player; start from 2nd wave
-	    	VectorEditorPopup_Crummy.show(ge, true, "Get ready for the next wave!", true, v, waveCount);
+	    	VectorEditorPopup_Crummy.show(ge, true, "How did these controls compare to the controls from the last wave?", true, v, waveCount);
 //	    	VectorEditorPopup_Crummy.blockWhileOpen();
 	    } else if (waveCount > 0) {
         	TraitProjectClient.storeData(v, waveCount);
