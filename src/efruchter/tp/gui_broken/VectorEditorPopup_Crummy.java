@@ -48,6 +48,8 @@ public class VectorEditorPopup_Crummy {
     @SuppressWarnings("serial")
     private static void rebuildGui(final List<GeneWrapper> genes, final boolean useName, final String headerText, final ServerIO v, final long waveCount) {
 
+    	System.out.println("entering rebuildGui");
+    	
         frame = new JFrame("Control Panel");
         
         //frame.setUndecorated(true);
@@ -124,10 +126,10 @@ public class VectorEditorPopup_Crummy {
         final JButton goButton = new JButton("Go!");
         goButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
-            	if (v != null) {
-            		// if called w/storage data, record preference information instead
-            		TraitProjectClient.storeData(v, waveCount);
-            	}
+//            	if (v != null) {
+//            		// if called w/storage data, record preference information instead
+//            		TraitProjectClient.storeData(v, waveCount);
+//            	}
                 hide();
             }
         });
@@ -147,6 +149,7 @@ public class VectorEditorPopup_Crummy {
 
     public static void show(final List<GeneWrapper> genes, final boolean useName, final String headerText, final boolean forceShow, final ServerIO v, long waveCount) {
 
+    	System.out.println("entering show");
         hide();
         
         // Wire an action for next hide
@@ -173,6 +176,7 @@ public class VectorEditorPopup_Crummy {
     }
 
     public static void hide() {
+    	System.out.println("entering hide");
         if (frame != null) {
         	frameLoc = frame.getLocation();
             frame.setVisible(false);
@@ -190,23 +194,29 @@ public class VectorEditorPopup_Crummy {
     /**
      * Block the core game thread until the window is closed.
      */
-    public synchronized static void blockWhileOpen() {
+    public static void blockWhileOpen() {
     	blocking = true;
+    	System.out.println("starting blocking");
     	while (frame != null && frame.isVisible()) {
     		try {
+    			System.out.println("starting sleeping");
 				Thread.sleep(100);
+				System.out.println("done sleeping");
 			} catch (InterruptedException e) {
 				e.printStackTrace();
+			} catch(Throwable t) {
+			    System.err.println(""+t);
 			}
     	}
     	blocking = false;
+    	System.out.println("finished blocking");
     }
     
     public static boolean isVisible() {
     	return frame != null;
     }
 
-	public synchronized static boolean isBlocking() {
+	public static boolean isBlocking() {
 		return blocking;
 	}
 }
