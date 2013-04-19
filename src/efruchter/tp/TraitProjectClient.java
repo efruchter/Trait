@@ -32,6 +32,7 @@ import efruchter.tp.state.ClientStateManager.FlowState;
 import efruchter.tp.trait.behavior.Behavior;
 import efruchter.tp.util.KeyUtil;
 import efruchter.tp.util.RenderUtil;
+import efruchter.tp.trait.Trait.TraitAdapter;
 
 @SuppressWarnings("serial")
 public class TraitProjectClient extends Applet {
@@ -85,7 +86,7 @@ public class TraitProjectClient extends Applet {
 		display_score = 0;
 	}
 	
-	public static void storeData(ServerIO v, long waveCount, boolean isRandom, String learnMode) {
+	public static void storeDataAndWaveReset(ServerIO v, long waveCount, boolean isRandom, String learnMode) {
 		String username = System.getProperty("user.name");
         if (username == null) {
             username = "NO_NAME";
@@ -111,6 +112,14 @@ public class TraitProjectClient extends Applet {
         info.put("learn_mode", learnMode);
         info.put("c_choice", (TraitProjectClient.c_choice).toString());
         v.storeInfo(info);
+        level.getBlankEntity(EntityType.SERVICE).addTrait(new TraitAdapter(){
+            public void onUpdate(Entity self, Level level, long delta) {
+
+                TraitProjectClient.resetMetrics();
+
+                level.removeEntity(self);
+            }
+        });
 	}
 
 	private static String[] playerControlled = new String[0];

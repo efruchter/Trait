@@ -61,7 +61,7 @@ public class VectorEditorPopup_Crummy {
                 if (arg0.getKeyCode() == KeyEvent.VK_ESCAPE) {
                 	if (v != null) {
                 		// if called w/storage data, record preference information instead
-                		TraitProjectClient.storeData(v, waveCount, isRandom, learnMode);
+                		TraitProjectClient.storeDataAndWaveReset(v, waveCount, isRandom, learnMode);
                 	}
                     hide();
                 }
@@ -129,7 +129,7 @@ public class VectorEditorPopup_Crummy {
             public void actionPerformed(ActionEvent actionEvent) {
             	if (v != null) {
             		// if called w/storage data, record preference information instead
-            		TraitProjectClient.storeData(v, waveCount, isRandom, learnMode);
+            		TraitProjectClient.storeDataAndWaveReset(v, waveCount, isRandom, learnMode);
             		TraitProjectClient.resetMetrics();
             	}
                 hide();
