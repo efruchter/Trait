@@ -6,11 +6,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Scanner;
+import java.util.concurrent.ExecutionException;
 
 import com.csvreader.CsvReader;
 
 import efruchter.tp.gui.Console;
 import efruchter.tp.learning.GeneVector;
+import efruchter.tp.learning.RThread;
 import efruchter.tp.learning.SessionInfo;
 import efruchter.tp.learning.database.CSVDatabase;
 import efruchter.tp.learning.database.Database;
@@ -141,32 +143,39 @@ public class ZookProjectServer implements NetworkingListener {
     /**
      * Calls R code for learning process
      */
-    private synchronized void runR(long playerID, String learningMode, long iteration) {
-    	ClientStateManager.togglePauseState();
-    	try {
-    		Runtime rt = Runtime.getRuntime();
-    		Process pr;
-    		if (System.getProperty("os.name").startsWith("Windows")) {
-    			pr = rt.exec("cmd /C \"Rscript r_script.R " + playerID + " " + learningMode + " " + iteration +  "\""); // change directory, then call the r script
-    		} else {
-    			pr = rt.exec("Rscript r_script.R " + playerID + " " + learningMode + " " + iteration); //call the r script
-    		}
-    		BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
-    		
-    		String line = null;
-    		while((line = input.readLine()) != null) {
-    			System.out.println(line);
-    		}
-    		int exitVal = pr.waitFor();
-    		System.out.println("exited w/error code: " + exitVal);
-    		
-    	} catch (Exception e) {
-    		System.out.println(e.toString());
-    		e.printStackTrace();
-    	} finally {
-    		ClientStateManager.togglePauseState();
-    	}
-    }
+//    private synchronized void runR(long playerID, String learningMode, long iteration) {
+//    	ClientStateManager.togglePauseState();
+//    	try {
+//    		Runtime rt = Runtime.getRuntime();
+//    		Process pr;
+//    		if (System.getProperty("os.name").startsWith("Windows")) {
+//    			pr = rt.exec("cmd /C \"Rscript r_script.R " + playerID + " " + learningMode + " " + iteration +  "\""); // change directory, then call the r script
+//    		} else {
+//    			pr = rt.exec("Rscript r_script.R " + playerID + " " + learningMode + " " + iteration); //call the r script
+//    		}
+//    		BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+//    		
+//    		String line = null;
+//    		while((line = input.readLine()) != null) {
+//    			System.out.println(line);
+//    		}
+//    		int exitVal = pr.waitFor();
+//    		System.out.println("exited w/error code: " + exitVal);
+//    		
+//    	} catch (Exception e) {
+//    		System.out.println(e.toString());
+//    		e.printStackTrace();
+//    	} finally {
+//    		ClientStateManager.togglePauseState();
+//    	}
+//    }
+	private void runR(long playerID, String learnMode, long waveCount) {
+		System.out.println("runR called w/pID: " + playerID);
+		RThread learnThread = new RThread(playerID, waveCount, learnMode);
+        learnThread.execute();
+        System.out.println("R thread on wave: " + learnThread.getWave());
+	}
+	
 
 	public synchronized long getID() throws IOException {
 		final File idFile = new File("playerID.txt");

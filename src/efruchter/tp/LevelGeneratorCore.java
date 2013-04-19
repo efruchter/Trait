@@ -18,6 +18,7 @@ import efruchter.tp.entity.EntityType;
 import efruchter.tp.entity.Level;
 import efruchter.tp.entity.PolarityController;
 import efruchter.tp.gui_broken.VectorEditorPopup_Crummy;
+import efruchter.tp.learning.RThread;
 import efruchter.tp.learning.SessionInfo;
 import efruchter.tp.learning.GeneVector.GeneWrapper;
 import efruchter.tp.learning.server.ServerIO;
@@ -282,6 +283,7 @@ public class LevelGeneratorCore extends Trait {
 //        System.out.println("calling R to learn with: " + TraitProjectClient.playerID + " " + ClientDefaults.learnMode() + " " + waveCount);
         System.out.println("calling R to learn with: " + TraitProjectClient.playerID + " " + learnMode + " " + waveCount);
 //        v.runR(TraitProjectClient.playerID, ClientDefaults.learnMode(), waveCount);
+        
         v.runR(TraitProjectClient.playerID, learnMode, waveCount);
 //        ClientStateManager.togglePauseState();
 

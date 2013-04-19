@@ -36,6 +36,7 @@ cat('called R \n')
 #### read in configuration and data for this player ####
 
 usr_data = read.csv('./database.csv')
+cat(paste(usr_data[nrow(usr_data),]), '\n')
 
 cat('user data read', dim(usr_data), '\n')
 
