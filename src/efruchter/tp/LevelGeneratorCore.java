@@ -68,15 +68,17 @@ public class LevelGeneratorCore extends Trait {
     final public static Random random = new Random(0);
 
     public long waveCount;
-    public String learningMode;
+    public String learnMode;
+    public boolean isRandom;
     private int percentComplete;
 
     public LevelGeneratorCore() {
         super("Level Generator : Spawner", "The level generating structure.");
         waveCount = 0;
         chains = new LinkedList<Chain>();
-        String isRandom = TraitProjectClient.playerID % 2 == 0 ? "+random" : "";
-        learningMode = ClientDefaults.learnMode() + isRandom;
+        isRandom = TraitProjectClient.playerID % 2 == 0 ? true : false;
+        String randomStr = isRandom ? "+random" : "";
+        learnMode = ClientDefaults.learnMode() + randomStr;
     }
 
     @Override
@@ -127,9 +129,9 @@ public class LevelGeneratorCore extends Trait {
         
         if (waveCount < 2) {
 //        	System.out.println("calling R to initialize with: " + TraitProjectClient.playerID + " " + ClientDefaults.learnMode() + " " + waveCount);
-        	System.out.println("calling R to initialize with: " + TraitProjectClient.playerID + " " + learningMode + " " + waveCount);
+        	System.out.println("calling R to initialize with: " + TraitProjectClient.playerID + " " + learnMode + " " + waveCount);
 //        	v.runR(TraitProjectClient.playerID, ClientDefaults.learnMode(), waveCount);
-        	v.runR(TraitProjectClient.playerID, learningMode, waveCount);
+        	v.runR(TraitProjectClient.playerID, learnMode, waveCount);
         }
         v.reloadExplorationVector("../geneText.txt");
         
@@ -255,12 +257,12 @@ public class LevelGeneratorCore extends Trait {
        // record data either after responding to query or just directly after wave
        	if (waveCount > 1 && ClientDefaults.learnMode().equals("preference")) {
        		// show editor to allow better/worse feedback from player; start from 2nd wave
-	    	VectorEditorPopup_Crummy.show(ge, true, "How did these controls compare to the controls from the last wave?", true, v, waveCount);
+	    	VectorEditorPopup_Crummy.show(ge, true, "How did these controls compare to the controls from the last wave?", true, v, waveCount, isRandom, learnMode);
 //	    	VectorEditorPopup_Crummy.blockWhileOpen();
 	    } 
-//       	else if (waveCount > 0) {
-        	TraitProjectClient.storeData(v, waveCount);
-//        }
+       	else if (waveCount > 0) {
+        	TraitProjectClient.storeData(v, waveCount, isRandom, learnMode);
+        }
 
         time = 0;
         TraitProjectClient.resetMetrics();
@@ -270,7 +272,7 @@ public class LevelGeneratorCore extends Trait {
         level.getBlankEntity(EntityType.SERVICE).addTrait(new TraitAdapter(){
         	public void onUpdate(Entity self, Level level, long delta) {
 
-        		TraitProjectClient.resetMetrics();
+//        		TraitProjectClient.resetMetrics();
 
         		level.removeEntity(self);
         	}
@@ -278,9 +280,9 @@ public class LevelGeneratorCore extends Trait {
         
 //        ClientStateManager.togglePauseState();
 //        System.out.println("calling R to learn with: " + TraitProjectClient.playerID + " " + ClientDefaults.learnMode() + " " + waveCount);
-        System.out.println("calling R to learn with: " + TraitProjectClient.playerID + " " + learningMode + " " + waveCount);
+        System.out.println("calling R to learn with: " + TraitProjectClient.playerID + " " + learnMode + " " + waveCount);
 //        v.runR(TraitProjectClient.playerID, ClientDefaults.learnMode(), waveCount);
-        v.runR(TraitProjectClient.playerID, learningMode, waveCount);
+        v.runR(TraitProjectClient.playerID, learnMode, waveCount);
 //        ClientStateManager.togglePauseState();
 
         waveCount++;

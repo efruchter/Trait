@@ -42,11 +42,12 @@ public class VectorEditorPopup_Crummy {
     private static ActionListener onHideAction;
 
     private static void rebuildGui(final List<GeneWrapper> genes, final boolean useName, final String headerText) {
-    	rebuildGui(genes, useName, headerText, null, -1);
+    	rebuildGui(genes, useName, headerText, null, -1, false, "err");
     }
     
     @SuppressWarnings("serial")
-    private static void rebuildGui(final List<GeneWrapper> genes, final boolean useName, final String headerText, final ServerIO v, final long waveCount) {
+    private static void rebuildGui(final List<GeneWrapper> genes, final boolean useName, final String headerText, 
+    		final ServerIO v, final long waveCount, final boolean isRandom, final String learnMode) {
 
     	System.out.println("entering rebuildGui");
     	
@@ -60,7 +61,7 @@ public class VectorEditorPopup_Crummy {
                 if (arg0.getKeyCode() == KeyEvent.VK_ESCAPE) {
                 	if (v != null) {
                 		// if called w/storage data, record preference information instead
-                		TraitProjectClient.storeData(v, waveCount);
+                		TraitProjectClient.storeData(v, waveCount, isRandom, learnMode);
                 	}
                     hide();
                 }
@@ -126,10 +127,11 @@ public class VectorEditorPopup_Crummy {
         final JButton goButton = new JButton("Go!");
         goButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
-//            	if (v != null) {
-//            		// if called w/storage data, record preference information instead
-//            		TraitProjectClient.storeData(v, waveCount);
-//            	}
+            	if (v != null) {
+            		// if called w/storage data, record preference information instead
+            		TraitProjectClient.storeData(v, waveCount, isRandom, learnMode);
+            		TraitProjectClient.resetMetrics();
+            	}
                 hide();
             }
         });
@@ -143,11 +145,12 @@ public class VectorEditorPopup_Crummy {
     }
     
     public static void show(final List<GeneWrapper> genes, final boolean useName, final String headerText, final ActionListener onHideAction) {
-    	show(genes, useName, headerText, false, null, -1);
+    	show(genes, useName, headerText, false, null, -1, false, "err");
     }
 
 
-    public static void show(final List<GeneWrapper> genes, final boolean useName, final String headerText, final boolean forceShow, final ServerIO v, long waveCount) {
+    public static void show(final List<GeneWrapper> genes, final boolean useName, final String headerText, final boolean forceShow, 
+    		final ServerIO v, long waveCount, boolean isRandom, String learnMode) {
 
     	System.out.println("entering show");
         hide();
@@ -160,7 +163,7 @@ public class VectorEditorPopup_Crummy {
 
         Collections.sort(genes);
         
-        rebuildGui(genes, useName, headerText, v, waveCount);
+        rebuildGui(genes, useName, headerText, v, waveCount, isRandom, learnMode);
 
         if (genes.isEmpty() && !forceShow) {
             hide();

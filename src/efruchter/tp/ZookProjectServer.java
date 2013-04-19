@@ -17,6 +17,7 @@ import efruchter.tp.learning.database.Database;
 import efruchter.tp.learning.server.ZookServer;
 import efruchter.tp.learning.server.comm.NetworkingListener;
 import efruchter.tp.learning.server.comm.Server;
+import efruchter.tp.state.ClientStateManager;
 
 
 public class ZookProjectServer implements NetworkingListener {
@@ -141,6 +142,7 @@ public class ZookProjectServer implements NetworkingListener {
      * Calls R code for learning process
      */
     private synchronized void runR(long playerID, String learningMode, long iteration) {
+    	ClientStateManager.togglePauseState();
     	try {
     		Runtime rt = Runtime.getRuntime();
     		Process pr;
@@ -161,6 +163,8 @@ public class ZookProjectServer implements NetworkingListener {
     	} catch (Exception e) {
     		System.out.println(e.toString());
     		e.printStackTrace();
+    	} finally {
+    		ClientStateManager.togglePauseState();
     	}
     }
 

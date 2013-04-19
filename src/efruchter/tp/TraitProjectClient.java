@@ -85,7 +85,7 @@ public class TraitProjectClient extends Applet {
 		display_score = 0;
 	}
 	
-	public static void storeData(ServerIO v, long waveCount) {
+	public static void storeData(ServerIO v, long waveCount, boolean isRandom, String learnMode) {
 		String username = System.getProperty("user.name");
         if (username == null) {
             username = "NO_NAME";
@@ -107,6 +107,8 @@ public class TraitProjectClient extends Applet {
         info.put("s_killed_enemies", Float.toString(TraitProjectClient.s_killed_enemies));
         info.put("s_remain_enemies", Float.toString(TraitProjectClient.s_remain_enemies));
         info.put("display_score", Long.toString(TraitProjectClient.display_score));
+        info.put("is_random", Boolean.toString(isRandom));
+        info.put("learn_mode", learnMode);
         info.put("c_choice", (TraitProjectClient.c_choice).toString());
         v.storeInfo(info);
 	}
