@@ -32,6 +32,7 @@ import efruchter.tp.state.ClientStateManager.FlowState;
 import efruchter.tp.trait.behavior.Behavior;
 import efruchter.tp.util.KeyUtil;
 import efruchter.tp.util.RenderUtil;
+import efruchter.tp.trait.Trait.TraitAdapter;
 
 @SuppressWarnings("serial")
 public class TraitProjectClient extends Applet {
@@ -112,8 +113,17 @@ public class TraitProjectClient extends Applet {
         info.put("learn_mode", learnMode);
         info.put("c_choice", (TraitProjectClient.c_choice).toString());
         v.storeInfo(info);
-        
+
         TraitProjectClient.resetMetrics();
+//=======
+//        level.getBlankEntity(EntityType.SERVICE).addTrait(new TraitAdapter(){
+//            public void onUpdate(Entity self, Level level, long delta) {
+//
+//                TraitProjectClient.resetMetrics();
+//
+//                level.removeEntity(self);
+//            }
+//        });
 	}
 
 	private static String[] playerControlled = new String[0];

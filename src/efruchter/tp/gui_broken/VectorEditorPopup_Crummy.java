@@ -131,6 +131,7 @@ public class VectorEditorPopup_Crummy {
             		// if called w/storage data, record preference information instead
             		TraitProjectClient.storeData(v, waveCount, isRandom, learnMode);
 //            		TraitProjectClient.resetMetrics();
+
             	}
                 hide();
             }

@@ -260,24 +260,14 @@ public class LevelGeneratorCore extends Trait {
        		// show editor to allow better/worse feedback from player; start from 2nd wave
 	    	VectorEditorPopup_Crummy.show(ge, true, "How did these controls compare to the controls from the last wave?", true, v, waveCount, isRandom, learnMode);
 //	    	VectorEditorPopup_Crummy.blockWhileOpen();
-	    } 
-       	else if (waveCount > 0) {
+	    } else if (waveCount > 0) {
         	TraitProjectClient.storeData(v, waveCount, isRandom, learnMode);
         }
 
         time = 0;
-//        TraitProjectClient.resetMetrics();
         /* Use this to perform actions on level start
          * when ordering is becoming an issue.
          */
-        level.getBlankEntity(EntityType.SERVICE).addTrait(new TraitAdapter(){
-        	public void onUpdate(Entity self, Level level, long delta) {
-
-//        		TraitProjectClient.resetMetrics();
-
-        		level.removeEntity(self);
-        	}
-        });
         
 //        ClientStateManager.togglePauseState();
 //        System.out.println("calling R to learn with: " + TraitProjectClient.playerID + " " + ClientDefaults.learnMode() + " " + waveCount);
