@@ -102,7 +102,6 @@ public class KeyboardControlTrait_Attack extends Trait {
 					p.addTrait(new TraitAdapter(){
 						@Override
 						public void onStart(final Entity self, final Level level) {
-							System.out.println("player fired: " + TraitProjectClient.s_fired_player);
 							TraitProjectClient.s_fired_player++;
 						}
 						@Override

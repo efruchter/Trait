@@ -265,7 +265,7 @@ public class LevelGeneratorCore extends Trait {
         }
 
         time = 0;
-        TraitProjectClient.resetMetrics();
+//        TraitProjectClient.resetMetrics();
         /* Use this to perform actions on level start
          * when ordering is becoming an issue.
          */

@@ -130,7 +130,7 @@ public class VectorEditorPopup_Crummy {
             	if (v != null) {
             		// if called w/storage data, record preference information instead
             		TraitProjectClient.storeData(v, waveCount, isRandom, learnMode);
-            		TraitProjectClient.resetMetrics();
+//            		TraitProjectClient.resetMetrics();
             	}
                 hide();
             }
@@ -152,8 +152,7 @@ public class VectorEditorPopup_Crummy {
     public static void show(final List<GeneWrapper> genes, final boolean useName, final String headerText, final boolean forceShow, 
     		final ServerIO v, long waveCount, boolean isRandom, String learnMode) {
 
-    	System.out.println("entering show");
-        hide();
+    	hide();
         
         // Wire an action for next hide
         VectorEditorPopup_Crummy.onHideAction = onHideAction;
@@ -179,8 +178,7 @@ public class VectorEditorPopup_Crummy {
     }
 
     public static void hide() {
-    	System.out.println("entering hide");
-        if (frame != null) {
+    	if (frame != null) {
         	frameLoc = frame.getLocation();
             frame.setVisible(false);
             ClientStateManager.setFlowState(FlowState.FREE);

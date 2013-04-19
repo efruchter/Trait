@@ -83,6 +83,7 @@ public class TraitProjectClient extends Applet {
 		s_killed_enemies = 0;
 		c_choice = CHOICE.NONE;
 		display_score = 0;
+		System.out.println("resetting metrics");
 	}
 	
 	public static void storeData(ServerIO v, long waveCount, boolean isRandom, String learnMode) {
@@ -111,6 +112,8 @@ public class TraitProjectClient extends Applet {
         info.put("learn_mode", learnMode);
         info.put("c_choice", (TraitProjectClient.c_choice).toString());
         v.storeInfo(info);
+        
+        TraitProjectClient.resetMetrics();
 	}
 
 	private static String[] playerControlled = new String[0];
