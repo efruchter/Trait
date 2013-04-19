@@ -97,7 +97,8 @@ public class ZookServer implements ServerIO {
 	}
 
 	@Override
-	public void runR(final long playerID, final String learningMode, final long iteration) {
+	public boolean runR(final long playerID, final String learningMode, final long iteration) {
+		String received = "";
 		ClientStateManager.setFlowState(FlowState.STORING_VECT);
         try {
             final Client c = TraitProjectClient.getClient();
@@ -111,7 +112,8 @@ public class ZookServer implements ServerIO {
 
                 System.out.println("sending to R: " + data.toDataString());
                 c.send("runR" + SessionInfo.SEPERATOR + data.toDataString());
-                c.receive();
+                received = c.receive();
+                System.out.println("client received " + received);
             } catch (IOException e) {
             	System.err.println("Cannot run r code on server!");
             } finally {
@@ -124,6 +126,13 @@ public class ZookServer implements ServerIO {
         } finally {
             ClientStateManager.setFlowState(FlowState.FREE);
         }
+        return Boolean.parseBoolean(received);
+	}
+
+	@Override
+	public boolean isRDone() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 	
 

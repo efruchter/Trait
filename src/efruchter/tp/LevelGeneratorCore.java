@@ -130,9 +130,9 @@ public class LevelGeneratorCore extends Trait {
         
         if (waveCount < 2) {
 //        	System.out.println("calling R to initialize with: " + TraitProjectClient.playerID + " " + ClientDefaults.learnMode() + " " + waveCount);
-        	System.out.println("calling R to initialize with: " + TraitProjectClient.playerID + " " + learnMode + " " + waveCount);
+//        	System.out.println("calling R to initialize with: " + TraitProjectClient.playerID + " " + learnMode + " " + waveCount);
 //        	v.runR(TraitProjectClient.playerID, ClientDefaults.learnMode(), waveCount);
-        	v.runR(TraitProjectClient.playerID, learnMode, waveCount);
+//        	v.runR(TraitProjectClient.playerID, learnMode, waveCount);
         }
         v.reloadExplorationVector("../geneText.txt");
         
@@ -274,8 +274,21 @@ public class LevelGeneratorCore extends Trait {
         System.out.println("calling R to learn with: " + TraitProjectClient.playerID + " " + learnMode + " " + waveCount);
 //        v.runR(TraitProjectClient.playerID, ClientDefaults.learnMode(), waveCount);
         
-        v.runR(TraitProjectClient.playerID, learnMode, waveCount);
-//        ClientStateManager.togglePauseState();
+        ClientStateManager.setPaused(true);
+        boolean runRDone = v.runR(TraitProjectClient.playerID, learnMode, waveCount);
+        System.out.println("client saw R done: " + runRDone);
+        while (!runRDone) {
+        	try {
+        		Thread.sleep(1000);
+				runRDone = v.runR(TraitProjectClient.playerID, learnMode, waveCount);
+				System.out.println("client polling R");
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        	
+        }
+        ClientStateManager.setPaused(false);
 
         waveCount++;
     }

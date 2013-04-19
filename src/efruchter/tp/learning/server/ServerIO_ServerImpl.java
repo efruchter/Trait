@@ -88,7 +88,13 @@ public class ServerIO_ServerImpl implements ServerIO {
     }
 
 	@Override
-	public void runR(final long playerID, final String learningMode, final long isDebug) {
+	public boolean runR(final long playerID, final String learningMode, final long isDebug) {
+		return true;
+	}
 
+	@Override
+	public boolean isRDone() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }
