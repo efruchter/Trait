@@ -226,7 +226,7 @@ predictGP.optimx = function(kernelpar, xin, yin, x_test, sigma_n, k.x_x, meanFn,
   ## kernel par should be: [variance scale, lengthscale[1], lengthscale[2], ..., lengthscale[D]]
   ##    where D is dimensionality of xin
   nparam = length(kernelpar)
-  outparam = predictGP(x, y, x_test, sigma_n, 
+  outparam = predictGP(xin, yin, x_test, sigma_n, 
                        k.x_x, meanFn, kernelFn, 
                        length_scale=kernelpar[2:nparam], variance_scale=kernelpar[1])
   return(-as.numeric(outparam$lZ))
