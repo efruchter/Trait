@@ -1,19 +1,18 @@
 package efruchter.tp;
 
 import java.awt.Color;
-import java.awt.Frame;
 import java.awt.Point;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
-import java.io.*;
 
-import javax.swing.JFrame;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
-
 
 import efruchter.tp.entity.CollisionLabel;
 import efruchter.tp.entity.Entity;
@@ -22,11 +21,8 @@ import efruchter.tp.entity.EntityType;
 import efruchter.tp.entity.Level;
 import efruchter.tp.entity.PolarityController;
 import efruchter.tp.gui_broken.VectorEditorPopup_Crummy;
-import efruchter.tp.learning.RThread;
-import efruchter.tp.learning.SessionInfo;
 import efruchter.tp.learning.GeneVector.GeneWrapper;
 import efruchter.tp.learning.server.ServerIO;
-import efruchter.tp.state.ClientStateManager;
 import efruchter.tp.trait.Trait;
 import efruchter.tp.trait.behavior.Behavior;
 import efruchter.tp.trait.behavior.BehaviorChain;
@@ -281,25 +277,34 @@ public class LevelGeneratorCore extends Trait {
 //        ClientStateManager.setPaused(true);
         boolean runRDone = v.runR(TraitProjectClient.playerID, learnMode, waveCount);
         System.out.println("client saw R done: " + runRDone);
-        JFrame progress = new JFrame("current progress"); 
+
+        // Build a progress bar
+        JDialog pFrame = new JDialog();
+        pFrame.setModal(true);
+        pFrame.setUndecorated(true);
+        JPanel panel = new JPanel();
+        panel.add(new JLabel("Generating Level..."));
         JProgressBar progBar = new JProgressBar();
         progBar.setIndeterminate(true);
-        progress.add(progBar);
-        progress.pack();
-        progress.setVisible(true);
+        panel.add(progBar);
+        pFrame.add(panel);
+        pFrame.pack();
+        pFrame.setLocation(new Point(Display.getX() + Display.getWidth() / 2 - pFrame.getWidth() / 2,
+                Display.getY() + Display.getHeight() / 2 - pFrame.getHeight() / 2));
+        pFrame.setVisible(true);
+
         while (!runRDone) {
         	try {
         		Thread.sleep(1000);
 				runRDone = v.runR(TraitProjectClient.playerID, learnMode, waveCount);
 				System.out.println("client polling R");
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
         	
         }
-        progress.setVisible(false);
-//        ClientStateManager.setPaused(false);
+
+        pFrame.setVisible(true);
 
         waveCount++;
     }

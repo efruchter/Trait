@@ -171,11 +171,8 @@ public class VectorEditorPopup_Crummy {
             hide();
         } else {
             KeyUtil.clearKeys();
-            if (frameLoc == null) {
-            	frameLoc = new Point(Display.getX() + Display.getWidth() / 2 - frame.getWidth() / 2, Display.getY() + Display.getHeight() / 2
-                        - frame.getHeight() / 2);
-            }
-            frame.setLocation(frameLoc);
+            frame.setLocation(new Point(Display.getX() + Display.getWidth() / 2 - frame.getWidth() / 2,
+                                        Display.getY() + Display.getHeight() / 2 - frame.getHeight() / 2));
             frame.setVisible(true);
         }
     }
