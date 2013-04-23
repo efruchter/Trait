@@ -192,6 +192,12 @@ public class VectorEditorPopup_Crummy {
         ClientStateManager.setPaused(false);
     }
     
+    public static void setEnabled(boolean isEnabled) {
+    	if (frame != null) {
+    		frame.setEnabled(isEnabled);
+    	}
+    }
+    
     /**
      * Block the core game thread until the window is closed.
      */

@@ -280,7 +280,7 @@ public class LevelGeneratorCore extends Trait {
 
         // Build a progress bar
         JDialog pFrame = new JDialog();
-        pFrame.setModal(true);
+//        pFrame.setModal(true);
         pFrame.setUndecorated(true);
         JPanel panel = new JPanel();
         panel.add(new JLabel("Generating Level..."));
@@ -292,6 +292,7 @@ public class LevelGeneratorCore extends Trait {
         pFrame.setLocation(new Point(Display.getX() + Display.getWidth() / 2 - pFrame.getWidth() / 2,
                 Display.getY() + Display.getHeight() / 2 - pFrame.getHeight() / 2));
         pFrame.setVisible(true);
+        VectorEditorPopup_Crummy.setEnabled(false);
 
         while (!runRDone) {
         	try {
@@ -304,7 +305,8 @@ public class LevelGeneratorCore extends Trait {
         	
         }
 
-        pFrame.setVisible(true);
+        pFrame.setVisible(false);
+        VectorEditorPopup_Crummy.setEnabled(true);
 
         waveCount++;
     }
