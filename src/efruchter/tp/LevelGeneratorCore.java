@@ -1,11 +1,15 @@
 package efruchter.tp;
 
 import java.awt.Color;
+import java.awt.Frame;
 import java.awt.Point;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.io.*;
+
+import javax.swing.JFrame;
+import javax.swing.JProgressBar;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
@@ -274,9 +278,15 @@ public class LevelGeneratorCore extends Trait {
         System.out.println("calling R to learn with: " + TraitProjectClient.playerID + " " + learnMode + " " + waveCount);
 //        v.runR(TraitProjectClient.playerID, ClientDefaults.learnMode(), waveCount);
         
-        ClientStateManager.setPaused(true);
+//        ClientStateManager.setPaused(true);
         boolean runRDone = v.runR(TraitProjectClient.playerID, learnMode, waveCount);
         System.out.println("client saw R done: " + runRDone);
+        JFrame progress = new JFrame("current progress"); 
+        JProgressBar progBar = new JProgressBar();
+        progBar.setIndeterminate(true);
+        progress.add(progBar);
+        progress.pack();
+        progress.setVisible(true);
         while (!runRDone) {
         	try {
         		Thread.sleep(1000);
@@ -288,7 +298,8 @@ public class LevelGeneratorCore extends Trait {
 			}
         	
         }
-        ClientStateManager.setPaused(false);
+        progress.setVisible(false);
+//        ClientStateManager.setPaused(false);
 
         waveCount++;
     }

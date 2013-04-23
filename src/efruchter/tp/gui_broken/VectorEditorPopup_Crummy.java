@@ -51,6 +51,8 @@ public class VectorEditorPopup_Crummy {
 
     	System.out.println("entering rebuildGui");
     	
+    	ClientStateManager.setPaused(true);
+    	
         frame = new JFrame("Control Panel");
         
         //frame.setUndecorated(true);
