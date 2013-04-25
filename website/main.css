@@ -1,0 +1,14 @@
+p, h1, h2 {
+    font-family: 'Share Tech Mono', sans-serif;
+}
+
+.colleft {
+    float: left;
+    width: 20%;
+}
+.maintext {
+    width: 80%;
+}
+.rowbot {
+    text-align: center;
+}
