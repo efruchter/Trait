@@ -176,14 +176,14 @@ public class LevelGeneratorCore extends Trait {
             player.polarity = 0;
         }
         final Gene pSwi = polarityAmount;
-        player.addTrait(new TraitAdapter (){
+        /*player.addTrait(new TraitAdapter (){
             @Override
         	public void onUpdate(Entity self, Level level, long delta) {
                if (KeyHolder.get().isPressedThenRelease(KeyEvent.VK_SHIFT)) {
                    self.polarity = (self.polarity + 1) % (int) (Math.round(pSwi.getValue())); 
                }
             }
-        });
+        });*/
 
         // Add the new wave animation
         EntityFactory.buildNewWaveAnim(level.getBlankEntity(EntityType.BG));

@@ -118,7 +118,7 @@ public class VectorEditorPopup_Crummy {
             	frameLoc = new Point(Display.getX() + TraitProjectClient.SIZE.width / 2 - frame.getWidth() / 2, Display.getY() + TraitProjectClient.SIZE.height / 2
                         - frame.getHeight() / 2);
             }*/
-            frame.setLocation(frameLoc);
+            //frame.setLocation(frameLoc);
             frame.setVisible(true);
         }
     }

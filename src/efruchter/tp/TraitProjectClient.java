@@ -1,10 +1,11 @@
 package efruchter.tp;
 
-import java.applet.Applet;
+
 import java.awt.BorderLayout;
-import java.awt.Canvas;
+
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ import efruchter.tp.learning.GeneVector;
 import efruchter.tp.learning.SessionInfo;
 import efruchter.tp.state.ClientStateManager;
 import efruchter.tp.state.ClientStateManager.FlowState;
-import efruchter.tp.trait.behavior.Behavior;
+
 import efruchter.tp.util.KeyHolder;
 
 import java.awt.event.ActionEvent;
@@ -97,8 +98,9 @@ public class TraitProjectClient extends JApplet {
 
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                level.onUpdate(16);
+                onUpdate(16);
                 repaint();
+                KeyHolder.get().freeQueuedKeys();
             }
 		    
 		}).start();
@@ -151,63 +153,10 @@ public class TraitProjectClient extends JApplet {
 			EntityFactory.buildBackgroundStar(e);
 		}
 
-		level.addRenderBehavior(new Behavior() {
-			public void onStart(Entity self, Level level) {
-			}
-
-			public void onUpdate(final Entity self, final Level level,
-					final long delta) {
-				/*RenderUtil.setColor(Color.CYAN);
-				// final String playerHealth = level.getPlayer() == null ? "XX"
-				// : Integer.toString((int) level.getPlayer().getHealth());
-				RenderUtil
-						.drawString(
-								new StringBuffer().append("")
-										// .append("health ").append(playerHealth)
-										.append("\n")
-										.append("score ").append(displayScore)
-										.append("\n\n")
-										.append("wave ")
-										.append(level.getGeneratorCore().getWaveCount()).toString(), 5, 45);
-				RenderUtil.setColor(Color.GREEN);
-				RenderUtil.drawString("Progress "
-						+ level.getGeneratorCore().getPercentComplete()
-						+ (ClientDefaults.devMode() ? "\n\nF1 : Edit Vector": "")
-						, 5,
-						TraitProjectClient.SIZE.height - 15);*/
-			}
-
-			public void onDeath(Entity self, Level level) {
-			}
-		});
-
 		level.onDeath();
 		TraitProjectClient.level = level;
 
 		ClientStateManager.setFlowState(FlowState.FREE);
-	}
-
-	public static void renderGL(final long delta) {
-		// Clear The Screen And The Depth Buffer
-		/*try {
-			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-
-			level.renderGL(delta);
-
-			if (ClientStateManager.isPaused()) {
-				RenderUtil.setColor(Color.WHITE);
-				GL11.glPushMatrix();
-				{
-					GL11.glTranslatef(TraitProjectClient.SIZE.width / 2,
-							TraitProjectClient.SIZE.height / 2, 0);
-					RenderUtil.drawString("PAUSED", 5);
-					GL11.glTranslatef(0, -TraitProjectClient.SIZE.height / 8, 0);
-					RenderUtil.drawString("Press <ENTER>", 3);
-				}
-				GL11.glPopMatrix();
-			}
-		} catch (final Exception e) {
-		}*/
 	}
 
 	public static void versionCheck() {
@@ -314,8 +263,48 @@ public class TraitProjectClient extends JApplet {
 	@Override
 	public void paint(Graphics g) {
 	    g.clearRect(0, 0, SIZE.width, SIZE.height);
-	    ((Graphics2D)g).scale(1, -1);
+	    ((Graphics2D)g). scale(1, -1);
 	    ((Graphics2D)g).translate(0, -600);
 	    level.render(g);
+	    
+	    ((Graphics2D)g).translate(0, 600);
+	    ((Graphics2D)g). scale(1, -1);
+	    
+	    g.setColor(Color.WHITE);
+	    
+	    if (ClientStateManager.isPaused()) {
+	        g.setFont(new Font("Monospaced", Font.BOLD, 32));
+	        g.drawString("PAUSED", SIZE.width / 2, SIZE.height / 2);
+	    }
+	    
+	    g.setFont(new Font("Monospaced", Font.BOLD, 20));
+
+	    g.drawString("Score: " + TraitProjectClient.displayScore, 0, SIZE.height - 25);
+	    g.drawString("Wave: " + level.getGeneratorCore().getWaveCount(), 0, SIZE.height - 5);
+	    
+	    g.drawString("Progress: " + level.getGeneratorCore().getPercentComplete(), 0, 25);
+	    
+	    /*RenderUtil.setColor(Color.CYAN);
+        // final String playerHealth = level.getPlayer() == null ? "XX"
+        // : Integer.toString((int) level.getPlayer().getHealth());
+        RenderUtil
+                .drawString(
+                        new StringBuffer().append("")
+                                // .append("health ").append(playerHealth)
+                                .append("\n")
+                                .append("score ").append(displayScore)
+                                .append("\n\n")
+                                .append("wave ")
+                                .append(level.getGeneratorCore().getWaveCount()).toString(), 5, 45);
+        RenderUtil.setColor(Color.GREEN);
+        RenderUtil.drawString("Progress "
+                + level.getGeneratorCore().getPercentComplete()
+                + (ClientDefaults.devMode() ? "\n\nF1 : Edit Vector": "")
+                , 5,
+                TraitProjectClient.SIZE.height - 15);*/
+	}
+	
+	public TraitProjectClient() {
+	    System.setProperty("sun.java2d.opengl", "True");
 	}
 }
