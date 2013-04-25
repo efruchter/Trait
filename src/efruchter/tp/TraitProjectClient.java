@@ -265,7 +265,7 @@ public class TraitProjectClient extends JApplet {
 		}
 	}
 	
-	public void update( Graphics g ) {
+	public void paint(Graphics g) {
 	    backg.setColor(Color.BLACK);
         backg.fillRect(0, 0, SIZE.width, SIZE.height);
 
@@ -292,10 +292,6 @@ public class TraitProjectClient extends JApplet {
         
         //Draw the backbuffer
         g.drawImage( backbuffer, 0, 0, this );
-    }
-
-    public void paint( Graphics g ) {
-        update( g );
     }
 	
 	public TraitProjectClient() {
