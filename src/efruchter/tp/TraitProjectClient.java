@@ -74,7 +74,12 @@ public class TraitProjectClient extends JApplet {
 
 	private static String[] playerControlled = new String[0];
 
+	@Override
+	public void start() {
+        requestFocusInWindow();
+	}
 
+	@Override
 	public void init() {
 	    
 	    backbuffer = createImage(SIZE.width, SIZE.height);
