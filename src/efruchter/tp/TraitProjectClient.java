@@ -1,23 +1,21 @@
 package efruchter.tp;
 
-
 import java.applet.Applet;
 import java.awt.BorderLayout;
 
+import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Image;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JApplet;
-import javax.swing.JOptionPane;
-import javax.swing.Timer;
-import javax.swing.UIManager;
 
+import javax.swing.JOptionPane;
+
+import javax.swing.UIManager;
 
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.EntityFactory;
@@ -35,66 +33,62 @@ import efruchter.tp.util.KeyHolder;
 import efruchter.tp.util.RepeatingTimer;
 import efruchter.tp.util.RepeatingTimer.RepeatingTimerAction;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferStrategy;
 import java.awt.Graphics2D;
 
 @SuppressWarnings("serial")
 public class TraitProjectClient extends Applet {
 
     public static Dimension SIZE = new Dimension(800, 600);
-    private static Image backbuffer;
-    private static Graphics backg;
 
-	/*
-	 * GAME VARS
-	 */
-	public static final String VERSION = "00.00.00.04";
-	private static Level level;
+    private BufferStrategy bufferStrategy;
+    private Canvas drawArea;/* Drawing Canvas */
 
-	/*
-	 * Client Statistics
-	 */
+    /*
+     * GAME VARS
+     */
+    public static final String VERSION = "00.00.00.04";
+    private static Level level;
 
-	public static float s_damage_player;
-	public static float s_damage_enemies;
-	public static float s_num_enemies;
-	public static float s_fired_player;
-	public static float s_fired_enemies;
-	public static float s_killed_enemies;
-	public static long displayScore;
-	public static long playerID;
+    /*
+     * Client Statistics
+     */
 
-	public static void resetMetrics() {
-		s_damage_player = 0;
-		s_damage_enemies = 0;
-		s_num_enemies = 0;
-		s_fired_player = 0;
-		s_fired_enemies = 0;
-		s_killed_enemies = 0;
-		displayScore = 0;
-	}
+    public static float s_damage_player;
+    public static float s_damage_enemies;
+    public static float s_num_enemies;
+    public static float s_fired_player;
+    public static float s_fired_enemies;
+    public static float s_killed_enemies;
+    public static long displayScore;
+    public static long playerID;
 
-	private static String[] playerControlled = new String[0];
+    public static void resetMetrics() {
+        s_damage_player = 0;
+        s_damage_enemies = 0;
+        s_num_enemies = 0;
+        s_fired_player = 0;
+        s_fired_enemies = 0;
+        s_killed_enemies = 0;
+        displayScore = 0;
+    }
 
-	@Override
-	public void start() {
-        requestFocusInWindow();
-	}
+    private static String[] playerControlled = new String[0];
 
-	@Override
-	public void init() {
-	    
-	    backbuffer = createImage(SIZE.width, SIZE.height);
-	    backg = backbuffer.getGraphics();
-		
-		ClientDefaults.init(this);
-		
-		setLayout(new BorderLayout());
-		
-		versionCheck();
-        
+    @Override
+    public void init() {
+
+        drawArea = new Canvas();
+        setIgnoreRepaint(true);
+
+        ClientDefaults.init(this);
+
+        setLayout(new BorderLayout());
+
+        versionCheck();
+
         playerID = getUniqueID();
 
         level = new Level();
@@ -104,114 +98,120 @@ public class TraitProjectClient extends Applet {
         resetSim();
 
         ClientStateManager.setPaused(true);
-        
-        addKeyListener(KeyHolder.get());
-        setFocusable(true);
-        
-        RepeatingTimer timer = new RepeatingTimer(new RepeatingTimerAction() {
+
+        drawArea.addKeyListener(KeyHolder.get());
+        drawArea.setFocusable(true);
+
+        drawArea.setSize(new Dimension(getWidth(), getHeight()));
+        add(drawArea);
+        drawArea.createBufferStrategy(2);
+        bufferStrategy = drawArea.getBufferStrategy();
+
+        RepeatingTimer a = new RepeatingTimer(new RepeatingTimerAction(){
             @Override
             public void update(long lastFrameDelta) {
-                try {
-                    onUpdate(lastFrameDelta);
-                    repaint();
-                    KeyHolder.get().freeQueuedKeys();
-                } catch (Exception exception) {
-                    exception.printStackTrace();
-                    System.exit(1);
-                }
+
+                // Update any sprites or other graphical objects
+                onUpdate(lastFrameDelta);
+
+                // Handle Drawing
+                Graphics2D g = getGraphics();
+                render(g);
+
+                // Dispose of graphics context
+                g.dispose();
             }
-        }, 1000L / 60L);
-        timer.start();
-	}
+        }, 1000/60);
+        a.start();
+    }
 
-	public static void onUpdate(long delta) {
-		
-		try {
-			if (ClientStateManager.getFlowState() == FlowState.FREE)
-				ClientStateManager.setFlowState(FlowState.PLAYING);
+    public static void onUpdate(long delta) {
 
-			KeyHolder holder = KeyHolder.get();
+        try {
+            if (ClientStateManager.getFlowState() == FlowState.FREE)
+                ClientStateManager.setFlowState(FlowState.PLAYING);
 
-			level.onUpdate(ClientStateManager.isPaused() || VectorEditorPopup_Crummy.isBlocking() ? 0 : delta);
+            KeyHolder holder = KeyHolder.get();
 
-			if (holder.isPressedThenRelease(KeyEvent.VK_ENTER)
-					|| holder.isPressedThenRelease(KeyEvent.VK_ESCAPE))
-				ClientStateManager.togglePauseState();
-			
-			if (holder.isPressedThenRelease(KeyEvent.VK_F1) && ClientDefaults.devMode()) {
-				VectorEditorPopup_Crummy.show(ClientDefaults.server().getExplorationVector().getGenes(), true, "Adjust allowable values");
-			}
-			
-			if (!ClientStateManager.isPaused() && VectorEditorPopup_Crummy.isVisible()) {
-				VectorEditorPopup_Crummy.hide();
-			}
-			
-		} catch (final Exception e) {
-			e.printStackTrace();
-		}
+            level.onUpdate(ClientStateManager.isPaused() || VectorEditorPopup_Crummy.isBlocking() ? 0 : delta);
 
-	}
+            if (holder.isPressedThenRelease(KeyEvent.VK_ENTER) || holder.isPressedThenRelease(KeyEvent.VK_ESCAPE))
+                ClientStateManager.togglePauseState();
 
-	/**
-	 * Build the level and entities from scratch. Update appropriate GUI
-	 * components.
-	 */
-	public static void resetSim() {
+            if (holder.isPressedThenRelease(KeyEvent.VK_F1) && ClientDefaults.devMode()) {
+                VectorEditorPopup_Crummy.show(ClientDefaults.server().getExplorationVector().getGenes(), true, "Adjust allowable values");
+            }
 
-		final Level level = new Level();
+            if (!ClientStateManager.isPaused() && VectorEditorPopup_Crummy.isVisible()) {
+                VectorEditorPopup_Crummy.hide();
+            }
 
-		final LevelGeneratorCore chainer;
-		level.getBlankEntity(EntityType.GENERATOR).addTrait(
-				chainer = new LevelGeneratorCore());
-		level.setGeneratorCore(chainer);
+            KeyHolder.get().freeQueuedKeys();
 
-		for (int i = 0; i < 200; i++) {
-			Entity e = level.getBlankEntity(EntityType.BG);
-			EntityFactory.buildBackgroundStar(e);
-		}
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
 
-		level.onDeath();
-		TraitProjectClient.level = level;
+    }
 
-		ClientStateManager.setFlowState(FlowState.FREE);
-	}
+    /**
+     * Build the level and entities from scratch. Update appropriate GUI
+     * components.
+     */
+    public static void resetSim() {
 
-	public static void versionCheck() {
-		final Client c = getClient();
+        final Level level = new Level();
 
-		try {
-			c.reconnect();
-			c.send("versioncheck" + VERSION);
-			boolean sameVersion = Boolean.parseBoolean(c.receive());
-			if (!sameVersion) {
-				JOptionPane.showMessageDialog(null,
-								"Your client is out-of-date, please download the latest version.");
-				System.exit(0);
-			} else {
-				System.out.println("Client and Server versions match.");
-				return;
-			}
-		} catch (Exception e) {
+        final LevelGeneratorCore chainer;
+        level.getBlankEntity(EntityType.GENERATOR).addTrait(chainer = new LevelGeneratorCore());
+        level.setGeneratorCore(chainer);
 
-		} finally {
-			try {
-				c.close();
-			} catch (Exception e) {
-			}
-		}
-		System.err.println("Cannot check server version.");
-	}
+        for (int i = 0; i < 200; i++) {
+            Entity e = level.getBlankEntity(EntityType.BG);
+            EntityFactory.buildBackgroundStar(e);
+        }
 
-	private static long getUniqueID() {
+        level.onDeath();
+        TraitProjectClient.level = level;
+
+        ClientStateManager.setFlowState(FlowState.FREE);
+    }
+
+    public static void versionCheck() {
+        final Client c = getClient();
+
+        try {
+            c.reconnect();
+            c.send("versioncheck" + VERSION);
+            boolean sameVersion = Boolean.parseBoolean(c.receive());
+            if (!sameVersion) {
+                JOptionPane.showMessageDialog(null, "Your client is out-of-date, please download the latest version.");
+                System.exit(0);
+            } else {
+                System.out.println("Client and Server versions match.");
+                return;
+            }
+        } catch (Exception e) {
+
+        } finally {
+            try {
+                c.close();
+            } catch (Exception e) {
+            }
+        }
+        System.err.println("Cannot check server version.");
+    }
+
+    private static long getUniqueID() {
         ClientStateManager.setFlowState(FlowState.FETCHING_ID);
         try {
             final Client c = TraitProjectClient.getClient();
             try {
                 c.reconnect();
                 c.send("getID");
-                
+
                 System.out.println("Successfully ID fetched from server.");
-                
+
                 return Long.parseLong(c.receive());
             } catch (Exception e) {
 
@@ -226,88 +226,89 @@ public class TraitProjectClient extends Applet {
             ClientStateManager.setFlowState(FlowState.FREE);
         }
 
-		return -1;
-	}
+        return -1;
+    }
 
-	public static List<GeneWrapper> getPlayerControlledGenes() {
-		final GeneVector geneVector = ClientDefaults.server().getExplorationVector();
-		final List<GeneWrapper> genes = new ArrayList<GeneWrapper>();
-		for (final String string : playerControlled) {
-			genes.add(geneVector.getGeneWrapper(string));
-		}
-		return genes;
-	}
+    public static List<GeneWrapper> getPlayerControlledGenes() {
+        final GeneVector geneVector = ClientDefaults.server().getExplorationVector();
+        final List<GeneWrapper> genes = new ArrayList<GeneWrapper>();
+        for (final String string : playerControlled) {
+            genes.add(geneVector.getGeneWrapper(string));
+        }
+        return genes;
+    }
 
-	public static Client getClient() {
-		if (ClientDefaults.localServer()) {
-			return new Client(ClientDefaults.serverPort());
-		} else {
-			return new Client(ClientDefaults.serverIp(), ClientDefaults.serverPort());
-		}
-	}
+    public static Client getClient() {
+        if (ClientDefaults.localServer()) {
+            return new Client(ClientDefaults.serverPort());
+        } else {
+            return new Client(ClientDefaults.serverIp(), ClientDefaults.serverPort());
+        }
+    }
 
-	private static void fetchPlayerControlled() {
-		ClientStateManager.setFlowState(FlowState.LOADING_VECT);
-		try {
-			final Client c = TraitProjectClient.getClient();
-			try {
-				c.reconnect();
-				c.send("playerControlled");
-				final String s = c.receive();
-				if (s.trim().isEmpty())
-					playerControlled = new String[0];
-				else
-					playerControlled = s.split(SessionInfo.SEPERATOR);
-				System.out
-						.println("Successfully read player-controlled gene list from server.");
-				return;
-			} catch (IOException e) {
-			} finally {
-				try {
-					c.close();
-					return;
-				} catch (Exception e) {
-				}
-			}
-			System.err
-					.println("Could not fetch player-controlled gene list from server.");
-			playerControlled = new String[0];
-		} finally {
-			ClientStateManager.setFlowState(FlowState.FREE);
-		}
-	}
-	
-	public void paint(Graphics g) {
-	    backg.setColor(Color.BLACK);
+    private static void fetchPlayerControlled() {
+        ClientStateManager.setFlowState(FlowState.LOADING_VECT);
+        try {
+            final Client c = TraitProjectClient.getClient();
+            try {
+                c.reconnect();
+                c.send("playerControlled");
+                final String s = c.receive();
+                if (s.trim().isEmpty())
+                    playerControlled = new String[0];
+                else
+                    playerControlled = s.split(SessionInfo.SEPERATOR);
+                System.out.println("Successfully read player-controlled gene list from server.");
+                return;
+            } catch (IOException e) {
+            } finally {
+                try {
+                    c.close();
+                    return;
+                } catch (Exception e) {
+                }
+            }
+            System.err.println("Could not fetch player-controlled gene list from server.");
+            playerControlled = new String[0];
+        } finally {
+            ClientStateManager.setFlowState(FlowState.FREE);
+        }
+    }
+
+    public void render(Graphics backg) {
+
+        if (!bufferStrategy.contentsLost()) {
+            // Show bufferStrategy
+            bufferStrategy.show();
+        }
+
+        backg.setColor(Color.BLACK);
         backg.fillRect(0, 0, SIZE.width, SIZE.height);
 
-        ((Graphics2D)backg). scale(1, -1);
-        ((Graphics2D)backg).translate(0, -600);
+        ((Graphics2D) backg).scale(1, -1);
+        ((Graphics2D) backg).translate(0, -600);
         level.render(backg);
-        
-        ((Graphics2D)backg).translate(0, 600);
-        ((Graphics2D)backg). scale(1, -1);
-        
+
+        ((Graphics2D) backg).translate(0, 600);
+        ((Graphics2D) backg).scale(1, -1);
+
         backg.setColor(Color.WHITE);
-        
+
         if (ClientStateManager.isPaused()) {
             backg.setFont(new Font("Monospaced", Font.BOLD, 32));
             backg.drawString("PAUSED", SIZE.width / 2, SIZE.height / 2);
         }
-        
+
         backg.setFont(new Font("Monospaced", Font.BOLD, 20));
-        
+
         backg.drawString("Score: " + TraitProjectClient.displayScore, 0, SIZE.height - 25);
         backg.drawString("Wave: " + level.getGeneratorCore().getWaveCount(), 0, SIZE.height - 5);
-        
+
         backg.drawString("Progress: " + level.getGeneratorCore().getPercentComplete(), 0, 25);
-        
-        //Draw the backbuffer
-        g.drawImage( backbuffer, 0, 0, this );
     }
-	
-	public TraitProjectClient() {
-	    if (System.getProperty("os.name").contains("Windows")) {
+
+    public TraitProjectClient() {
+        if (System.getProperty("os.name").contains("Windows")) {
             System.setProperty("sun.java2d.d3d", "True");
         } else {
             System.setProperty("sun.java2d.opengl", "True");
@@ -317,5 +318,14 @@ public class TraitProjectClient extends Applet {
         } catch (Exception e) {
             e.printStackTrace();
         }
-	}
+    }
+
+    public Graphics2D getGraphics() {
+        return (Graphics2D) bufferStrategy.getDrawGraphics();
+    }
+    
+    @Override
+    public void start() {
+        requestFocusInWindow();
+    }
 }
