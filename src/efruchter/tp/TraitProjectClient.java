@@ -41,10 +41,11 @@ import java.awt.Graphics2D;
 @SuppressWarnings("serial")
 public class TraitProjectClient extends Applet {
 
-    public static Dimension SIZE = new Dimension(800, 600);
+    public final static Dimension SIZE = new Dimension(800, 600);
 
     private BufferStrategy bufferStrategy;
     private Canvas drawArea;/* Drawing Canvas */
+    private final boolean fixedFrameRate = false;
 
     /*
      * GAME VARS
@@ -112,7 +113,7 @@ public class TraitProjectClient extends Applet {
             public void update(long lastFrameDelta) {
 
                 // Update any sprites or other graphical objects
-                onUpdate(lastFrameDelta);
+                onUpdate(fixedFrameRate ? lastFrameDelta : 16);
 
                 // Handle Drawing
                 Graphics2D g = getGraphics();
