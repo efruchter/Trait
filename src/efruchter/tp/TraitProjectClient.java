@@ -97,6 +97,7 @@ public class TraitProjectClient extends JApplet {
         ClientStateManager.setPaused(true);
         
         addKeyListener(KeyHolder.get());
+        setFocusable(true);
 		
 		new Timer(16, new ActionListener(){
 
