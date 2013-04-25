@@ -1,6 +1,7 @@
 package efruchter.tp.entity;
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -146,5 +147,10 @@ public class Entity {
 		entityType = EntityType.NONE;
 		setRenderBehavior(Behavior.EMPTY);
 		setActive(hasStarted = false);
+	}
+	
+	public void draw(final Graphics g) {
+	    g.setColor(baseColor);
+	    g.fillOval((int)(x - radius), (int)(y - radius), (int)(radius * 2), (int)(radius * 2));
 	}
 }

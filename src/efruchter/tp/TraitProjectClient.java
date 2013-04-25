@@ -4,17 +4,15 @@ import java.applet.Applet;
 import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JApplet;
 import javax.swing.JOptionPane;
-
-import org.lwjgl.LWJGLException;
-import org.lwjgl.Sys;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.GL11;
+import javax.swing.Timer;
 
 
 import efruchter.tp.entity.Entity;
@@ -29,28 +27,23 @@ import efruchter.tp.learning.SessionInfo;
 import efruchter.tp.state.ClientStateManager;
 import efruchter.tp.state.ClientStateManager.FlowState;
 import efruchter.tp.trait.behavior.Behavior;
-import efruchter.tp.util.KeyUtil;
-import efruchter.tp.util.RenderUtil;
+import efruchter.tp.util.KeyHolder;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.Graphics2D;
 
 @SuppressWarnings("serial")
-public class TraitProjectClient extends Applet {
+public class TraitProjectClient extends JApplet {
 
-	private Canvas display_parent;
-
-	/** Thread which runs the main game loop */
-	private Thread gameThread;
-
-	/** is the game loop running */
-	private boolean running = false;
+    public static Dimension SIZE = new Dimension(800, 600);    
 
 	/*
 	 * GAME VARS
 	 */
 	public static final String VERSION = "00.00.00.04";
 	private static Level level;
-	private static long lastFrame;
-	private static int fps;
-	private static long lastFPS;
 
 	/*
 	 * Client Statistics
@@ -77,114 +70,39 @@ public class TraitProjectClient extends Applet {
 
 	private static String[] playerControlled = new String[0];
 
-	public void startLWJGL() {
-		gameThread = new Thread() {
-			public void run() {
-				running = true;
-				try {
-					Display.setParent(display_parent);
-					Display.create();
-					initGL();
-				} catch (LWJGLException e) {
-					e.printStackTrace();
-					return;
-				}
-				gameLoop();
-			}
-		};
-		gameThread.start();
-	}
-
-	/**
-	 * Tell game loop to stop running, after which the LWJGL Display will be
-	 * destoryed. The main thread will wait for the Display.destroy().
-	 */
-	private void stopLWJGL() {
-		running = false;
-		try {
-			gameThread.join();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public void start() {
-
-		lastFPS = getTime();
-
-		versionCheck();
-		
-		playerID = getUniqueID();
-
-		level = new Level();
-
-		fetchPlayerControlled();
-
-		resetSim();
-
-		ClientStateManager.setPaused(true);
-	}
-
-	public void stop() {
-
-	}
-
-	/**
-	 * Applet Destroy method will remove the canvas, before canvas is destroyed
-	 * it will notify stopLWJGL() to stop the main game loop and to destroy the
-	 * Display
-	 */
-	public void destroy() {
-		remove(display_parent);
-		super.destroy();
-	}
 
 	public void init() {
 		
 		ClientDefaults.init(this);
 		
 		setLayout(new BorderLayout());
-		try {
-			display_parent = new Canvas() {
-				public final void addNotify() {
-					super.addNotify();
-					startLWJGL();
-				}
+		
+		versionCheck();
+        
+        playerID = getUniqueID();
 
-				public final void removeNotify() {
-					stopLWJGL();
-					super.removeNotify();
-				}
-			};
-			display_parent.setSize(getWidth(), getHeight());
-			add(display_parent);
-			display_parent.setFocusable(true);
-			display_parent.requestFocus();
-			display_parent.setIgnoreRepaint(true);
-			setVisible(true);
-		} catch (Exception e) {
-			System.err.println(e);
-			throw new RuntimeException("Unable to create display");
-		}
-	}
+        level = new Level();
 
-	protected void initGL() {
-		GL11.glMatrixMode(GL11.GL_PROJECTION);
-		GL11.glLoadIdentity();
-		GL11.glOrtho(0, 800, 0, 600, 1, -1);
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-	}
+        fetchPlayerControlled();
 
-	public void gameLoop() {
-		while (running) {
-			final long delta = getDelta();
-			onUpdate(delta);
-			renderGL(delta);
-			Display.sync(60);
-			Display.update();
-		}
+        resetSim();
 
-		Display.destroy();
+        ClientStateManager.setPaused(true);
+        
+        addKeyListener(KeyHolder.get());
+        
+        setBackground(Color.BLACK);
+		
+		new Timer(16, new ActionListener(){
+
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                level.onUpdate(16);
+                repaint();
+            }
+		    
+		}).start();
+		
 	}
 
 	public static void onUpdate(long delta) {
@@ -193,15 +111,15 @@ public class TraitProjectClient extends Applet {
 			if (ClientStateManager.getFlowState() == FlowState.FREE)
 				ClientStateManager.setFlowState(FlowState.PLAYING);
 
-			KeyUtil.update();
+			KeyHolder holder = KeyHolder.get();
 
 			level.onUpdate(ClientStateManager.isPaused() || VectorEditorPopup_Crummy.isBlocking() ? 0 : delta);
 
-			if (KeyUtil.isKeyPressed(Keyboard.KEY_RETURN)
-					|| KeyUtil.isKeyPressed(Keyboard.KEY_ESCAPE))
+			if (holder.isPressedThenRelease(KeyEvent.VK_ENTER)
+					|| holder.isPressedThenRelease(KeyEvent.VK_ESCAPE))
 				ClientStateManager.togglePauseState();
 			
-			if (KeyUtil.isKeyPressed(Keyboard.KEY_F1) && ClientDefaults.devMode()) {
+			if (holder.isPressedThenRelease(KeyEvent.VK_F1) && ClientDefaults.devMode()) {
 				VectorEditorPopup_Crummy.show(ClientDefaults.server().getExplorationVector().getGenes(), true, "Adjust allowable values");
 			}
 			
@@ -212,7 +130,6 @@ public class TraitProjectClient extends Applet {
 		} catch (final Exception e) {
 			e.printStackTrace();
 		}
-		updateFPS();
 
 	}
 
@@ -240,7 +157,7 @@ public class TraitProjectClient extends Applet {
 
 			public void onUpdate(final Entity self, final Level level,
 					final long delta) {
-				RenderUtil.setColor(Color.CYAN);
+				/*RenderUtil.setColor(Color.CYAN);
 				// final String playerHealth = level.getPlayer() == null ? "XX"
 				// : Integer.toString((int) level.getPlayer().getHealth());
 				RenderUtil
@@ -257,7 +174,7 @@ public class TraitProjectClient extends Applet {
 						+ level.getGeneratorCore().getPercentComplete()
 						+ (ClientDefaults.devMode() ? "\n\nF1 : Edit Vector": "")
 						, 5,
-						Display.getHeight() - 15);
+						TraitProjectClient.SIZE.height - 15);*/
 			}
 
 			public void onDeath(Entity self, Level level) {
@@ -272,7 +189,7 @@ public class TraitProjectClient extends Applet {
 
 	public static void renderGL(final long delta) {
 		// Clear The Screen And The Depth Buffer
-		try {
+		/*try {
 			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 
 			level.renderGL(delta);
@@ -281,45 +198,16 @@ public class TraitProjectClient extends Applet {
 				RenderUtil.setColor(Color.WHITE);
 				GL11.glPushMatrix();
 				{
-					GL11.glTranslatef(Display.getWidth() / 2,
-							Display.getHeight() / 2, 0);
+					GL11.glTranslatef(TraitProjectClient.SIZE.width / 2,
+							TraitProjectClient.SIZE.height / 2, 0);
 					RenderUtil.drawString("PAUSED", 5);
-					GL11.glTranslatef(0, -Display.getHeight() / 8, 0);
+					GL11.glTranslatef(0, -TraitProjectClient.SIZE.height / 8, 0);
 					RenderUtil.drawString("Press <ENTER>", 3);
 				}
 				GL11.glPopMatrix();
 			}
 		} catch (final Exception e) {
-		}
-	}
-
-	/**
-	 * Calculate how many milliseconds have passed since last frame.
-	 * 
-	 * @return milliseconds passed since last frame
-	 */
-	public static int getDelta() {
-		/*final long time = getTime();
-		final int delta = (int) (time - lastFrame);
-		lastFrame = time;
-
-		return delta;*/
-		return 16;
-	}
-
-	public static long getTime() {
-		return (Sys.getTime() * 1000) / Sys.getTimerResolution();
-	}
-
-	/**
-	 * Calculate the FPS and set it in the title bar
-	 */
-	public static void updateFPS() {
-		if (getTime() - lastFPS > 1000) {
-			fps = 0;
-			lastFPS += 1000;
-		}
-		fps++;
+		}*/
 	}
 
 	public static void versionCheck() {
@@ -421,5 +309,13 @@ public class TraitProjectClient extends Applet {
 		} finally {
 			ClientStateManager.setFlowState(FlowState.FREE);
 		}
+	}
+	
+	@Override
+	public void paint(Graphics g) {
+	    g.clearRect(0, 0, SIZE.width, SIZE.height);
+	    ((Graphics2D)g).scale(1, -1);
+	    ((Graphics2D)g).translate(0, -600);
+	    level.render(g);
 	}
 }

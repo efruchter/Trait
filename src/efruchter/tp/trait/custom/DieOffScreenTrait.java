@@ -1,7 +1,6 @@
 package efruchter.tp.trait.custom;
 
-import org.lwjgl.opengl.Display;
-
+import efruchter.tp.TraitProjectClient;
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
 import efruchter.tp.trait.Trait;
@@ -20,7 +19,7 @@ public class DieOffScreenTrait extends Trait {
 	
 	@Override
 	public void onUpdate(final Entity self, final Level level, final long delta) {
-		if (self.x < 0 || self.x > Display.getWidth() || self.y > Display.getHeight() || self.y < 0) {
+		if (self.x < 0 || self.x > TraitProjectClient.SIZE.width || self.y > TraitProjectClient.SIZE.height || self.y < 0) {
 			level.removeEntity(self);
 		}
 	}

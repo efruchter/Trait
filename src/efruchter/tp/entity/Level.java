@@ -1,5 +1,6 @@
 package efruchter.tp.entity;
 
+import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
@@ -104,23 +105,19 @@ public class Level {
         }
     }
 
-    public void renderGL(final long delta) {
+    public void render(final Graphics g) {
 
         try {
             for (final Entity b : entities.get(EntityType.BG)) {
-                b.getRenderBehavior().onUpdate(b, this, delta);
+                b.draw(g);
             }
 
             for (final Entity b : entities.get(EntityType.SHIP)) {
-                b.getRenderBehavior().onUpdate(b, this, delta);
+                b.draw(g);
             }
 
             for (final Entity b : entities.get(EntityType.PROJECTILE)) {
-                b.getRenderBehavior().onUpdate(b, this, delta);
-            }
-
-            for (final Behavior b : renderBehaviors) {
-                b.onUpdate(null, this, delta);
+                b.draw(g);
             }
 
         } catch (final ConcurrentModificationException e) {

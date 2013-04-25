@@ -2,12 +2,12 @@ package efruchter.tp;
 
 import java.awt.Color;
 import java.awt.Point;
+import java.awt.event.KeyEvent;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.Display;
+
 
 
 import efruchter.tp.entity.CollisionLabel;
@@ -34,7 +34,7 @@ import efruchter.tp.trait.custom.player.PlayerRadiusEditTrait;
 import efruchter.tp.trait.custom.player.SetPlayerTrait;
 import efruchter.tp.trait.gene.Gene;
 import efruchter.tp.trait.gene.GeneCurve;
-import efruchter.tp.util.KeyUtil;
+import efruchter.tp.util.KeyHolder;
 
 /**
  * Not really sure how to approach this. Trying some stuff.
@@ -140,8 +140,8 @@ public class LevelGeneratorCore extends Trait {
             playerY = level.getPlayer().y;
             // level.removeEntity(level.getPlayer());
         } else {
-            playerX = Display.getWidth() / 2;
-            playerY = Display.getHeight() * .15f;
+            playerX = TraitProjectClient.SIZE.width / 2;
+            playerY = TraitProjectClient.SIZE.height * .15f;
         }
 
         for (final Entity ship : level.getEntities(EntityType.SHIP)) {
@@ -179,7 +179,7 @@ public class LevelGeneratorCore extends Trait {
         player.addTrait(new TraitAdapter (){
             @Override
         	public void onUpdate(Entity self, Level level, long delta) {
-               if (KeyUtil.isKeyPressed(Keyboard.KEY_LSHIFT)) {
+               if (KeyHolder.get().isPressedThenRelease(KeyEvent.VK_SHIFT)) {
                    self.polarity = (self.polarity + 1) % (int) (Math.round(pSwi.getValue())); 
                }
             }
@@ -313,29 +313,29 @@ public class LevelGeneratorCore extends Trait {
 
                 switch (random.nextInt(5)) {
                     case 0:
-                        curve[0] = new Point.Float(Display.getWidth() + 20, Display.getHeight() - Display.getHeight() * random.nextFloat()
+                        curve[0] = new Point.Float(TraitProjectClient.SIZE.width + 20, TraitProjectClient.SIZE.height - TraitProjectClient.SIZE.height * random.nextFloat()
                                 * .25f);
                         break;
                     case 1:
-                        curve[0] = new Point.Float(-20, Display.getHeight() - Display.getHeight() * random.nextFloat() * .25f);
+                        curve[0] = new Point.Float(-20, TraitProjectClient.SIZE.height - TraitProjectClient.SIZE.height * random.nextFloat() * .25f);
                         break;
                     default:
-                        curve[0] = new Point.Float(Display.getWidth() * random.nextFloat(), Display.getHeight() + 20);
+                        curve[0] = new Point.Float(TraitProjectClient.SIZE.width * random.nextFloat(), TraitProjectClient.SIZE.height + 20);
                 }
 
-                curve[1] = new Point.Float(Display.getWidth() * random.nextFloat(), Display.getHeight() - Display.getHeight()
+                curve[1] = new Point.Float(TraitProjectClient.SIZE.width * random.nextFloat(), TraitProjectClient.SIZE.height - TraitProjectClient.SIZE.height
                         * random.nextFloat() * .75f);
 
                 switch (random.nextInt(5)) {
                     case 0:
-                        curve[2] = new Point.Float(Display.getWidth() + 20, Display.getHeight() - Display.getHeight() * random.nextFloat()
+                        curve[2] = new Point.Float(TraitProjectClient.SIZE.width + 20, TraitProjectClient.SIZE.height - TraitProjectClient.SIZE.height * random.nextFloat()
                                 * .25f);
                         break;
                     case 1:
-                        curve[2] = new Point.Float(-20, Display.getHeight() - Display.getHeight() * random.nextFloat() * .25f);
+                        curve[2] = new Point.Float(-20, TraitProjectClient.SIZE.height - TraitProjectClient.SIZE.height * random.nextFloat() * .25f);
                         break;
                     default:
-                        curve[2] = new Point.Float(Display.getWidth() * random.nextFloat(), -20);
+                        curve[2] = new Point.Float(TraitProjectClient.SIZE.width * random.nextFloat(), -20);
                 }
 
                 tracking = random.nextFloat() < intensity.getExpression();

@@ -1,7 +1,7 @@
 package efruchter.tp.trait.custom;
 
-import org.lwjgl.opengl.Display;
 
+import efruchter.tp.TraitProjectClient;
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
 import efruchter.tp.trait.Trait;
@@ -21,16 +21,16 @@ public class LoopScreenTrait extends Trait {
 	@Override
 	public void onUpdate(final Entity self, final Level level, final long delta) {
 		// TODO: Cheap fix, make better.
-		if (self.x > Display.getWidth()) {
-			self.x = self.x - Display.getWidth();
+		if (self.x > TraitProjectClient.SIZE.width) {
+			self.x = self.x - TraitProjectClient.SIZE.width;
 		} else if (self.x < 0) {
-			self.x = Display.getWidth() + self.x;
+			self.x = TraitProjectClient.SIZE.width + self.x;
 		}
 		
-		if (self.y > Display.getHeight()) {
-			self.y = self.y - Display.getHeight();
+		if (self.y > TraitProjectClient.SIZE.height) {
+			self.y = self.y - TraitProjectClient.SIZE.height;
 		} else if (self.y < 0) {
-			self.y = Display.getHeight() + self.y;
+			self.y = TraitProjectClient.SIZE.height + self.y;
 		}
 	}
 	

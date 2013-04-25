@@ -20,12 +20,13 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.lwjgl.opengl.Display;
+
 
 import efruchter.tp.learning.GeneVector.GeneWrapper;
 import efruchter.tp.state.ClientStateManager;
 import efruchter.tp.state.ClientStateManager.FlowState;
-import efruchter.tp.util.KeyUtil;
+import efruchter.tp.util.KeyHolder;
+
 
 public class VectorEditorPopup_Crummy {
 
@@ -112,11 +113,11 @@ public class VectorEditorPopup_Crummy {
         if (genes.isEmpty()) {
             hide();
         } else {
-            KeyUtil.clearKeys();
-            if (frameLoc == null) {
-            	frameLoc = new Point(Display.getX() + Display.getWidth() / 2 - frame.getWidth() / 2, Display.getY() + Display.getHeight() / 2
+            KeyHolder.get().clearKeys();
+            /*if (frameLoc == null) {
+            	frameLoc = new Point(Display.getX() + TraitProjectClient.SIZE.width / 2 - frame.getWidth() / 2, Display.getY() + TraitProjectClient.SIZE.height / 2
                         - frame.getHeight() / 2);
-            }
+            }*/
             frame.setLocation(frameLoc);
             frame.setVisible(true);
         }
