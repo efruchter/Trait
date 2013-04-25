@@ -7,6 +7,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +39,9 @@ import java.awt.Graphics2D;
 @SuppressWarnings("serial")
 public class TraitProjectClient extends JApplet {
 
-    public static Dimension SIZE = new Dimension(800, 600);    
+    public static Dimension SIZE = new Dimension(800, 600);
+    private static Image backbuffer;
+    private static Graphics backg;
 
 	/*
 	 * GAME VARS
@@ -73,6 +76,9 @@ public class TraitProjectClient extends JApplet {
 
 
 	public void init() {
+	    
+	    backbuffer = createImage(SIZE.width, SIZE.height);
+	    backg = backbuffer.getGraphics();
 		
 		ClientDefaults.init(this);
 		
@@ -91,8 +97,6 @@ public class TraitProjectClient extends JApplet {
         ClientStateManager.setPaused(true);
         
         addKeyListener(KeyHolder.get());
-        
-        setBackground(Color.BLACK);
 		
 		new Timer(16, new ActionListener(){
 
@@ -260,49 +264,38 @@ public class TraitProjectClient extends JApplet {
 		}
 	}
 	
-	@Override
-	public void paint(Graphics g) {
-	    g.clearRect(0, 0, SIZE.width, SIZE.height);
-	    ((Graphics2D)g). scale(1, -1);
-	    ((Graphics2D)g).translate(0, -600);
-	    level.render(g);
-	    
-	    ((Graphics2D)g).translate(0, 600);
-	    ((Graphics2D)g). scale(1, -1);
-	    
-	    g.setColor(Color.WHITE);
-	    
-	    if (ClientStateManager.isPaused()) {
-	        g.setFont(new Font("Monospaced", Font.BOLD, 32));
-	        g.drawString("PAUSED", SIZE.width / 2, SIZE.height / 2);
-	    }
-	    
-	    g.setFont(new Font("Monospaced", Font.BOLD, 20));
+	public void update( Graphics g ) {
+	    backg.setColor(Color.BLACK);
+        backg.fillRect(0, 0, SIZE.width, SIZE.height);
 
-	    g.drawString("Score: " + TraitProjectClient.displayScore, 0, SIZE.height - 25);
-	    g.drawString("Wave: " + level.getGeneratorCore().getWaveCount(), 0, SIZE.height - 5);
-	    
-	    g.drawString("Progress: " + level.getGeneratorCore().getPercentComplete(), 0, 25);
-	    
-	    /*RenderUtil.setColor(Color.CYAN);
-        // final String playerHealth = level.getPlayer() == null ? "XX"
-        // : Integer.toString((int) level.getPlayer().getHealth());
-        RenderUtil
-                .drawString(
-                        new StringBuffer().append("")
-                                // .append("health ").append(playerHealth)
-                                .append("\n")
-                                .append("score ").append(displayScore)
-                                .append("\n\n")
-                                .append("wave ")
-                                .append(level.getGeneratorCore().getWaveCount()).toString(), 5, 45);
-        RenderUtil.setColor(Color.GREEN);
-        RenderUtil.drawString("Progress "
-                + level.getGeneratorCore().getPercentComplete()
-                + (ClientDefaults.devMode() ? "\n\nF1 : Edit Vector": "")
-                , 5,
-                TraitProjectClient.SIZE.height - 15);*/
-	}
+        ((Graphics2D)backg). scale(1, -1);
+        ((Graphics2D)backg).translate(0, -600);
+        level.render(backg);
+        
+        ((Graphics2D)backg).translate(0, 600);
+        ((Graphics2D)backg). scale(1, -1);
+        
+        backg.setColor(Color.WHITE);
+        
+        if (ClientStateManager.isPaused()) {
+            backg.setFont(new Font("Monospaced", Font.BOLD, 32));
+            backg.drawString("PAUSED", SIZE.width / 2, SIZE.height / 2);
+        }
+        
+        backg.setFont(new Font("Monospaced", Font.BOLD, 20));
+        
+        backg.drawString("Score: " + TraitProjectClient.displayScore, 0, SIZE.height - 25);
+        backg.drawString("Wave: " + level.getGeneratorCore().getWaveCount(), 0, SIZE.height - 5);
+        
+        backg.drawString("Progress: " + level.getGeneratorCore().getPercentComplete(), 0, 25);
+        
+        //Draw the backbuffer
+        g.drawImage( backbuffer, 0, 0, this );
+    }
+
+    public void paint( Graphics g ) {
+        update( g );
+    }
 	
 	public TraitProjectClient() {
 	    System.setProperty("sun.java2d.opengl", "True");
