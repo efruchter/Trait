@@ -1,6 +1,7 @@
 package efruchter.tp;
 
 
+import java.applet.Applet;
 import java.awt.BorderLayout;
 
 import java.awt.Color;
@@ -15,6 +16,7 @@ import java.util.List;
 import javax.swing.JApplet;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
+import javax.swing.UIManager;
 
 
 import efruchter.tp.entity.Entity;
@@ -30,6 +32,8 @@ import efruchter.tp.state.ClientStateManager;
 import efruchter.tp.state.ClientStateManager.FlowState;
 
 import efruchter.tp.util.KeyHolder;
+import efruchter.tp.util.RepeatingTimer;
+import efruchter.tp.util.RepeatingTimer.RepeatingTimerAction;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -37,7 +41,7 @@ import java.awt.event.KeyEvent;
 import java.awt.Graphics2D;
 
 @SuppressWarnings("serial")
-public class TraitProjectClient extends JApplet {
+public class TraitProjectClient extends Applet {
 
     public static Dimension SIZE = new Dimension(800, 600);
     private static Image backbuffer;
@@ -103,18 +107,21 @@ public class TraitProjectClient extends JApplet {
         
         addKeyListener(KeyHolder.get());
         setFocusable(true);
-		
-		new Timer(16, new ActionListener(){
-
+        
+        RepeatingTimer timer = new RepeatingTimer(new RepeatingTimerAction() {
             @Override
-            public void actionPerformed(ActionEvent arg0) {
-                onUpdate(16);
-                repaint();
-                KeyHolder.get().freeQueuedKeys();
+            public void update(long lastFrameDelta) {
+                try {
+                    onUpdate(lastFrameDelta);
+                    repaint();
+                    KeyHolder.get().freeQueuedKeys();
+                } catch (Exception exception) {
+                    exception.printStackTrace();
+                    System.exit(1);
+                }
             }
-		    
-		}).start();
-		
+        }, 1000L / 60L);
+        timer.start();
 	}
 
 	public static void onUpdate(long delta) {
@@ -300,6 +307,15 @@ public class TraitProjectClient extends JApplet {
     }
 	
 	public TraitProjectClient() {
-	    System.setProperty("sun.java2d.opengl", "True");
+	    if (System.getProperty("os.name").contains("Windows")) {
+            System.setProperty("sun.java2d.d3d", "True");
+        } else {
+            System.setProperty("sun.java2d.opengl", "True");
+        }
+        try {
+            UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 	}
 }
