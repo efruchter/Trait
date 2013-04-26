@@ -324,8 +324,8 @@ public class TraitProjectClient extends Applet {
 
         backg.setFont(GUI_FONT);
 
-        backg.drawString("Score: " + TraitProjectClient.display_score, 0, SIZE.height - 25);
-        backg.drawString("Wave: " + level.getGeneratorCore().getWaveCount(), 0, SIZE.height - 5);
+        backg.drawString("Score: " + TraitProjectClient.display_score, SIZE.width - 110, 25);
+        backg.drawString("Wave: " + level.getGeneratorCore().getWaveCount(), SIZE.width - 110, 50);
 
         backg.drawString("Progress: " + level.getGeneratorCore().getPercentComplete(), 0, 25);
     }
