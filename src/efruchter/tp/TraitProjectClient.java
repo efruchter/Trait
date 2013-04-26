@@ -39,13 +39,7 @@ import efruchter.tp.util.RepeatingTimer.RepeatingTimerAction;
 @SuppressWarnings("serial")
 public class TraitProjectClient extends Applet {
 
-	/*
-	 * GAME VARS
-	 */
-	public static final String VERSION = "00.00.00.04";
-	private static Level level;
-
-	public final static Dimension SIZE = new Dimension(800, 600);
+    public final static Dimension SIZE = new Dimension(800, 600);
 
     private BufferStrategy bufferStrategy;
     private Canvas drawArea;/* Drawing Canvas */
@@ -55,6 +49,12 @@ public class TraitProjectClient extends Applet {
     public static final Font PAUSE_FONT = new Font("SansSerif", Font.BOLD, 32);
     public static final Font GUI_FONT = new Font("SansSerif", Font.BOLD, 20);
     public static final Font NEW_WAVE_FONT = new Font("SansSerif", Font.PLAIN, 50);
+
+    /*
+     * GAME VARS
+     */
+    public static final String VERSION = "00.00.00.04";
+    private static Level level;
 
 	/*
 	 * Client Statistics
@@ -88,88 +88,8 @@ public class TraitProjectClient extends Applet {
 		display_score = 0;
 		System.out.println("resetting metrics");
 	}
-	
-	public static void storeData(ServerIO v, long waveCount, boolean isRandom, String learnMode) {
-		String username = System.getProperty("user.name");
-        if (username == null) {
-            username = "NO_NAME";
-        }
-        SessionInfo info = new SessionInfo();
-        info.put("username", username);
-        info.put("date", Long.toString(System.currentTimeMillis()));
-        info.put("vector", v.getExplorationVector().toDataString());
-//        System.out.println("saving exploration vector: " + v.getExplorationVector().toDataString());
-        info.put("pID", Long.toString(TraitProjectClient.playerID));
-        info.put("s_wave", Long.toString(waveCount));
-        info.put("s_damage_player", Float.toString(TraitProjectClient.s_damage_player));
-        info.put("s_damage_enemies", Float.toString(TraitProjectClient.s_damage_enemies));
-        info.put("s_hit_player", Float.toString(TraitProjectClient.s_hit_player));
-        info.put("s_hit_enemies", Float.toString(TraitProjectClient.s_hit_enemies));
-        info.put("s_num_enemies", Float.toString(TraitProjectClient.s_num_enemies));
-        info.put("s_fired_player", Float.toString(TraitProjectClient.s_fired_player));
-        info.put("s_fired_enemies", Float.toString(TraitProjectClient.s_fired_enemies));
-        info.put("s_killed_enemies", Float.toString(TraitProjectClient.s_killed_enemies));
-        info.put("s_remain_enemies", Float.toString(TraitProjectClient.s_remain_enemies));
-        info.put("display_score", Long.toString(TraitProjectClient.display_score));
-        info.put("is_random", Boolean.toString(isRandom));
-        info.put("learn_mode", learnMode);
-        info.put("c_choice", (TraitProjectClient.c_choice).toString());
-        v.storeInfo(info);
-
-        TraitProjectClient.resetMetrics();
-	}
 
 	private static String[] playerControlled = new String[0];
-
-	/**
-	 * Build the level and entities from scratch. Update appropriate GUI
-	 * components.
-	 */
-	public static void resetSim() {
-
-		final Level level = new Level();
-
-		final LevelGeneratorCore chainer;
-		level.getBlankEntity(EntityType.GENERATOR).addTrait(
-				chainer = new LevelGeneratorCore());
-		level.setGeneratorCore(chainer);
-
-		for (int i = 0; i < 200; i++) {
-			Entity e = level.getBlankEntity(EntityType.BG);
-			EntityFactory.buildBackgroundStar(e);
-		}
-
-		level.onDeath();
-		TraitProjectClient.level = level;
-
-		ClientStateManager.setFlowState(FlowState.FREE);
-	}
-
-	public static void versionCheck() {
-		final Client c = getClient();
-
-		try {
-			c.reconnect();
-			c.send("versioncheck" + VERSION);
-			boolean sameVersion = Boolean.parseBoolean(c.receive());
-			if (!sameVersion) {
-				JOptionPane.showMessageDialog(null,
-								"Your client is out-of-date, please download the latest version.");
-				System.exit(0);
-			} else {
-				System.out.println("Client and Server versions match.");
-				return;
-			}
-		} catch (Exception e) {
-
-		} finally {
-			try {
-				c.close();
-			} catch (Exception e) {
-			}
-		}
-		System.err.println("Cannot check server version.");
-	}
 
     @Override
     public void init() {
@@ -252,7 +172,56 @@ public class TraitProjectClient extends Applet {
 
     }
 
-   
+    /**
+     * Build the level and entities from scratch. Update appropriate GUI
+     * components.
+     */
+    public static void resetSim() {
+
+        final Level level = new Level();
+
+        final LevelGeneratorCore chainer;
+        level.getBlankEntity(EntityType.GENERATOR).addTrait(
+                chainer = new LevelGeneratorCore());
+        level.setGeneratorCore(chainer);
+
+        for (int i = 0; i < 200; i++) {
+            Entity e = level.getBlankEntity(EntityType.BG);
+            EntityFactory.buildBackgroundStar(e);
+        }
+
+        level.onDeath();
+        TraitProjectClient.level = level;
+
+        ClientStateManager.setFlowState(FlowState.FREE);
+    }
+
+    public static void versionCheck() {
+        final Client c = getClient();
+
+        try {
+            c.reconnect();
+            c.send("versioncheck" + VERSION);
+            boolean sameVersion = Boolean.parseBoolean(c.receive());
+            if (!sameVersion) {
+                JOptionPane.showMessageDialog(null,
+                                "Your client is out-of-date, please download the latest version.");
+                System.exit(0);
+            } else {
+                System.out.println("Client and Server versions match.");
+                return;
+            }
+        } catch (Exception e) {
+
+        } finally {
+            try {
+                c.close();
+            } catch (Exception e) {
+            }
+        }
+        System.err.println("Cannot check server version.");
+    }
+
     private static long getUniqueID() {
         ClientStateManager.setFlowState(FlowState.FETCHING_ID);
         try {
@@ -381,5 +350,35 @@ public class TraitProjectClient extends Applet {
     @Override
     public void start() {
         requestFocusInWindow();
+    }
+
+    public static void storeData(ServerIO v, long waveCount, boolean isRandom, String learnMode) {
+        String username = System.getProperty("user.name");
+        if (username == null) {
+            username = "NO_NAME";
+        }
+        SessionInfo info = new SessionInfo();
+        info.put("username", username);
+        info.put("date", Long.toString(System.currentTimeMillis()));
+        info.put("vector", v.getExplorationVector().toDataString());
+//        System.out.println("saving exploration vector: " + v.getExplorationVector().toDataString());
+        info.put("pID", Long.toString(TraitProjectClient.playerID));
+        info.put("s_wave", Long.toString(waveCount));
+        info.put("s_damage_player", Float.toString(TraitProjectClient.s_damage_player));
+        info.put("s_damage_enemies", Float.toString(TraitProjectClient.s_damage_enemies));
+        info.put("s_hit_player", Float.toString(TraitProjectClient.s_hit_player));
+        info.put("s_hit_enemies", Float.toString(TraitProjectClient.s_hit_enemies));
+        info.put("s_num_enemies", Float.toString(TraitProjectClient.s_num_enemies));
+        info.put("s_fired_player", Float.toString(TraitProjectClient.s_fired_player));
+        info.put("s_fired_enemies", Float.toString(TraitProjectClient.s_fired_enemies));
+        info.put("s_killed_enemies", Float.toString(TraitProjectClient.s_killed_enemies));
+        info.put("s_remain_enemies", Float.toString(TraitProjectClient.s_remain_enemies));
+        info.put("display_score", Long.toString(TraitProjectClient.display_score));
+        info.put("is_random", Boolean.toString(isRandom));
+        info.put("learn_mode", learnMode);
+        info.put("c_choice", (TraitProjectClient.c_choice).toString());
+        v.storeInfo(info);
+
+        TraitProjectClient.resetMetrics();
     }
 }
