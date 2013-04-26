@@ -116,11 +116,15 @@ public class TraitProjectClient extends Applet {
                 onUpdate(fixedFrameRate ? lastFrameDelta : 16);
 
                 // Handle Drawing
-                Graphics2D g = getGraphics();
-                render(g);
+                try {
+                    Graphics2D g = getGraphics();
+                    render(g);
 
-                // Dispose of graphics context
-                g.dispose();
+                    // Dispose of graphics context
+                    g.dispose();
+                } catch (final NullPointerException exc) {
+                    //It's cool, the graphics can crash.
+                }
             }
         }, 1000/60);
         a.start();
