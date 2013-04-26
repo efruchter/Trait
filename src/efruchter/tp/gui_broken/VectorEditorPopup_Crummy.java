@@ -8,6 +8,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.Collections;
 import java.util.List;
 
@@ -102,7 +104,7 @@ public class VectorEditorPopup_Crummy {
 
         String betterString = "better than before";
         String worseString = "worse than before";
-        JRadioButton choiceBetter = new JRadioButton(betterString);
+        final JRadioButton choiceBetter = new JRadioButton(betterString);
         choiceBetter.setActionCommand(betterString);
         JRadioButton choiceWorse = new JRadioButton(worseString);
         choiceWorse.setActionCommand(worseString);
@@ -137,6 +139,11 @@ public class VectorEditorPopup_Crummy {
 
             	}
                 hide();
+            }
+        });
+        frame.addWindowFocusListener(new WindowAdapter() {
+            public void windowGainedFocus(WindowEvent e) {
+                choiceBetter.requestFocusInWindow();
             }
         });
         frame.add(goButton, BorderLayout.SOUTH);;
