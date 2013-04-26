@@ -1,13 +1,15 @@
 package efruchter.tp.trait.custom.player;
 
-import org.lwjgl.input.Keyboard;
+import java.awt.event.KeyEvent;
+
+
 
 import efruchter.tp.ClientDefaults;
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.Level;
 import efruchter.tp.trait.Trait;
 import efruchter.tp.trait.gene.Gene;
-import efruchter.tp.util.KeyUtil;
+import efruchter.tp.util.KeyHolder;
 
 /**
  * Govern the movement of an entity with the keyboard.
@@ -41,14 +43,16 @@ public class KeyboardControlTrait_Movement extends Trait {
 		float ax = 0, ay = 0;
 
 		final float a = thrust.getValue();
-
-		if (KeyUtil.isKeyDown(Keyboard.KEY_A) || KeyUtil.isKeyDown(Keyboard.KEY_LEFT))
+		
+		KeyHolder holder = KeyHolder.get();
+		
+		if (holder.isPressed(KeyEvent.VK_A) || holder.isPressed(KeyEvent.VK_LEFT))
 			ax -= a;
-		if (KeyUtil.isKeyDown(Keyboard.KEY_D) || KeyUtil.isKeyDown(Keyboard.KEY_RIGHT))
+		if (holder.isPressed(KeyEvent.VK_D) || holder.isPressed(KeyEvent.VK_RIGHT))
 			ax += a;
-		if (KeyUtil.isKeyDown(Keyboard.KEY_W) || KeyUtil.isKeyDown(Keyboard.KEY_UP))
+		if (holder.isPressed(KeyEvent.VK_W) || holder.isPressed(KeyEvent.VK_UP))
 			ay += a;
-		if (KeyUtil.isKeyDown(Keyboard.KEY_S) || KeyUtil.isKeyDown(Keyboard.KEY_DOWN))
+		if (holder.isPressed(KeyEvent.VK_S) || holder.isPressed(KeyEvent.VK_DOWN))
 			ay -= a;
 
 		vx += ax * delta;

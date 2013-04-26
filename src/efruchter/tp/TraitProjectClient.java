@@ -2,20 +2,20 @@ package efruchter.tp;
 
 import java.applet.Applet;
 import java.awt.BorderLayout;
+
 import java.awt.Canvas;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+
 import javax.swing.JOptionPane;
 
-import org.lwjgl.LWJGLException;
-import org.lwjgl.Sys;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.GL11;
-
+import javax.swing.UIManager;
 
 import efruchter.tp.entity.Entity;
 import efruchter.tp.entity.EntityFactory;
@@ -29,30 +29,24 @@ import efruchter.tp.learning.GeneVector;
 import efruchter.tp.learning.SessionInfo;
 import efruchter.tp.state.ClientStateManager;
 import efruchter.tp.state.ClientStateManager.FlowState;
-import efruchter.tp.trait.behavior.Behavior;
-import efruchter.tp.util.KeyUtil;
-import efruchter.tp.util.RenderUtil;
-import efruchter.tp.trait.Trait.TraitAdapter;
+
+import efruchter.tp.util.KeyHolder;
+import efruchter.tp.util.RepeatingTimer;
+import efruchter.tp.util.RepeatingTimer.RepeatingTimerAction;
+
+
+import java.awt.event.KeyEvent;
+import java.awt.image.BufferStrategy;
+import java.awt.Graphics2D;
 
 @SuppressWarnings("serial")
 public class TraitProjectClient extends Applet {
-
-	private Canvas display_parent;
-
-	/** Thread which runs the main game loop */
-	private Thread gameThread;
-
-	/** is the game loop running */
-	private boolean running = false;
 
 	/*
 	 * GAME VARS
 	 */
 	public static final String VERSION = "00.00.00.04";
 	private static Level level;
-	private static long lastFrame;
-	private static int fps;
-	private static long lastFPS;
 
 	/*
 	 * Client Statistics
@@ -115,157 +109,9 @@ public class TraitProjectClient extends Applet {
         v.storeInfo(info);
 
         TraitProjectClient.resetMetrics();
-//=======
-//        level.getBlankEntity(EntityType.SERVICE).addTrait(new TraitAdapter(){
-//            public void onUpdate(Entity self, Level level, long delta) {
-//
-//                TraitProjectClient.resetMetrics();
-//
-//                level.removeEntity(self);
-//            }
-//        });
 	}
 
 	private static String[] playerControlled = new String[0];
-
-	public void startLWJGL() {
-		gameThread = new Thread() {
-			public void run() {
-				running = true;
-				try {
-					Display.setParent(display_parent);
-					Display.create();
-					initGL();
-				} catch (LWJGLException e) {
-					e.printStackTrace();
-					return;
-				}
-				gameLoop();
-			}
-		};
-		gameThread.start();
-	}
-
-	/**
-	 * Tell game loop to stop running, after which the LWJGL Display will be
-	 * destoryed. The main thread will wait for the Display.destroy().
-	 */
-	private void stopLWJGL() {
-		running = false;
-		try {
-			gameThread.join();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public void start() {
-
-		lastFPS = getTime();
-
-		versionCheck();
-		
-		playerID = getUniqueID();
-
-		level = new Level();
-
-		fetchPlayerControlled();
-
-		resetSim();
-
-		ClientStateManager.setPaused(true);
-	}
-
-	public void stop() {
-
-	}
-
-	/**
-	 * Applet Destroy method will remove the canvas, before canvas is destroyed
-	 * it will notify stopLWJGL() to stop the main game loop and to destroy the
-	 * Display
-	 */
-	public void destroy() {
-		remove(display_parent);
-		super.destroy();
-	}
-
-	public void init() {
-
-		ClientDefaults.init(this);
-
-		setLayout(new BorderLayout());
-		try {
-			display_parent = new Canvas() {
-				public final void addNotify() {
-					super.addNotify();
-					startLWJGL();
-				}
-
-				public final void removeNotify() {
-					stopLWJGL();
-					super.removeNotify();
-				}
-			};
-			display_parent.setSize(getWidth(), getHeight());
-			add(display_parent);
-			display_parent.setFocusable(true);
-			display_parent.requestFocus();
-			display_parent.setIgnoreRepaint(true);
-			setVisible(true);
-		} catch (Exception e) {
-			System.err.println(e);
-			throw new RuntimeException("Unable to create display");
-		}
-	}
-
-	protected void initGL() {
-		GL11.glMatrixMode(GL11.GL_PROJECTION);
-		GL11.glLoadIdentity();
-		GL11.glOrtho(0, 800, 0, 600, 1, -1);
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-	}
-
-	public void gameLoop() {
-		while (running) {
-			final long delta = getDelta();
-			onUpdate(delta);
-			renderGL(delta);
-			Display.sync(60);
-			Display.update();
-		}
-
-		Display.destroy();
-	}
-
-	public static void onUpdate(long delta) {
-		
-		try {
-			if (ClientStateManager.getFlowState() == FlowState.FREE)
-				ClientStateManager.setFlowState(FlowState.PLAYING);
-
-			KeyUtil.update();
-
-			level.onUpdate(ClientStateManager.isPaused() || VectorEditorPopup_Crummy.isBlocking() ? 0 : delta);
-
-			if (KeyUtil.isKeyPressed(Keyboard.KEY_RETURN)
-					|| KeyUtil.isKeyPressed(Keyboard.KEY_ESCAPE))
-				ClientStateManager.togglePauseState();
-			
-			if (KeyUtil.isKeyPressed(Keyboard.KEY_F1) && ClientDefaults.devMode()) {
-				VectorEditorPopup_Crummy.show(ClientDefaults.server().getExplorationVector().getGenes(), true, "Adjust allowable values");
-			}
-			
-			if (!ClientStateManager.isPaused() && VectorEditorPopup_Crummy.isVisible()) {
-				VectorEditorPopup_Crummy.hide();
-			}
-			
-		} catch (final Exception e) {
-			e.printStackTrace();
-		}
-		updateFPS();
-
-	}
 
 	/**
 	 * Build the level and entities from scratch. Update appropriate GUI
@@ -285,94 +131,10 @@ public class TraitProjectClient extends Applet {
 			EntityFactory.buildBackgroundStar(e);
 		}
 
-		level.addRenderBehavior(new Behavior() {
-			public void onStart(Entity self, Level level) {
-			}
-
-			public void onUpdate(final Entity self, final Level level,
-					final long delta) {
-				RenderUtil.setColor(Color.CYAN);
-				// final String playerHealth = level.getPlayer() == null ? "XX"
-				// : Integer.toString((int) level.getPlayer().getHealth());
-				RenderUtil
-						.drawString(
-								new StringBuffer().append("")
-										// .append("health ").append(playerHealth)
-										.append("\n")
-										.append("score ").append(Long.toString(display_score))
-										.append("\n\n")
-										.append("wave ")
-										.append(level.getGeneratorCore().getWaveCount()).toString(), 
-											(int)(Display.getWidth()*0.875), 
-											(int)(Display.getHeight()*0.99));
-				RenderUtil.setColor(Color.GREEN);
-				RenderUtil.drawString("Progress "
-						+ level.getGeneratorCore().getPercentComplete()
-						+ (ClientDefaults.devMode() ? "\n\nF1 : Edit Vector": "")
-						, 5,
-						Display.getHeight() - 15);
-			}
-
-			public void onDeath(Entity self, Level level) {
-			}
-		});
-
 		level.onDeath();
 		TraitProjectClient.level = level;
 
 		ClientStateManager.setFlowState(FlowState.FREE);
-	}
-
-	public static void renderGL(final long delta) {
-		// Clear The Screen And The Depth Buffer
-		try {
-			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-
-			level.renderGL(delta);
-
-			if (ClientStateManager.isPaused()) {
-				RenderUtil.setColor(Color.WHITE);
-				GL11.glPushMatrix();
-				{
-					GL11.glTranslatef(Display.getWidth() / 2,
-							Display.getHeight() / 2, 0);
-					RenderUtil.drawString("PAUSED", 5);
-					GL11.glTranslatef(0, -Display.getHeight() / 8, 0);
-					RenderUtil.drawString("Press <ENTER>", 3);
-				}
-				GL11.glPopMatrix();
-			}
-		} catch (final Exception e) {
-		}
-	}
-
-	/**
-	 * Calculate how many milliseconds have passed since last frame.
-	 * 
-	 * @return milliseconds passed since last frame
-	 */
-	public static int getDelta() {
-		/*final long time = getTime();
-		final int delta = (int) (time - lastFrame);
-		lastFrame = time;
-
-		return delta;*/
-		return 16;
-	}
-
-	public static long getTime() {
-		return (Sys.getTime() * 1000) / Sys.getTimerResolution();
-	}
-
-	/**
-	 * Calculate the FPS and set it in the title bar
-	 */
-	public static void updateFPS() {
-		if (getTime() - lastFPS > 1000) {
-			fps = 0;
-			lastFPS += 1000;
-		}
-		fps++;
 	}
 
 	public static void versionCheck() {
@@ -401,16 +163,100 @@ public class TraitProjectClient extends Applet {
 		System.err.println("Cannot check server version.");
 	}
 
-	private static long getUniqueID() {
+    public final static Dimension SIZE = new Dimension(800, 600);
+
+    private BufferStrategy bufferStrategy;
+    private Canvas drawArea;/* Drawing Canvas */
+    private final boolean fixedFrameRate = false;
+
+    @Override
+    public void init() {
+
+        drawArea = new Canvas();
+        setIgnoreRepaint(true);
+
+        ClientDefaults.init(this);
+
+        setLayout(new BorderLayout());
+
+        versionCheck();
+
+        playerID = getUniqueID();
+
+        level = new Level();
+
+        fetchPlayerControlled();
+
+        resetSim();
+
+        ClientStateManager.setPaused(true);
+
+        drawArea.addKeyListener(KeyHolder.get());
+        drawArea.setFocusable(true);
+
+        drawArea.setSize(new Dimension(getWidth(), getHeight()));
+        add(drawArea);
+        drawArea.createBufferStrategy(2);
+        bufferStrategy = drawArea.getBufferStrategy();
+
+        RepeatingTimer a = new RepeatingTimer(new RepeatingTimerAction(){
+            @Override
+            public void update(long lastFrameDelta) {
+
+                // Update any sprites or other graphical objects
+                onUpdate(fixedFrameRate ? lastFrameDelta : 16);
+
+                // Handle Drawing
+                Graphics2D g = getGraphics();
+                render(g);
+
+                // Dispose of graphics context
+                g.dispose();
+            }
+        }, 1000/60);
+        a.start();
+    }
+
+    public static void onUpdate(long delta) {
+
+        try {
+            if (ClientStateManager.getFlowState() == FlowState.FREE)
+                ClientStateManager.setFlowState(FlowState.PLAYING);
+
+            KeyHolder holder = KeyHolder.get();
+
+            level.onUpdate(ClientStateManager.isPaused() || VectorEditorPopup_Crummy.isBlocking() ? 0 : delta);
+
+            if (holder.isPressedThenRelease(KeyEvent.VK_ENTER) || holder.isPressedThenRelease(KeyEvent.VK_ESCAPE))
+                ClientStateManager.togglePauseState();
+
+            if (holder.isPressedThenRelease(KeyEvent.VK_F1) && ClientDefaults.devMode()) {
+                VectorEditorPopup_Crummy.show(ClientDefaults.server().getExplorationVector().getGenes(), true, "Adjust allowable values");
+            }
+
+            if (!ClientStateManager.isPaused() && VectorEditorPopup_Crummy.isVisible()) {
+                VectorEditorPopup_Crummy.hide();
+            }
+
+            KeyHolder.get().freeQueuedKeys();
+
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+   
+    private static long getUniqueID() {
         ClientStateManager.setFlowState(FlowState.FETCHING_ID);
         try {
             final Client c = TraitProjectClient.getClient();
             try {
                 c.reconnect();
                 c.send("getID");
-                
+
                 System.out.println("Successfully ID fetched from server.");
-                
+
                 return Long.parseLong(c.receive());
             } catch (Exception e) {
             	System.err.println("failed to get ID");
@@ -425,7 +271,6 @@ public class TraitProjectClient extends Applet {
         } finally {
             ClientStateManager.setFlowState(FlowState.FREE);
         }
-
 		return -1;
 	}
 
@@ -477,4 +322,58 @@ public class TraitProjectClient extends Applet {
 			ClientStateManager.setFlowState(FlowState.FREE);
 		}
 	}
+
+    public void render(Graphics backg) {
+
+        if (!bufferStrategy.contentsLost()) {
+            // Show bufferStrategy
+            bufferStrategy.show();
+        }
+
+        backg.setColor(Color.BLACK);
+        backg.fillRect(0, 0, SIZE.width, SIZE.height);
+
+        ((Graphics2D) backg).scale(1, -1);
+        ((Graphics2D) backg).translate(0, -600);
+        level.render(backg);
+
+        ((Graphics2D) backg).translate(0, 600);
+        ((Graphics2D) backg).scale(1, -1);
+
+        backg.setColor(Color.WHITE);
+
+        if (ClientStateManager.isPaused()) {
+            backg.setFont(new Font("Monospaced", Font.BOLD, 32));
+            backg.drawString("PAUSED", SIZE.width / 2, SIZE.height / 2);
+        }
+
+        backg.setFont(new Font("Monospaced", Font.BOLD, 20));
+
+        backg.drawString("Score: " + TraitProjectClient.display_score, 0, SIZE.height - 25);
+        backg.drawString("Wave: " + level.getGeneratorCore().getWaveCount(), 0, SIZE.height - 5);
+
+        backg.drawString("Progress: " + level.getGeneratorCore().getPercentComplete(), 0, 25);
+    }
+
+    public TraitProjectClient() {
+        if (System.getProperty("os.name").contains("Windows")) {
+            System.setProperty("sun.java2d.d3d", "True");
+        } else {
+            System.setProperty("sun.java2d.opengl", "True");
+        }
+        try {
+            UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Graphics2D getGraphics() {
+        return (Graphics2D) bufferStrategy.getDrawGraphics();
+    }
+    
+    @Override
+    public void start() {
+        requestFocusInWindow();
+    }
 }

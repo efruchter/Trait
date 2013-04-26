@@ -2,16 +2,16 @@ package efruchter.tp.entity;
 
 import java.awt.*;
 
+import efruchter.tp.TraitProjectClient;
 import efruchter.tp.trait.behavior.Behavior;
 import efruchter.tp.trait.behavior.BehaviorChain;
 import efruchter.tp.trait.behavior.custom.KillBehavior;
 import efruchter.tp.trait.custom.*;
-import org.lwjgl.opengl.Display;
+
 
 import efruchter.tp.trait.Trait;
 import efruchter.tp.trait.gene.GeneExpressionInterpolator;
-import efruchter.tp.util.RenderUtil;
-import org.lwjgl.opengl.GL11;
+
 
 /**
  * Methods for creating canned entities that conform to a certain type
@@ -28,7 +28,6 @@ public class EntityFactory {
 		e.baseColor = color;
 		e.collisionLabel = collisionLabel;
 		e.entityType = EntityType.PROJECTILE;
-		e.setRenderBehavior(RenderUtil.PROJECTILE_RENDER);
 		e.addTrait(new CollideDamageTrait(damage));
 		e.addTrait(new DramaticDeathTrait(5, 200));
 	}
@@ -40,7 +39,6 @@ public class EntityFactory {
 		e.baseColor = color;
 		e.collisionLabel = collisionLabel;
 		e.entityType = EntityType.SHIP;
-		e.setRenderBehavior(RenderUtil.SHIP_RENDER);
 		e.health = initialHealth;
 		e.addTrait(new NoHealthDeathTrait());
 		e.addTrait(new DramaticDeathTrait(10, 1000));
@@ -55,7 +53,6 @@ public class EntityFactory {
 		e.baseColor = Math.random() < .99 ? new Color(82, 82, 82) : Color.WHITE;
 		e.collisionLabel = CollisionLabel.NO_COLLISION;
 		e.entityType = EntityType.BG;
-		e.setRenderBehavior(RenderUtil.STAR_RENDER);
 		e.health = 0;
 		e.addTrait(starMove);
 	}
@@ -69,8 +66,8 @@ public class EntityFactory {
 		@Override
 		public void onStart(final Entity self, final Level level) {
 			self.radius = .5f + (float) Math.random() * 3;
-			self.x = ((float) Math.random()) * Display.getWidth();
-			self.y = ((float) Math.random()) * Display.getHeight();
+			self.x = ((float) Math.random()) * TraitProjectClient.SIZE.width;
+			self.y = ((float) Math.random()) * TraitProjectClient.SIZE.height;
 		}
 		
 		@Override
@@ -79,30 +76,30 @@ public class EntityFactory {
             self.x += dx;
 
             boolean shifted = false;
-            if (self.x > Display.getWidth()) {
-                self.x = self.x - Display.getWidth();
+            if (self.x > TraitProjectClient.SIZE.width) {
+                self.x = self.x - TraitProjectClient.SIZE.width;
                 shifted = true;
             } else if (self.x < 0) {
-                self.x = Display.getWidth() + self.x;
+                self.x = TraitProjectClient.SIZE.width + self.x;
                 shifted = true;
             }
 
             if(shifted) {
-                self.y = ((float) Math.random()) * Display.getHeight();
+                self.y = ((float) Math.random()) * TraitProjectClient.SIZE.height;
                 self.radius = .5f + (float) Math.random() * 3;
             }
 
             shifted = false;
-            if (self.y > Display.getHeight()) {
-                self.y = self.y - Display.getHeight();
+            if (self.y > TraitProjectClient.SIZE.height) {
+                self.y = self.y - TraitProjectClient.SIZE.height;
                 shifted = true;
             } else if (self.y < 0) {
-                self.y = Display.getHeight() + self.y;
+                self.y = TraitProjectClient.SIZE.height + self.y;
                 shifted = true;
             }
 
             if(shifted) {
-                self.x = ((float) Math.random()) * Display.getWidth();
+                self.x = ((float) Math.random()) * TraitProjectClient.SIZE.width;
                 self.radius = .5f + (float) Math.random() * 3;
             }
 		}
@@ -119,7 +116,6 @@ public class EntityFactory {
 		e.radius = radius;
 		e.baseColor = color;
 		e.entityType = EntityType.BG;
-		e.setRenderBehavior(RenderUtil.PROJECTILE_RENDER);
 		e.addTrait(new TimedDeathTrait(delay));
 		
 		final WiggleTrait w = new WiggleTrait(20);
@@ -139,14 +135,14 @@ public class EntityFactory {
         e.baseColor = Color.CYAN;
         e.collisionLabel = CollisionLabel.NO_COLLISION;
         e.entityType = EntityType.BG;
-        e.x = Display.getWidth() / 2 - 150;
-        e.y = Display.getHeight() + 3;
+        e.x = TraitProjectClient.SIZE.width / 2 - 150;
+        e.y = TraitProjectClient.SIZE.height + 3;
 
         final BehaviorChain chain = new BehaviorChain();
         chain.addBehavior(CurveInterpolator.buildPath(duration, false,
                 new Point.Float[]{
                         new Point.Float(e.x, e.y),
-                        new Point.Float(Display.getWidth() / 2 - 150, -50)}),
+                        new Point.Float(TraitProjectClient.SIZE.width / 2 - 150, -50)}),
                 duration);
         chain.addBehavior(new KillBehavior(), 0);
 
@@ -155,13 +151,13 @@ public class EntityFactory {
         e.setRenderBehavior(new Behavior() {
             public void onStart(Entity self, Level level) {}
             public void onUpdate(Entity self, Level level, long delta) {
-                GL11.glPushMatrix();
+                /*GL11.glPushMatrix();
                 {
                     RenderUtil.setColor(Color.GREEN);
                     GL11.glTranslatef(self.x, self.y, 0);
                     RenderUtil.drawString("NEW WAVE ", 5);
                 }
-                GL11.glPopMatrix();
+                GL11.glPopMatrix();*/
             }
             public void onDeath(Entity self, Level level) {}
         });

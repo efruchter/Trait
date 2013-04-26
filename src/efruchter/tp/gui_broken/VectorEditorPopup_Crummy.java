@@ -22,7 +22,7 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.lwjgl.opengl.Display;
+
 
 import efruchter.tp.CHOICE;
 import efruchter.tp.TraitProjectClient;
@@ -30,7 +30,8 @@ import efruchter.tp.learning.GeneVector.GeneWrapper;
 import efruchter.tp.learning.server.ServerIO;
 import efruchter.tp.state.ClientStateManager;
 import efruchter.tp.state.ClientStateManager.FlowState;
-import efruchter.tp.util.KeyUtil;
+import efruchter.tp.util.KeyHolder;
+
 
 public class VectorEditorPopup_Crummy {
 
@@ -170,9 +171,7 @@ public class VectorEditorPopup_Crummy {
         if (genes.isEmpty() && !forceShow) {
             hide();
         } else {
-            KeyUtil.clearKeys();
-            frame.setLocation(new Point(Display.getX() + Display.getWidth() / 2 - frame.getWidth() / 2,
-                                        Display.getY() + Display.getHeight() / 2 - frame.getHeight() / 2));
+            KeyHolder.get().clearKeys();
             frame.setVisible(true);
         }
     }

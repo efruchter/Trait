@@ -1,8 +1,9 @@
 package efruchter.tp.trait.custom.player;
 
 import java.awt.Color;
+import java.awt.event.KeyEvent;
 
-import org.lwjgl.input.Keyboard;
+
 
 
 import efruchter.tp.ClientDefaults;
@@ -21,8 +22,7 @@ import efruchter.tp.trait.custom.TimedDeathTrait;
 import efruchter.tp.trait.custom.WiggleTrait;
 import efruchter.tp.trait.gene.Gene;
 import efruchter.tp.trait.gene.GeneExpressionInterpolator;
-import efruchter.tp.util.KeyUtil;
-
+import efruchter.tp.util.KeyHolder;
 /**
  * Govern the attack of an entity with the keyboard.
  * 
@@ -71,7 +71,7 @@ public class KeyboardControlTrait_Attack extends Trait {
 			cd += delta;
 		}
 		if (cd >= coolDown.getValue()) {
-			if (KeyUtil.isKeyDown(Keyboard.KEY_SPACE)) {
+			if (KeyHolder.get().isPressed(KeyEvent.VK_SPACE)) {
 				cd = 0;
 				for (int i = 0; i < amount.getValue(); i++) {
 					final Entity p = level.getBlankEntity(EntityType.PROJECTILE);
