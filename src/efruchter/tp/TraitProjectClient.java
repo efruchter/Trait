@@ -323,7 +323,8 @@ public class TraitProjectClient extends Applet {
 
         if (ClientStateManager.isPaused()) {
             backg.setFont(PAUSE_FONT);
-            backg.drawString("PAUSED", SIZE.width / 2, SIZE.height / 2);
+            backg.drawString("PAUSED", SIZE.width / 2 - 50, SIZE.height / 2);
+            backg.drawString("PRESS ENTER TO RESUME", SIZE.width / 2 - 175, SIZE.height / 2 + 30);
         }
 
         backg.setFont(GUI_FONT);
