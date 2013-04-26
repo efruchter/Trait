@@ -35,6 +35,7 @@ import efruchter.tp.trait.custom.player.PlayerRadiusEditTrait;
 import efruchter.tp.trait.custom.player.SetPlayerTrait;
 import efruchter.tp.trait.gene.Gene;
 import efruchter.tp.trait.gene.GeneCurve;
+import efruchter.tp.util.KeyHolder;
 
 /**
  * Not really sure how to approach this. Trying some stuff.
@@ -186,6 +187,8 @@ public class LevelGeneratorCore extends Trait {
 //        }
         playerX = TraitProjectClient.SIZE.width / 2;
         playerY = TraitProjectClient.SIZE.height * .15f;
+        
+        KeyHolder.get().clearKeys();
 
         for (final Entity ship : level.getEntities(EntityType.SHIP)) {
             if (ship.isActive()) {
