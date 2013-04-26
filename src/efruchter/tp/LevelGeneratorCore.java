@@ -2,7 +2,6 @@ package efruchter.tp;
 
 import java.awt.Color;
 import java.awt.Point;
-import java.awt.event.KeyEvent;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -34,7 +33,6 @@ import efruchter.tp.trait.custom.player.PlayerRadiusEditTrait;
 import efruchter.tp.trait.custom.player.SetPlayerTrait;
 import efruchter.tp.trait.gene.Gene;
 import efruchter.tp.trait.gene.GeneCurve;
-import efruchter.tp.util.KeyHolder;
 
 /**
  * Not really sure how to approach this. Trying some stuff.
@@ -175,7 +173,7 @@ public class LevelGeneratorCore extends Trait {
         if (Math.round(polarityAmount.getValue()) != 0) {
             player.polarity = 0;
         }
-        final Gene pSwi = polarityAmount;
+        //final Gene pSwi = polarityAmount;
         /*player.addTrait(new TraitAdapter (){
             @Override
         	public void onUpdate(Entity self, Level level, long delta) {
