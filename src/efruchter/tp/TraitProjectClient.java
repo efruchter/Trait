@@ -2,19 +2,18 @@ package efruchter.tp;
 
 import java.applet.Applet;
 import java.awt.BorderLayout;
-
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.event.KeyEvent;
+import java.awt.image.BufferStrategy;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import javax.swing.JOptionPane;
-
 import javax.swing.UIManager;
 
 import efruchter.tp.entity.Entity;
@@ -22,21 +21,15 @@ import efruchter.tp.entity.EntityFactory;
 import efruchter.tp.entity.EntityType;
 import efruchter.tp.entity.Level;
 import efruchter.tp.gui_broken.VectorEditorPopup_Crummy;
-import efruchter.tp.learning.GeneVector.GeneWrapper;
-import efruchter.tp.learning.server.comm.Client;
 import efruchter.tp.learning.GeneVector;
+import efruchter.tp.learning.GeneVector.GeneWrapper;
 import efruchter.tp.learning.SessionInfo;
+import efruchter.tp.learning.server.comm.Client;
 import efruchter.tp.state.ClientStateManager;
 import efruchter.tp.state.ClientStateManager.FlowState;
-
 import efruchter.tp.util.KeyHolder;
 import efruchter.tp.util.RepeatingTimer;
 import efruchter.tp.util.RepeatingTimer.RepeatingTimerAction;
-
-
-import java.awt.event.KeyEvent;
-import java.awt.image.BufferStrategy;
-import java.awt.Graphics2D;
 
 @SuppressWarnings("serial")
 public class TraitProjectClient extends Applet {
@@ -46,6 +39,11 @@ public class TraitProjectClient extends Applet {
     private BufferStrategy bufferStrategy;
     private Canvas drawArea;/* Drawing Canvas */
     private final boolean fixedFrameRate = false;
+
+    //Fonts
+    public static final Font PAUSE_FONT = new Font("SansSerif", Font.BOLD, 32);
+    public static final Font GUI_FONT = new Font("SansSerif", Font.BOLD, 20);
+    public static final Font NEW_WAVE_FONT = new Font("SansSerif", Font.PLAIN, 50);
 
     /*
      * GAME VARS
@@ -280,7 +278,7 @@ public class TraitProjectClient extends Applet {
         }
     }
 
-    public void render(Graphics backg) {
+    public void render(Graphics2D backg) {
 
         if (!bufferStrategy.contentsLost()) {
             // Show bufferStrategy
@@ -290,21 +288,21 @@ public class TraitProjectClient extends Applet {
         backg.setColor(Color.BLACK);
         backg.fillRect(0, 0, SIZE.width, SIZE.height);
 
-        ((Graphics2D) backg).scale(1, -1);
-        ((Graphics2D) backg).translate(0, -600);
+        backg.scale(1, -1);
+        backg.translate(0, -600);
         level.render(backg);
 
-        ((Graphics2D) backg).translate(0, 600);
-        ((Graphics2D) backg).scale(1, -1);
+        backg.translate(0, 600);
+        backg.scale(1, -1);
 
         backg.setColor(Color.WHITE);
 
         if (ClientStateManager.isPaused()) {
-            backg.setFont(new Font("Monospaced", Font.BOLD, 32));
+            backg.setFont(PAUSE_FONT);
             backg.drawString("PAUSED", SIZE.width / 2, SIZE.height / 2);
         }
 
-        backg.setFont(new Font("Monospaced", Font.BOLD, 20));
+        backg.setFont(GUI_FONT);
 
         backg.drawString("Score: " + TraitProjectClient.displayScore, 0, SIZE.height - 25);
         backg.drawString("Wave: " + level.getGeneratorCore().getWaveCount(), 0, SIZE.height - 5);

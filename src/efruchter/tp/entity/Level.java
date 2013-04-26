@@ -1,6 +1,6 @@
 package efruchter.tp.entity;
 
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
@@ -9,9 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-
 import efruchter.tp.LevelGeneratorCore;
-import efruchter.tp.trait.behavior.Behavior;
 
 /**
  * Stores and coordinates entities.
@@ -25,7 +23,6 @@ public class Level {
     private final Map<EntityType, LinkedList<Entity>> recycle;
 
     private final List<Entity> add, remove;
-    private final List<Behavior> renderBehaviors;
 
     private Entity player;
     private LevelGeneratorCore generatorCore;
@@ -48,12 +45,6 @@ public class Level {
 
         add = new LinkedList<Entity>();
         remove = new LinkedList<Entity>();
-
-        renderBehaviors = new LinkedList<Behavior>();
-    }
-
-    public void addRenderBehavior(final Behavior beh) {
-        renderBehaviors.add(beh);
     }
 
     public void onUpdate(final long delta) {
@@ -105,7 +96,7 @@ public class Level {
         }
     }
 
-    public void render(final Graphics g) {
+    public void render(final Graphics2D g) {
 
         try {
             for (final Entity b : entities.get(EntityType.BG)) {
