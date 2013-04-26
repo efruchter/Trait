@@ -1,15 +1,20 @@
 package efruchter.tp.entity;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Point;
 
 import efruchter.tp.TraitProjectClient;
-import efruchter.tp.trait.behavior.Behavior;
+import efruchter.tp.trait.Trait;
 import efruchter.tp.trait.behavior.BehaviorChain;
 import efruchter.tp.trait.behavior.custom.KillBehavior;
-import efruchter.tp.trait.custom.*;
-
-
-import efruchter.tp.trait.Trait;
+import efruchter.tp.trait.custom.CollideDamageTrait;
+import efruchter.tp.trait.custom.CurveInterpolator;
+import efruchter.tp.trait.custom.DramaticDeathTrait;
+import efruchter.tp.trait.custom.NoHealthDeathTrait;
+import efruchter.tp.trait.custom.RadiusEditTrait;
+import efruchter.tp.trait.custom.TimedDeathTrait;
+import efruchter.tp.trait.custom.WiggleTrait;
 import efruchter.tp.trait.gene.GeneExpressionInterpolator;
 
 
@@ -136,7 +141,7 @@ public class EntityFactory {
         e.collisionLabel = CollisionLabel.NO_COLLISION;
         e.entityType = EntityType.BG;
         e.x = TraitProjectClient.SIZE.width / 2 - 150;
-        e.y = TraitProjectClient.SIZE.height + 3;
+        e.y = TraitProjectClient.SIZE.height + 30;
 
         final BehaviorChain chain = new BehaviorChain();
         chain.addBehavior(CurveInterpolator.buildPath(duration, false,
@@ -148,22 +153,23 @@ public class EntityFactory {
 
         e.addTrait(chain);
 
-        e.setRenderBehavior(new Behavior() {
-            public void onStart(Entity self, Level level) {}
-            public void onUpdate(Entity self, Level level, long delta) {
-                /*GL11.glPushMatrix();
-                {
-                    RenderUtil.setColor(Color.GREEN);
-                    GL11.glTranslatef(self.x, self.y, 0);
-                    RenderUtil.drawString("NEW WAVE ", 5);
-                }
-                GL11.glPopMatrix();*/
-            }
-            public void onDeath(Entity self, Level level) {}
-        });
-
         e.health = 0;
-        
+
+        e.setRenderBehavior(NEW_ANIM_RENDER);
+
         return e;
     }
+
+    final static RenderBehavior NEW_ANIM_RENDER = new RenderBehavior(){
+        public void render(Entity entity, Graphics2D g) {
+            g.setColor(entity.baseColor);
+
+            g.setFont(TraitProjectClient.NEW_WAVE_FONT);
+            g.scale(1, -1);
+            g.translate((int) entity.x, -(int) entity.y);
+            g.drawString("NEW WAVE", 0, 0);
+            g.translate(-(int) entity.x, (int) entity.y);
+            g.scale(1, -1);
+        }
+    };
 }

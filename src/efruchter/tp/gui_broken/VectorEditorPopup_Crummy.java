@@ -3,7 +3,6 @@ package efruchter.tp.gui_broken;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -38,7 +37,7 @@ public class VectorEditorPopup_Crummy {
     private final static int RESOLUTION = 1000;
 
     private static JFrame frame;
-    private static Point frameLoc = null;
+    //private static Point frameLoc = null;
     private static boolean blocking = false;
     private static ActionListener onHideAction;
 
@@ -177,8 +176,8 @@ public class VectorEditorPopup_Crummy {
     }
 
     public static void hide() {
-    	if (frame != null) {
-        	frameLoc = frame.getLocation();
+        if (frame != null) {
+        	//frameLoc = frame.getLocation();
             frame.setVisible(false);
             ClientStateManager.setFlowState(FlowState.FREE);
             frame.dispose();
