@@ -3,6 +3,7 @@ package efruchter.tp.gui_broken;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -138,9 +139,10 @@ public class VectorEditorPopup_Crummy {
                 hide();
             }
         });
-        frame.add(goButton, BorderLayout.SOUTH);
-
+        frame.add(goButton, BorderLayout.SOUTH);;
         frame.pack();
+        frame.setLocation(new Point(TraitProjectClient.getClientInstance().getY() + TraitProjectClient.getClientInstance().getWidth() / 2 - frame.getWidth() / 2,
+        		TraitProjectClient.getClientInstance().getY() + TraitProjectClient.getClientInstance().getHeight() / 2 - frame.getHeight() / 2));
     }
 
     public static void show(final List<GeneWrapper> genes, final boolean useName, final String headerText) {
@@ -188,6 +190,8 @@ public class VectorEditorPopup_Crummy {
         frame = null;
         onHideAction = null;
         ClientStateManager.setPaused(false);
+        TraitProjectClient.getClientInstance().requestFocusInWindow();
+        KeyHolder.get().clearKeys();
     }
     
     public static void setEnabled(boolean isEnabled) {

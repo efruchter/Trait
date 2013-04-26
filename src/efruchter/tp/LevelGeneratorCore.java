@@ -288,8 +288,8 @@ public class LevelGeneratorCore extends Trait {
         panel.add(progBar);
         pFrame.add(panel);
         pFrame.pack();
-        /*pFrame.setLocation(new Point(Display.getX() + Display.getWidth() / 2 - pFrame.getWidth() / 2,
-                Display.getY() + Display.getHeight() / 2 - pFrame.getHeight() / 2));*/
+        pFrame.setLocation(new Point(TraitProjectClient.getClientInstance().getY() + TraitProjectClient.getClientInstance().getWidth() / 2 - pFrame.getWidth() / 2,
+        		TraitProjectClient.getClientInstance().getY() + TraitProjectClient.getClientInstance().getHeight() / 2 - pFrame.getHeight() / 2));
         pFrame.setVisible(true);
         VectorEditorPopup_Crummy.setEnabled(false);
 

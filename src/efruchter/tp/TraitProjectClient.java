@@ -40,6 +40,8 @@ import efruchter.tp.util.RepeatingTimer.RepeatingTimerAction;
 public class TraitProjectClient extends Applet {
 
     public final static Dimension SIZE = new Dimension(800, 600);
+    
+    private static TraitProjectClient clientInstance;
 
     private BufferStrategy bufferStrategy;
     private Canvas drawArea;/* Drawing Canvas */
@@ -94,6 +96,8 @@ public class TraitProjectClient extends Applet {
     @Override
     public void init() {
 
+    	clientInstance = this;
+
         drawArea = new Canvas();
         setIgnoreRepaint(true);
 
@@ -135,7 +139,7 @@ public class TraitProjectClient extends Applet {
 
                     // Dispose of graphics context
                     g.dispose();
-                } catch (final NullPointerException exc) {
+                } catch (final Exception exc) {
                     //It's cool, the graphics can crash.
                 }
             }
@@ -380,5 +384,9 @@ public class TraitProjectClient extends Applet {
         v.storeInfo(info);
 
         TraitProjectClient.resetMetrics();
+    }
+
+    public static TraitProjectClient getClientInstance() {
+    	return clientInstance;
     }
 }
