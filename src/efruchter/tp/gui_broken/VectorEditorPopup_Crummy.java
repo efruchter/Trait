@@ -82,7 +82,7 @@ public class VectorEditorPopup_Crummy {
 
         final JPanel traitPanel = new JPanel();
         traitPanel.setLayout(new GridLayout(genes.size(), 1));
-        traitPanel.setLayout(new GridLayout(genes.size()+2, 1));
+        traitPanel.setLayout(new GridLayout(genes.size()+4, 1));
 
         for (final GeneWrapper gene : genes) {
             final JPanel subPanel = new JPanel();
@@ -104,13 +104,23 @@ public class VectorEditorPopup_Crummy {
 
         String betterString = "better than before";
         String worseString = "worse than before";
+        String neitherString = "different but equal quality";
+        String nodiffString = "no difference";
+        
         final JRadioButton choiceBetter = new JRadioButton(betterString);
         choiceBetter.setActionCommand(betterString);
         JRadioButton choiceWorse = new JRadioButton(worseString);
         choiceWorse.setActionCommand(worseString);
+        final JRadioButton choiceNeither = new JRadioButton(neitherString);
+        choiceBetter.setActionCommand(neitherString);
+        final JRadioButton choiceNodiff = new JRadioButton(nodiffString);
+        choiceBetter.setActionCommand(nodiffString);
+        
         ButtonGroup classificationChoice = new ButtonGroup();
         classificationChoice.add(choiceBetter);
         classificationChoice.add(choiceWorse);
+        classificationChoice.add(choiceNeither);
+        classificationChoice.add(choiceNodiff);
         
         choiceBetter.addActionListener(new ActionListener() {
         	@Override
@@ -126,8 +136,24 @@ public class VectorEditorPopup_Crummy {
         		TraitProjectClient.c_choice = CHOICE.WORSE;
         	}
         });
+        choiceNeither.addActionListener(new ActionListener() {
+        	@Override
+        	public void actionPerformed(ActionEvent ae) {
+        		System.out.println("picked neither");
+        		TraitProjectClient.c_choice = CHOICE.NEITHER;
+        	}
+        });
+        choiceNodiff.addActionListener(new ActionListener() {
+        	@Override
+        	public void actionPerformed(ActionEvent ae) {
+        		System.out.println("picked nodiff");
+        		TraitProjectClient.c_choice = CHOICE.NODIFF;
+        	}
+        });
         traitPanel.add(choiceBetter);
         traitPanel.add(choiceWorse);
+        traitPanel.add(choiceNodiff);
+        traitPanel.add(choiceNeither);
                 
         final JButton goButton = new JButton("Go!");
         goButton.addActionListener(new ActionListener() {
@@ -136,9 +162,9 @@ public class VectorEditorPopup_Crummy {
             		// if called w/storage data, record preference information instead
             		TraitProjectClient.storeData(v, waveCount, isRandom, learnMode);
 //            		TraitProjectClient.resetMetrics();
+                    hide();
 
             	}
-                hide();
             }
         });
         frame.addWindowFocusListener(new WindowAdapter() {

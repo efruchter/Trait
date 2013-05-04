@@ -1,5 +1,5 @@
 package efruchter.tp;
 
 public enum CHOICE {
-	BETTER, WORSE, NONE;
+	BETTER, WORSE, NONE, NEITHER, NODIFF;
 }

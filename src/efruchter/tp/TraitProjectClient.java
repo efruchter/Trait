@@ -216,7 +216,8 @@ public class TraitProjectClient extends Applet {
                 return;
             }
         } catch (Exception e) {
-
+        	System.out.println("Failed to check version of server");
+        	e.printStackTrace();
         } finally {
             try {
                 c.close();
