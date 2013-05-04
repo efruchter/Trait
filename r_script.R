@@ -150,6 +150,8 @@ if (learn_mode == 'preference') {
     ## label training samples & construct pairs compared
     control_var = c(as.character(learn_params$param), 'c_choice', 's_wave')
     train_data = usr_data[control_var]
+    last_choice = train_data[nrow(train_data),'c_choice'] # save last choice to use
+    
     train_data$pref = rep(0, nrow(train_data))
     train_data$pref[train_data$c_choice=='BETTER'] = 1
     train_data$pref[train_data$c_choice=='WORSE'] = -1
@@ -207,6 +209,8 @@ if (learn_mode == 'preference') {
     t_pred = prefPredict.v2(optmodel, tclass_pair, tclass, x_sample, optmodel$f_map, optmodel$W, optmodel$K, optmodel$sigma_n, kernel.SqExpND, optmodel$lenscale)
     plot(-t_pred$pred)
     
+#     png('n10_predict.png'); plot(-t_pred$pred); dev.off()
+    
     cat('generated predictions \n')
     
     # (1) look up predictive means for each sample value
@@ -218,7 +222,10 @@ if (learn_mode == 'preference') {
 #     test_pts = tclass[tclass$label!=last_pt,-1]
     test_pts = tclass[!(tclass$label%in%last_Npt),-1]
     # (4) evaluate point to try next
-    next_sample = al.maxExpectedImprovement.v2(optmodel$f_map, f_t, sigma_t, test_pts, slack=0.1, iter)
+    al_slack = 0.1
+    ## note: slack simply shifts boundary, does not alter relative value of points
+
+    next_sample = al.maxExpectedImprovement.v2(optmodel$f_map, f_t, sigma_t, test_pts, slack=al_slack, iter)
     next_sample = as.matrix(next_sample, ncol=ncol(next_sample))
     
     cat('predicted sample \n')

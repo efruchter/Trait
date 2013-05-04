@@ -1,3 +1,3 @@
 param, min, max, npts
-player.move.thrust, 0.01, 0.05, 10
-player.move.drag, 0.1, 1.0, 10
+player.move.thrust, 0.01, 0.05, 25
+player.move.drag, 0.1, 1.0, 25

@@ -845,7 +845,7 @@ al.maxExpectedImprovement.v2 = function(f_cur, f_test, f_cov, x_test, slack=0.01
   #   last_pt = usr_sample[nrow(usr_sample), c('label')] # sample value most recently tested; use for pairwise tests
   
   #   z_t = (f_test - f_plus - slack) / sigma_n
-  z_t = (f_test - f_plus - slack)/f_cov
+  z_t = (f_test - f_plus - slack) / f_cov
   #   ei = (f_test - f_plus - slack) * pnorm(z_t) + sigma_n * dnorm(z_t)
   ei = (f_test - f_plus - slack) * pnorm(z_t) + f_cov * dnorm(z_t)
 #   ei = as.matrix(ei, ncol=1)
@@ -862,24 +862,12 @@ al.maxExpectedImprovement.v2 = function(f_cur, f_test, f_cov, x_test, slack=0.01
   ## get next set of possible sample points sorted by expected information
   tmp = cbind(ei, x_test)
   next_sample = arrange(tmp, desc(ei))[1,-1]
-#   top10 = tmp[order(-tmp[,1]),]
-#   next_sample10 = top10[1:min(10,nrow(top10)),-c(1)]
   
-  
-  #   next_pt = which.max(ei)
-  #   next_pt = t_pairs[next_pt,]
-  #   next_sample = next_pt[next_pt!=last_pt]
-  #   next_sample = x_test[next_pt,]
-#   next_sample = next_sample10[1,]
-  
-#   names(top10) = c('ei', paste('Var', seq(1:(ncol(top10)-1)), sep=''))
-  
-#   png(paste('ei_', iter, '.png', sep=''))
-#   print(
-#     ggplot(top10, aes(Var1, Var2, z=ei)) + stat_contour(geom='polygon', aes(fill=..level..), bins=15)  + geom_point(data=next_sample10, aes(x=Var1, y=Var2, z=1), size=5, colour='orange') + theme_bw()
-#   )
-#   dev.off()
-  
+  ## randomly sample w/in top N-tile
+#   ntile = 20 # top 5%
+#   ei_dec = quantile(ei, probs=seq(0,1,1/ntile))[ntile]
+#   next_sample = tmp[sample(which(ei >= ei_dec), 1),-1]
+
   return(next_sample)
 }
 
