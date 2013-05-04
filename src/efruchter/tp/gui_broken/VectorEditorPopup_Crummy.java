@@ -132,7 +132,7 @@ public class VectorEditorPopup_Crummy {
         final JButton goButton = new JButton("Go!");
         goButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
-            	if (v != null) {
+            	if (v != null && TraitProjectClient.c_choice != CHOICE.NONE) {
             		// if called w/storage data, record preference information instead
             		TraitProjectClient.storeData(v, waveCount, isRandom, learnMode);
 //            		TraitProjectClient.resetMetrics();
