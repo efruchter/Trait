@@ -291,7 +291,6 @@ public class LevelGeneratorCore extends Trait {
         pFrame.setLocation(new Point(TraitProjectClient.getClientInstance().getY() + TraitProjectClient.getClientInstance().getWidth() / 2 - pFrame.getWidth() / 2,
         		TraitProjectClient.getClientInstance().getY() + TraitProjectClient.getClientInstance().getHeight() / 2 - pFrame.getHeight() / 2));
         pFrame.setVisible(true);
-        VectorEditorPopup_Crummy.setEnabled(false);
 
         while (!runRDone) {
         	try {
@@ -305,7 +304,6 @@ public class LevelGeneratorCore extends Trait {
         }
 
         pFrame.setVisible(false);
-        VectorEditorPopup_Crummy.setEnabled(true);
 
         waveCount++;
     }
