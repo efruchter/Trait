@@ -75,6 +75,7 @@ public class TraitProjectClient extends Applet {
 	public static CHOICE c_choice = CHOICE.NONE;
 	public static long display_score;
 	public static long playerID;
+	public static boolean isRandom;
 
 	public static void resetMetrics() {
 		s_damage_player = 0;
@@ -108,6 +109,9 @@ public class TraitProjectClient extends Applet {
         versionCheck();
 
         playerID = getUniqueID();
+        
+        String learnMode = ClientDefaults.learnMode();
+        isRandom = getRandom(learnMode);
 
         level = new Level();
 
@@ -252,6 +256,42 @@ public class TraitProjectClient extends Applet {
             ClientStateManager.setFlowState(FlowState.FREE);
         }
 		return -1;
+	}
+    
+    private static boolean getRandom(String learnMode) {
+        ClientStateManager.setFlowState(FlowState.FETCHING_ID);
+        try {
+            final Client c = TraitProjectClient.getClient();
+            try {
+                c.reconnect();
+//                if (learnMode.equals("preference")) {
+//                	c.send("getRandPreference");
+//                } else if (learnMode.equals("regression")) {
+//                	c.send("getRandRegression");
+//                } else {
+//                	System.err.println("not a valid learning mode!");
+//                	throw new Exception("not a valid learning mode!");
+//                }
+                c.send("getRand:" + learnMode);
+                
+
+                System.out.println("Successfully fetched random toggle from server.");
+
+                return Boolean.parseBoolean(c.receive());
+            } catch (Exception e) {
+            	System.err.println("failed to get random toggle");
+            	e.printStackTrace();
+            } finally {
+                try {
+                    c.close();
+                } catch (Exception e) {
+                }
+            }
+            System.err.println("Cannot fetch random toggle!");
+        } finally {
+            ClientStateManager.setFlowState(FlowState.FREE);
+        }
+		return false;
 	}
 
 	public static List<GeneWrapper> getPlayerControlledGenes() {

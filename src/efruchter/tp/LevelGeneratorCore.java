@@ -75,7 +75,8 @@ public class LevelGeneratorCore extends Trait {
         super("Level Generator : Spawner", "The level generating structure.");
         waveCount = 0;
         chains = new LinkedList<Chain>();
-        isRandom = TraitProjectClient.playerID % 2 == 0 ? true : false;
+//        isRandom = TraitProjectClient.playerID % 2 == 0 ? true : false;
+        isRandom = TraitProjectClient.isRandom;
         String randomStr = isRandom ? "+random" : "";
         learnMode = ClientDefaults.learnMode() + randomStr;
     }

@@ -140,7 +140,11 @@ public class ZookProjectServer implements NetworkingListener {
 				result = "" + getID();
 				System.out.println(System.currentTimeMillis() + ": Fetched id "
 						+ result);
-			}
+			} else if (message.startsWith("getRand:")) {
+				String learnMode = message.replaceFirst("getRand:", "");
+				result = "" + getRand(learnMode);
+				System.out.println(System.currentTimeMillis() + ": Fetched random toggle "+ result);
+			} 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -214,5 +218,38 @@ public class ZookProjectServer implements NetworkingListener {
 		f.write((id + 1) + "");
 		f.close();
 		return id;
+	}
+	
+	public synchronized boolean getRand(String learnMode) throws IOException {
+		final File randFile = new File(learnMode + "Rand.txt");
+		
+		// if no file for this learning mode, create one and set to 0 AL, 0 RND
+		if (!randFile.exists()) {
+			randFile.createNewFile();
+			final FileWriter f = new FileWriter(randFile);
+			f.write("0\n0");
+			f.close();
+		}
+		final Scanner scan = new Scanner(randFile);
+		// read in number of players with active learning or random
+		// AL is first line, RND is second line
+		final long al = Long.parseLong(scan.next());
+		final long rnd = Long.parseLong(scan.next());
+		System.out.println("al: " + al + ", rnd: " + rnd);
+		
+		final FileWriter f = new FileWriter(randFile);
+		if (al < rnd) {
+			// fewer active learning samples than random samples
+			// increment active learning iterations and return isRandom=false
+			f.write((al+1) + "\n" + rnd);
+			f.close();
+			return false;
+		} else {
+			// more active learning samples than random samples
+			// increment random iterations and return isRandom=true
+			f.write(al + "\n" + (rnd+1));
+			f.close();
+			return true;
+		}
 	}
 }
