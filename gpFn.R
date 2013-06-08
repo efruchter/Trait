@@ -795,6 +795,86 @@ prefPredict.v2 = function(model, t_pair, t_sample, sample_pt, f, W, K, sigma_n, 
   return(list(pred=prefPred, mu_s=mu_t, sigma_s=sigma_s))
 }
 
+prefPredict.matchidx = function(model, t_pair, t_sample, sample_pt, f, W, K, sigma_n, kernelFn, ...) {
+  
+  # covariance b/t test samples and training samples
+  # kt = [K(r,x1) ... K(r,xn) ; K(s,x1) ... K(s,xn)]'
+  t_pt1 = as.matrix(t_sample[match(t_pair[,1], t_sample[,1]),])
+  t_pt2 = as.matrix(t_sample[match(t_pair[,2], t_sample[,1]),])
+  
+  s_val = sample_pt[,-1]
+  t1_val = t_pt1[,-1]
+  t2_val = t_pt2[,-1]
+  kt = t(rbind(kernelFn(t1_val, s_val, deriv=FALSE, ...), 
+               kernelFn(t2_val, s_val, deriv=FALSE, ...)))
+  
+  #   kt = t(rbind(kernelFn(t_pt1, sample_pt, deriv=FALSE, ...), 
+  #                kernelFn(t_pt2, sample_pt, deriv=FALSE, ...)))
+  
+  # test point covariance matrix from block form
+  # Kt = [ Krr Krs ; Ksr Kss]
+  ntest = nrow(t_pair)
+  Krr = kernelFn(t1_val, t2_val, deriv=FALSE, ...)
+  Kss = kernelFn(t2_val, t2_val, deriv=FALSE, ...)
+  Krs = kernelFn(t1_val, t2_val, deriv=FALSE, ...)
+  Ksr = kernelFn(t2_val, t1_val, deriv=FALSE, ...)
+  
+  #   Krr = kernelFn(t_pt1, t_pt2, deriv=FALSE, ...)
+  #   Kss = kernelFn(t_pt2, t_pt2, deriv=FALSE, ...)
+  #   Krs = kernelFn(t_pt1, t_pt2, deriv=FALSE, ...)
+  #   Ksr = kernelFn(t_pt2, t_pt1, deriv=FALSE, ...)
+  Kt = rbind(cbind(Krr, Krs), cbind(Ksr, Kss))
+  
+  
+  W[W<0] = 0
+  sW = sqrt(W)
+  L = chol(diag(1, ncol(K)) + sW %*% t(sW) * K)     # L = cholesky(I + sW K sW)
+  
+  
+  # predictive means
+  # mu_t = t(kt) %*% a # t(kt) alpha
+  mu_t = t(kt) %*% solve(t(L), solve(L)) %*% f 
+  # mu_t = t(kt) %*% K^-1 %*% f  # this may be unstable, need to check
+  mu_t = matrix(mu_t, ncol=2)
+  
+  
+  
+  ## predictive variances is broken
+  # may be due to repeat of identical samples being summed?
+  # cf GP regression model
+  
+  # predictive variances using methods from Rasmussen + Williams
+  
+  ## v = L \ (sW kt)
+  #   v = solve(L, sW %*% kt)
+  ## V = Kt - v' v
+  #   Kstar = Kt + sqrt(t(v) %*% v)
+  
+  #   apply(kt * (L %*% kt), 2, sum)
+  # kss + sum(Ks .* (L * Ks), 1)'
+  
+  v = Kt + apply(kt * L %*% kt, 2, sum) # maybe? Kt is 10x10 while second factor is 1x10
+  Kstar = Kt + sqrt(t(v) %*% v)
+  sigma_s = 2*sigma_n + Kstar[1:ntest,1:ntest] + Kstar[(ntest+1):(2*ntest),(ntest+1):(2*ntest)] - Kstar[1:ntest,(ntest+1):(2*ntest)] - Kstar[(ntest+1):(2*ntest),1:ntest]
+  
+  rownames(sigma_s) = gsub('\\.(\\d+)*', '', rownames(sigma_s))
+  colnames(sigma_s) = gsub('\\.(\\d+)*', '', colnames(sigma_s))
+  
+  latent = data.frame(label=seq(1:nrow(mu_t)), f=mu_t[,2], s2=diag(sigma_s))
+  ggplot(latent, aes(label, f)) + geom_point() + geom_errorbar(aes(ymin=f-sqrt(s2), ymax=f+sqrt(s2)), colour='grey80') + theme_bw()
+  
+  #   sigma = data.frame(p1=rownames(sigma_n), p2=colnames(sigma_n), sigma_n)
+  
+  
+  # predict preference using predictive means + variances
+  prefPred = prefFnVec(mu_t, t_pair, sigma_s)
+  pref = data.frame(label=seq(1:nrow(t_pair)), pref=prefPred, s2=diag(sigma_s))
+  ggplot(pref, aes(label, pref)) + geom_point() #+ geom_errorbar(aes(ymin=pref-sqrt(s2), ymax=pref+sqrt(s2)), colour='grey80') + theme_bw()
+  #   prefPred = prefFn(mu_t, sigma_n)
+  
+  return(list(pred=prefPred, mu_s=mu_t, sigma_s=sigma_s))
+}
+
 
 #### ACTIVE LEARNING ####
 
@@ -869,6 +949,42 @@ al.maxExpectedImprovement.v2 = function(f_cur, f_test, f_cov, x_test, slack=0.01
 #   next_sample = tmp[sample(which(ei >= ei_dec), 1),-1]
 
   return(next_sample)
+}
+
+al.maxExpectedImprovement.nsample = function(f_cur, f_test, f_cov, x_test, slack=0.01, nsample=1, iter=1, plotout=FALSE) {
+  f_plus = max(f_cur) # current best point
+  
+  #   usr_sample = arrange(usr_sample, s_wave)
+  #   last_pt = usr_sample[nrow(usr_sample), c('label')] # sample value most recently tested; use for pairwise tests
+  
+  #   z_t = (f_test - f_plus - slack) / sigma_n
+  z_t = (f_test - f_plus - slack) / f_cov
+  #   ei = (f_test - f_plus - slack) * pnorm(z_t) + sigma_n * dnorm(z_t)
+  ei = (f_test - f_plus - slack) * pnorm(z_t) + f_cov * dnorm(z_t)
+  #   ei = as.matrix(ei, ncol=1)
+  #   colnames(ei) = 'ei'
+  
+  pred = data.frame(label=seq(1:length(f_test)), f=f_test, s2=f_cov, ei=ei)
+  names(pred) = c('label', 'f', 's2', 'ei')
+
+  if (plotout) {
+    png(paste('ei_', iter, '.png', sep=''))
+    print(
+      ggplot(pred, aes(label, f)) + geom_point() + theme_bw() + geom_errorbar(aes(ymin=f-sqrt(s2), ymax=f+sqrt(s2)), colour='grey80') + geom_point(aes(label, ei), colour='orange')
+    )
+    dev.off()
+  }
+  
+  ## get next set of possible sample points sorted by expected information
+  tmp = cbind(ei, x_test)
+  next_samples = arrange(tmp, desc(ei))[1:nsample,-1]
+  
+  ## randomly sample w/in top N-tile
+  #   ntile = 20 # top 5%
+  #   ei_dec = quantile(ei, probs=seq(0,1,1/ntile))[ntile]
+  #   next_sample = tmp[sample(which(ei >= ei_dec), 1),-1]
+  
+  return(next_samples)
 }
 
 ## expands out a parameter range into a sequence of n points between the range bounds
